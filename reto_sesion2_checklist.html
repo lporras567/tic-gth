@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reto Sesión 2 — Formatear el Reglamento Interno</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:15px;color:#333;background:#f5f5f5}
+  .container{max-width:800px;margin:20px auto;background:#fff;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,.08);overflow:hidden}
+  .banner{background:linear-gradient(135deg,#39A900,#2E7D32);padding:25px 30px;color:#fff}
+  .banner h1{font-size:20px;font-weight:700;margin-bottom:4px}
+  .banner p{font-size:13px;opacity:.9}
+  .instrucciones{padding:20px 25px;background:#E8F5E0;border-bottom:1px solid #C8E6C9}
+  .instrucciones h2{color:#2E7D32;font-size:16px;margin-bottom:8px}
+  .instrucciones p{font-size:13px;line-height:1.6;color:#333}
+  .instrucciones code{background:#fff;padding:2px 6px;border-radius:4px;font-family:'Consolas',monospace;font-size:12px;color:#E65100}
+  .datos{padding:18px 25px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border-bottom:1px solid #eee}
+  .datos label{font-size:12px;font-weight:600;color:#39A900;display:block;margin-bottom:3px}
+  .datos input{width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit;transition:border-color .2s}
+  .datos input:focus{border-color:#39A900;outline:none}
+  .progreso{padding:12px 25px}
+  .barra-progreso{width:100%;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden}
+  .barra-fill{height:100%;background:linear-gradient(90deg,#39A900,#66BB6A);border-radius:4px;transition:width .3s ease;width:0%}
+  .progreso-texto{font-size:13px;color:#666;margin-top:5px;text-align:center;font-weight:500}
+  .checklist{padding:10px 25px 5px}
+  .checklist h2{color:#39A900;font-size:17px;margin-bottom:12px;border-bottom:2px solid #E8F5E0;padding-bottom:6px}
+  .check-item{display:flex;align-items:flex-start;padding:12px 15px;margin-bottom:8px;background:#fafafa;border-radius:8px;border-left:4px solid #e0e0e0;transition:all .2s;cursor:pointer}
+  .check-item.checked{border-left-color:#39A900;background:#f1f8e9}
+  .check-item:hover{background:#f0f0f0}
+  .check-item.checked:hover{background:#e8f5e0}
+  .check-item input[type=checkbox]{accent-color:#39A900;width:22px;height:22px;margin-right:12px;margin-top:1px;flex-shrink:0;cursor:pointer}
+  .check-item .texto{flex:1}
+  .check-item .titulo{font-weight:600;font-size:14px;color:#333}
+  .check-item.checked .titulo{color:#2E7D32}
+  .check-item .detalle{font-size:12px;color:#888;margin-top:2px}
+  .check-item.checked .detalle{color:#66BB6A}
+  .observaciones{padding:15px 25px}
+  .observaciones label{font-size:13px;font-weight:600;color:#39A900;display:block;margin-bottom:5px}
+  .observaciones textarea{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;transition:border-color .2s}
+  .observaciones textarea:focus{border-color:#39A900;outline:none}
+  .completado{display:none;background:#E8F5E0;border:2px solid #39A900;border-radius:8px;padding:15px;margin:15px 25px;text-align:center}
+  .completado.visible{display:block}
+  .completado p{color:#2E7D32;font-weight:600;font-size:15px}
+  .btn-container{padding:15px 25px 25px;text-align:center}
+  .btn-guardar{background:#39A900;color:#fff;border:none;padding:14px 40px;font-size:16px;font-weight:600;border-radius:8px;cursor:pointer;transition:background .2s,transform .1s;font-family:inherit}
+  .btn-guardar:hover{background:#2E7D32;transform:translateY(-1px)}
+  .instrucciones-guardar{font-size:12px;color:#999;margin-top:8px}
+  .footer{background:#f5f5f5;padding:12px 25px;text-align:center;font-size:10px;color:#999;border-top:1px solid #eee}
+  @media print{
+    body{background:#fff;font-size:11pt}
+    .container{box-shadow:none;margin:0;border-radius:0}
+    .banner{background:#39A900!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .instrucciones{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .btn-container,.instrucciones-guardar,.progreso{display:none!important}
+    .check-item{break-inside:avoid}
+    .check-item.checked{border-left-color:#39A900!important;background:#f1f8e9!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .check-item:not(.checked){opacity:.5}
+    .datos input{border-color:#fff;border-bottom-color:#333}
+  }
+  @media(max-width:600px){.datos{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="banner">
+    <h1>🏆 Reto de aplicación — Sesión 2</h1>
+    <p>Guía 1 — Word para la Gestión Documental del TH — Ficha 3311944</p>
+  </div>
+
+  <div class="instrucciones">
+    <h2>📌 Instrucciones</h2>
+    <p>Descargue el archivo <code>Reglamento_Interno_SIN_FORMATO.docx</code> desde la carpeta compartida. El documento contiene un extracto del Reglamento Interno de Trabajo de Confecciones del Cuero S.A.S. <strong>sin formato y con errores ortográficos intencionales</strong>. Su tarea es darle presentación profesional aplicando todo lo aprendido hoy.</p>
+    <p style="margin-top:8px">Al terminar, marque cada criterio cumplido en esta lista, escriba observaciones si las tiene y guarde como PDF para su evidencia.</p>
+  </div>
+
+  <div class="datos">
+    <div><label for="nombre">Nombre del aprendiz</label><input type="text" id="nombre" placeholder="Nombre completo"></div>
+    <div><label for="fecha">Fecha</label><input type="text" id="fecha" value="20 de agosto de 2026" readonly style="background:#f9f9f9;color:#666"></div>
+  </div>
+
+  <div class="progreso">
+    <div class="barra-progreso"><div class="barra-fill" id="barraFill"></div></div>
+    <div class="progreso-texto" id="progresoTexto">0 de 9 criterios cumplidos</div>
+  </div>
+
+  <div class="checklist">
+    <h2>Configuración de página</h2>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Márgenes GTC 185</div><div class="detalle">Superior 3 cm, inferior 2,5 cm, izquierdo 3 cm, derecho 2,5 cm | Tamaño Carta | Vertical</div></div>
+    </div>
+
+    <h2>Formato de texto</h2>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Fuente Calibri 11 pt en el cuerpo</div><div class="detalle">Todo el texto Normal debe estar en Calibri, tamaño 11</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Texto justificado con interlineado 1,5</div><div class="detalle">Alineación justificada, interlineado 1,5 líneas, espaciado posterior 6 pt</div></div>
+    </div>
+
+    <h2>Estilos aplicados</h2>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Título 1 en los 4 capítulos</div><div class="detalle">CAPÍTULO I, II, III y IV deben tener estilo Título 1</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Título 2 en los artículos</div><div class="detalle">Artículo 1, Artículo 2, etc. deben tener estilo Título 2</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Estilos personalizados con formato corporativo</div><div class="detalle">Los estilos fueron modificados (no se dejaron los predeterminados azules de Word)</div></div>
+    </div>
+
+    <h2>Revisión y verificación</h2>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Corrección ortográfica realizada</div><div class="detalle">No quedan subrayados rojos por errores ortográficos reales (los nombres propios no cuentan)</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Panel de navegación correcto</div><div class="detalle">Vista → Panel de navegación muestra los 4 capítulos (Título 1) y los artículos (Título 2) indentados</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" onchange="actualizar()">
+      <div class="texto"><div class="titulo">Archivo guardado correctamente</div><div class="detalle">Guardado como Reglamento_Interno_FORMATEADO.docx en la carpeta del curso</div></div>
+    </div>
+  </div>
+
+  <div class="observaciones">
+    <label for="obs">Observaciones o dificultades encontradas (opcional)</label>
+    <textarea id="obs" placeholder="¿Qué parte fue más difícil? ¿Qué duda le quedó?"></textarea>
+  </div>
+
+  <div class="completado" id="msgCompleto"><p>🎉 ¡Todos los criterios cumplidos! Excelente trabajo.</p></div>
+
+  <div class="btn-container">
+    <button class="btn-guardar" onclick="guardarPDF()">📄 Guardar como PDF</button>
+    <p class="instrucciones-guardar">Guardar como PDF → <strong>Reto_S2_SuNombre.pdf</strong> → subir a carpeta <strong>TIC_TalentoHumano</strong> en Drive</p>
+  </div>
+
+  <div class="footer">SENA — CDMC — Componente TIC — Guía 1 — Instructor: Ing. Luis Eladio Porras Camargo</div>
+</div>
+
+<script>
+const TOTAL=9;
+function toggleCheck(el){
+  const cb=el.querySelector('input[type=checkbox]');
+  if(event.target!==cb){cb.checked=!cb.checked}
+  el.classList.toggle('checked',cb.checked);
+  actualizar();
+}
+function actualizar(){
+  const checked=document.querySelectorAll('.check-item input:checked').length;
+  const pct=Math.round(checked/TOTAL*100);
+  document.getElementById('barraFill').style.width=pct+'%';
+  document.getElementById('progresoTexto').textContent=checked+' de '+TOTAL+' criterios cumplidos';
+  document.getElementById('msgCompleto').classList.toggle('visible',checked===TOTAL);
+}
+function guardarPDF(){
+  const n=document.getElementById('nombre').value.trim();
+  if(!n){alert('Escriba su nombre antes de guardar.');document.getElementById('nombre').focus();return}
+  window.print();
+}
+</script>
+</body>
+</html>
