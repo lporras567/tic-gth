@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuestionario de Conocimiento — Guía 1 Word</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:15px;color:#333;background:#f5f5f5}.container{max-width:800px;margin:20px auto;background:#fff;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,.08);overflow:hidden}.banner{background:linear-gradient(135deg,#39A900,#2E7D32);padding:25px 30px;color:#fff}.banner h1{font-size:20px;font-weight:700;margin-bottom:4px}.banner p{font-size:13px;opacity:.9}.nota{background:#E3F2FD;border-left:4px solid #1565C0;padding:12px 18px;margin:20px 25px;border-radius:4px;font-size:13px}.nota strong{color:#1565C0}.datos{padding:18px 25px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border-bottom:1px solid #eee}.datos label{font-size:12px;font-weight:600;color:#39A900;display:block;margin-bottom:3px}.datos input{width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit}.datos input:focus{border-color:#39A900;outline:none}.progreso{padding:12px 25px}.barra-progreso{width:100%;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden}.barra-fill{height:100%;background:linear-gradient(90deg,#39A900,#66BB6A);border-radius:4px;transition:width .3s;width:0%}.progreso-texto{font-size:13px;color:#666;margin-top:5px;text-align:center;font-weight:500}.seccion{padding:10px 25px}.pregunta{margin-bottom:18px;padding:15px;background:#fafafa;border-radius:8px;border-left:4px solid #e0e0e0;transition:border-color .2s}.pregunta.respondida{border-left-color:#39A900}.pregunta p{font-weight:600;font-size:14px;margin-bottom:10px}.opciones{list-style:none;padding:0}.opciones li{margin:5px 0}.opciones label{display:flex;align-items:center;cursor:pointer;padding:7px 12px;border-radius:6px;transition:background .15s;font-size:13px}.opciones label:hover{background:#E8F5E0}.opciones input[type=radio]{accent-color:#39A900;width:18px;height:18px;margin-right:10px;flex-shrink:0}.completado{display:none;background:#E8F5E0;border:2px solid #39A900;border-radius:8px;padding:15px;margin:15px 25px;text-align:center}.completado.visible{display:block}.completado p{color:#2E7D32;font-weight:600;font-size:15px}.btn-container{padding:15px 25px 25px;text-align:center}.btn-guardar{background:#39A900;color:#fff;border:none;padding:14px 40px;font-size:16px;font-weight:600;border-radius:8px;cursor:pointer;font-family:inherit}.btn-guardar:hover{background:#2E7D32}.instrucciones-guardar{font-size:12px;color:#999;margin-top:8px}.footer{background:#f5f5f5;padding:12px 25px;text-align:center;font-size:10px;color:#999;border-top:1px solid #eee}
+  @media print{body{background:#fff;font-size:10pt}.container{box-shadow:none;margin:0;border-radius:0}.banner{background:#39A900!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.btn-container,.instrucciones-guardar,.progreso,.completado,.nota{display:none!important}.pregunta{break-inside:avoid;padding:8px 12px;margin-bottom:10px}.opciones input[type=radio]:checked+span{font-weight:bold;color:#2E7D32}.opciones input[type=radio]:not(:checked)+span{color:#bbb}.datos input{border-color:#fff;border-bottom-color:#333}}
+  @media(max-width:600px){.datos{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="banner"><h1>📝 Cuestionario de Conocimiento — Guía 1</h1><p>Word para la Gestión Documental del TH — Ficha 3311944 — Sesión 4</p></div>
+  <div class="nota"><strong>⏱ Tiempo: 20 minutos · 15 preguntas · Individual</strong></div>
+  <div class="datos">
+    <div><label>Nombre completo</label><input type="text" id="nombre" placeholder="Nombre completo"></div>
+    <div><label>N.° de documento</label><input type="text" id="doc" placeholder="Cédula"></div>
+  </div>
+  <div class="progreso"><div class="barra-progreso"><div class="barra-fill" id="barraFill"></div></div><div class="progreso-texto" id="progresoTexto">0 de 15</div></div>
+  <div class="seccion" id="preguntas"></div>
+  <div class="completado" id="msgCompleto"><p>✅ ¡Cuestionario completo! Guárdelo como PDF.</p></div>
+  <div class="btn-container"><button class="btn-guardar" onclick="guardar()">📄 Guardar como PDF</button><p class="instrucciones-guardar"><strong>Cuestionario_SuNombre.pdf</strong> → subir a <strong>TIC_TalentoHumano</strong> en Drive</p></div>
+  <div class="footer">SENA — CDMC — Componente TIC — Guía 1 — Instructor: Ing. Luis Eladio Porras Camargo</div>
+</div>
+<script>
+const Q=[
+{q:"1. ¿Cuál pestaña de la cinta de opciones contiene los comandos de márgenes, orientación y tamaño?",o:["Inicio","Insertar","Disposición","Diseño"]},
+{q:"2. ¿Qué atajo de teclado selecciona todo el contenido de un documento?",o:["Ctrl+S","Ctrl+A","Ctrl+E","Ctrl+P"]},
+{q:"3. ¿Cuál es la diferencia principal entre un estilo y un formato manual?",o:["El estilo solo cambia el color","El estilo permite generar tablas de contenido y navegar por el documento","El formato manual es más rápido y da el mismo resultado","No hay diferencia"]},
+{q:"4. Para que la portada no tenga número de página, ¿qué debe insertar entre la portada y el contenido?",o:["Un salto de página","Un salto de sección «Página siguiente»","Una línea en blanco","Un salto de columna"]},
+{q:"5. ¿Cuál es la extensión de una plantilla de Word?",o:[".docx",".pdf",".dotx",".xlsx"]},
+{q:"6. ¿Qué alineación de párrafo se recomienda para el cuerpo de documentos corporativos?",o:["Izquierda","Centrada","Derecha","Justificada"]},
+{q:"7. ¿Cuáles son los dos componentes de una combinación de correspondencia?",o:["Un PDF y una impresora","Un documento principal y un origen de datos","Dos documentos de Word","Una hoja de Excel y una base SQL"]},
+{q:"8. ¿Qué sucede al insertar una tabla de contenido si los títulos tienen estilos aplicados?",o:["La tabla queda vacía","Muestra todos los párrafos","Muestra los títulos con sus páginas y se puede actualizar","Word muestra un error"]},
+{q:"9. ¿Qué hace el botón «Vincular a la anterior» en encabezados y pies?",o:["Copia el encabezado al portapapeles","Conecta el encabezado con el de la sección anterior (serán iguales)","Crea un hipervínculo a la página anterior","Inserta una referencia cruzada"]},
+{q:"10. ¿Qué tipo de salto de sección inicia la nueva sección en la misma página?",o:["Página siguiente","Página par","Continuo","Salto de columna"]},
+{q:"11. Al preparar un Excel como origen de datos, ¿cuál práctica es INCORRECTA?",o:["Primera fila con encabezados","Sin filas en blanco intermedias","Celdas del encabezado combinadas para centrar el título","Datos consistentes en formato"]},
+{q:"12. ¿Cuál es la diferencia entre «Guardar» (Ctrl+S) y «Guardar como» (F12)?",o:["No hay diferencia","«Guardar» actualiza el archivo; «Guardar como» permite elegir ubicación, nombre o formato","«Guardar como» solo sirve para cambiar el nombre","«Guardar» crea una copia de seguridad"]},
+{q:"13. ¿Qué herramienta detecta y corrige errores ortográficos en todo el documento?",o:["Inicio → Buscar y reemplazar","Revisar → Ortografía y gramática (F7)","Vista → Panel de navegación","Disposición → Guiones"]},
+{q:"14. ¿Cuál es la principal ventaja de usar una plantilla (.dotx) para documentos de TH?",o:["Los documentos pesan menos","Garantiza uniformidad, ahorra tiempo y evita errores de formato","Permite editar simultáneamente","Protege con contraseña automáticamente"]},
+{q:"15. Antes de ejecutar una combinación de correspondencia, ¿qué debe verificar?",o:["Que la impresora esté encendida","Que el documento tenga animaciones","Que los datos del origen sean exactos y actualizados","Que Excel tenga formato condicional"]}
+];
+const cont=document.getElementById('preguntas');
+Q.forEach((q,i)=>{
+  let h=`<div class="pregunta" id="pq${i}"><p>${q.q}</p><ul class="opciones">`;
+  q.o.forEach((o,j)=>{h+=`<li><label><input type="radio" name="q${i}" onchange="marcar(${i})"><span> ${o}</span></label></li>`});
+  h+='</ul></div>';cont.innerHTML+=h;
+});
+function marcar(i){document.getElementById('pq'+i).classList.add('respondida');actualizar()}
+function actualizar(){const r=document.querySelectorAll('.pregunta.respondida').length;const p=Math.round(r/15*100);document.getElementById('barraFill').style.width=p+'%';document.getElementById('progresoTexto').textContent=r+' de 15';document.getElementById('msgCompleto').classList.toggle('visible',r===15)}
+function guardar(){const n=document.getElementById('nombre').value.trim();if(!n){alert('Escriba su nombre.');document.getElementById('nombre').focus();return}if(document.querySelectorAll('.pregunta.respondida').length<15&&!confirm('Faltan preguntas. ¿Guardar de todos modos?'))return;window.print()}
+</script>
+</body>
+</html>
