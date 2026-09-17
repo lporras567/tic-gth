@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Autoevaluación Taller S06 — Formato y protección</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:15px;color:#333;background:#f5f5f5}.container{max-width:800px;margin:20px auto;background:#fff;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,.08);overflow:hidden}.banner{background:linear-gradient(135deg,#1565C0,#0D47A1);padding:25px 30px;color:#fff}.banner h1{font-size:20px;font-weight:700;margin-bottom:4px}.banner p{font-size:13px;opacity:.9}.datos{padding:18px 25px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border-bottom:1px solid #eee}.datos label{font-size:12px;font-weight:600;color:#1565C0;display:block;margin-bottom:3px}.datos input{width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:inherit}.datos input:focus{border-color:#1565C0;outline:none}.progreso{padding:12px 25px}.barra-progreso{width:100%;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden}.barra-fill{height:100%;background:linear-gradient(90deg,#1565C0,#42A5F5);border-radius:4px;transition:width .3s;width:0%}.progreso-texto{font-size:13px;color:#666;margin-top:5px;text-align:center;font-weight:500}.checklist{padding:10px 25px 5px}.checklist h2{color:#1565C0;font-size:16px;margin-bottom:10px;border-bottom:2px solid #E3F2FD;padding-bottom:6px;margin-top:15px}.check-item{display:flex;align-items:flex-start;padding:12px 15px;margin-bottom:8px;background:#fafafa;border-radius:8px;border-left:4px solid #e0e0e0;transition:all .2s;cursor:pointer}.check-item.checked{border-left-color:#1565C0;background:#E3F2FD}.check-item:hover{background:#f0f0f0}.check-item input[type=checkbox]{accent-color:#1565C0;width:22px;height:22px;margin-right:12px;margin-top:1px;flex-shrink:0;cursor:pointer}.check-item .texto{flex:1}.check-item .titulo{font-weight:600;font-size:14px}.check-item.checked .titulo{color:#0D47A1}.check-item .detalle{font-size:12px;color:#888;margin-top:2px}.check-item.checked .detalle{color:#42A5F5}.reflexion{padding:15px 25px}.reflexion h2{color:#1565C0;font-size:16px;margin-bottom:8px;border-bottom:2px solid #E3F2FD;padding-bottom:6px;margin-top:15px}.reflexion p{font-size:14px;font-weight:600;margin-bottom:6px}.reflexion textarea{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:15px}.reflexion textarea:focus{border-color:#1565C0;outline:none}.completado{display:none;background:#E3F2FD;border:2px solid #1565C0;border-radius:8px;padding:15px;margin:15px 25px;text-align:center}.completado.visible{display:block}.completado p{color:#0D47A1;font-weight:600;font-size:15px}.btn-container{padding:15px 25px 25px;text-align:center}.btn-guardar{background:#1565C0;color:#fff;border:none;padding:14px 40px;font-size:16px;font-weight:600;border-radius:8px;cursor:pointer;font-family:inherit}.btn-guardar:hover{background:#0D47A1}.instrucciones-guardar{font-size:12px;color:#999;margin-top:8px}.footer{background:#f5f5f5;padding:12px 25px;text-align:center;font-size:10px;color:#999;border-top:1px solid #eee}
+@media print{body{background:#fff}.container{box-shadow:none;margin:0;border-radius:0}.banner{background:#1565C0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.btn-container,.instrucciones-guardar,.progreso{display:none!important}.check-item{break-inside:avoid}.check-item.checked{border-left-color:#1565C0!important;background:#E3F2FD!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.check-item:not(.checked){opacity:.5}.datos input,.reflexion textarea{border-color:#fff;border-bottom-color:#333}}
+@media(max-width:600px){.datos{grid-template-columns:1fr}}
+</style>
+</head><body>
+<div class="container">
+<div class="banner"><h1>📋 Autoevaluación — Taller S06</h1><p>Formato avanzado y protección — Calzado Moderno S.A.S.</p></div>
+<div class="datos"><div><label>Nombre completo</label><input type="text" id="nombre" placeholder="Nombre completo"></div><div><label>Fecha</label><input type="text" id="fecha" value="" placeholder="DD/MM/AAAA"></div></div>
+<div class="progreso"><div class="barra-progreso"><div class="barra-fill" id="barraFill"></div></div><div class="progreso-texto" id="progresoTexto">0 de 10 criterios</div></div>
+
+<div class="checklist">
+<h2>Formato de tabla</h2>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Rango convertido en tabla con estilo azul</div><div class="detalle">Inicio → Dar formato como tabla → estilo azul aplicado</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Tabla nombrada como Tabla_Personal</div><div class="detalle">Diseño de tabla → Nombre: Tabla_Personal</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Fila de totales activada con suma de salarios</div><div class="detalle">Diseño de tabla → Fila de totales → Suma en columna Salario</div></div></div>
+
+<h2>Formato condicional</h2>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Regla 1: contratos a vencer en rojo</div><div class="detalle">Fórmula =Y(G2<>"Indefinido";HOY()-I2>300) → relleno rojo claro</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Regla 2: barras de datos en salarios</div><div class="detalle">Barras verdes o azules proporcionales al valor</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Regla 3: escala de color en antigüedad</div><div class="detalle">Columna de antigüedad creada con DIAS360 + escala rojo-amarillo-verde</div></div></div>
+
+<h2>Paneles y protección</h2>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Paneles inmovilizados en fila 1</div><div class="detalle">Los encabezados permanecen visibles al desplazarse</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Columna Observaciones agregada y editable</div><div class="detalle">Nueva columna al final, desbloqueada para edición</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Cédula y Salario protegidos (no editables)</div><div class="detalle">Al intentar editar aparece mensaje de error. EPS sí es editable</div></div></div>
+<div class="check-item" onclick="t(this)"><input type="checkbox" onchange="a()"><div class="texto"><div class="titulo">Archivo guardado como Taller_S06_Resuelto.xlsx</div><div class="detalle">Nombre correcto en la carpeta del curso</div></div></div>
+</div>
+
+<div class="reflexion">
+<h2>Reflexión final</h2>
+<p>1. ¿Qué regla de formato condicional le parece más útil para TH y por qué?</p>
+<textarea id="r1" placeholder="Escriba su respuesta..." oninput="a()"></textarea>
+<p>2. ¿Qué datos deben estar siempre protegidos y cuáles editables?</p>
+<textarea id="r2" placeholder="Escriba su respuesta..." oninput="a()"></textarea>
+<p>3. ¿Cómo conecta esto con la competencia de controlar la calidad de la información?</p>
+<textarea id="r3" placeholder="Escriba su respuesta..." oninput="a()"></textarea>
+</div>
+
+<div class="completado" id="msgCompleto"><p>🎉 ¡Autoevaluación completa! Guárdela como PDF.</p></div>
+<div class="btn-container"><button class="btn-guardar" onclick="g()">📄 Guardar como PDF</button><p class="instrucciones-guardar"><strong>Taller_S06_SuNombre.pdf</strong> → subir a <strong>TIC_TalentoHumano</strong> en Drive</p></div>
+<div class="footer">SENA — CDMC — Guía 2 Excel — Taller S06 — Instructor: Ing. Luis Eladio Porras Camargo</div>
+</div>
+<script>
+const T=10;
+function t(el){const cb=el.querySelector('input[type=checkbox]');if(event.target!==cb)cb.checked=!cb.checked;el.classList.toggle('checked',cb.checked);a()}
+function a(){const c=document.querySelectorAll('.check-item input:checked').length;const r=document.querySelectorAll('.reflexion textarea').length;let rr=0;document.querySelectorAll('.reflexion textarea').forEach(ta=>{if(ta.value.trim().length>20)rr++});const total=c+rr;const max=T+3;document.getElementById('barraFill').style.width=Math.round(total/max*100)+'%';document.getElementById('progresoTexto').textContent=c+' de '+T+' criterios · '+rr+' de 3 reflexiones';document.getElementById('msgCompleto').classList.toggle('visible',c===T&&rr===3)}
+function g(){const n=document.getElementById('nombre').value.trim();if(!n){alert('Escriba su nombre.');document.getElementById('nombre').focus();return}window.print()}
+</script>
+</body></html>
