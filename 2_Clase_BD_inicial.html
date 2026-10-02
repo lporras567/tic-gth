@@ -1,0 +1,1608 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Clase BD Relacional</title>
+<style>
+/*
+  Layout: header fijo + navegación lateral en desktop, stack en móvil
+  Palette: índigo oscuro sobre blanco cálido, con acento verde SENA
+  Type: Montserrat (display/UI) + Source Code Pro (código) + Inter (body)
+*/
+:root {
+  --bg:        #F7F8FC;
+  --surface:   #FFFFFF;
+  --border:    #E2E6F0;
+  --fg:        #1A1D2E;
+  --fg-muted:  #5A6073;
+  --accent:    #1A3C6E;    /* azul SENA */
+  --accent-lt: #EEF2FA;
+  --green:     #1A6E4A;    /* verde SENA */
+  --green-lt:  #EBF5EF;
+  --amber:     #92540C;
+  --amber-lt:  #FEF3E2;
+  --red:       #8B1A1A;
+  --red-lt:    #FDECEC;
+  --code-bg:   #1E2235;
+  --code-fg:   #CDD6F4;
+  --shadow:    0 1px 4px rgba(26,28,46,.08), 0 4px 12px rgba(26,28,46,.06);
+  --radius:    8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #0F1120;
+    --surface:   #1A1D2E;
+    --border:    #2A2F47;
+    --fg:        #E8EAF2;
+    --fg-muted:  #8B90A8;
+    --accent:    #5B82CC;
+    --accent-lt: #1A2340;
+    --green:     #4CAF84;
+    --green-lt:  #0E2518;
+    --amber:     #E8A53C;
+    --amber-lt:  #2C1E08;
+    --red:       #E07070;
+    --red-lt:    #2C0E0E;
+    --code-bg:   #0A0C18;
+    --shadow:    0 1px 4px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.2);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:        #0F1120;
+  --surface:   #1A1D2E;
+  --border:    #2A2F47;
+  --fg:        #E8EAF2;
+  --fg-muted:  #8B90A8;
+  --accent:    #5B82CC;
+  --accent-lt: #1A2340;
+  --green:     #4CAF84;
+  --green-lt:  #0E2518;
+  --amber:     #E8A53C;
+  --amber-lt:  #2C1E08;
+  --red:       #E07070;
+  --red-lt:    #2C0E0E;
+  --code-bg:   #0A0C18;
+  --shadow:    0 1px 4px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.2);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  padding-inline: 0;
+  padding-block: 0;
+}
+
+/* ── FONTS ─────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
+/* ── TOP HEADER ─────────────────────────────────── */
+.top-header {
+  background: var(--accent);
+  color: #fff;
+  padding: 18px 24px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-badge {
+  background: rgba(255,255,255,.18);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 3px;
+}
+.header-main { flex: 1; min-width: 0; }
+.header-main h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 800;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.header-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: .85;
+}
+.header-meta span { display: flex; align-items: center; gap: 5px; }
+
+/* ── NAV TABS ────────────────────────────────────── */
+.nav-tabs {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow);
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--accent); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* ── MAIN ────────────────────────────────────────── */
+.main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── SECTION HEADER ──────────────────────────────── */
+.sec-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sec-num {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sec-title { flex: 1; min-width: 0; }
+.sec-title h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(17px, 3.5vw, 22px);
+  font-weight: 800;
+  text-wrap: balance;
+}
+.sec-title .time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent-lt);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  margin-top: 4px;
+}
+
+/* ── CARDS ────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── TIMELINE ─────────────────────────────────────── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.tl-item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0 12px;
+  position: relative;
+}
+.tl-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 27px;
+  top: 36px;
+  bottom: -8px;
+  width: 2px;
+  background: var(--border);
+}
+.tl-time {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  text-align: right;
+  padding-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.tl-dot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+}
+.tl-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.tl-line { flex: 1; width: 2px; background: var(--border); }
+.tl-body {
+  padding: 6px 0 20px;
+}
+.tl-body h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+.tl-body p {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+}
+.tl-mins {
+  display: inline-block;
+  background: var(--accent-lt);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-top: 4px;
+}
+
+/* ── CODE BLOCKS ──────────────────────────────────── */
+.code-wrap {
+  background: var(--code-bg);
+  border-radius: var(--radius);
+  margin: 14px 0;
+  overflow-x: auto;
+}
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .06em;
+}
+.copy-btn {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.55);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 3px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.copy-btn:hover { background: rgba(255,255,255,.14); }
+pre {
+  margin: 0;
+  padding: 16px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--code-fg);
+  overflow-x: auto;
+}
+pre .kw  { color: #CBA6F7; }  /* keywords */
+pre .fn  { color: #89DCEB; }  /* functions */
+pre .str { color: #A6E3A1; }  /* strings */
+pre .num { color: #FAB387; }  /* numbers */
+pre .cm  { color: #6C7086; font-style: italic; }  /* comments */
+pre .op  { color: #89DCEB; }  /* operators */
+pre .tbl { color: #F38BA8; }  /* table names */
+
+/* ── ALERT BOXES ──────────────────────────────────── */
+.alert {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  margin: 14px 0;
+  font-size: 14px;
+}
+.alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert.info  { background: var(--accent-lt); border-left: 4px solid var(--accent); }
+.alert.tip   { background: var(--green-lt);  border-left: 4px solid var(--green);  }
+.alert.warn  { background: var(--amber-lt);  border-left: 4px solid var(--amber);  }
+.alert.error { background: var(--red-lt);    border-left: 4px solid var(--red);    }
+
+/* ── TABLES ───────────────────────────────────────── */
+.tbl-wrap { overflow-x: auto; margin: 14px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead { background: var(--accent); color: #fff; }
+thead th {
+  padding: 10px 14px;
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: var(--bg); }
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.pill.green { background: var(--green-lt); color: var(--green); }
+.pill.red   { background: var(--red-lt);   color: var(--red);   }
+
+/* ── STEP LIST ────────────────────────────────────── */
+.step-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.step-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-list li p { flex: 1; min-width: 0; font-size: 14px; }
+
+/* ── RETO STEPS ───────────────────────────────────── */
+.reto-step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.reto-step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--accent-lt);
+  border-bottom: 1px solid var(--border);
+}
+.reto-step-letter {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.reto-step-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+.reto-step-body { padding: 16px 18px; }
+.reto-step-body ul { padding-left: 20px; }
+.reto-step-body li { margin-bottom: 6px; font-size: 14px; }
+
+/* ── RUBRICA ──────────────────────────────────────── */
+.rubric-row { display: flex; flex-direction: column; gap: 6px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.rubric-row:last-child { border-bottom: none; }
+.rubric-crit {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+}
+.rubric-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.rubric-ok, .rubric-no {
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.rubric-ok { background: var(--green-lt); color: var(--green); }
+.rubric-no { background: var(--red-lt);   color: var(--red);   }
+.rubric-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  opacity: .8;
+}
+
+/* ── PROGRESS BAR ─────────────────────────────────── */
+.progress-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.progress-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 10px;
+}
+.progress-blocks {
+  display: flex;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  gap: 2px;
+}
+.prog-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .04em;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.prog-block:hover { opacity: .85; }
+.prog-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 10px;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* ── INSTRUCTOR NOTE ──────────────────────────────── */
+.instructor-note {
+  background: var(--amber-lt);
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 13.5px;
+}
+.instructor-note strong {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--amber);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ── DIAGNOSTICO ──────────────────────────────────── */
+.diag-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.diag-header {
+  background: var(--red-lt);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.diag-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.diag-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.diag-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13.5px;
+}
+.diag-icon { flex-shrink: 0; font-size: 16px; }
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .rubric-cols { grid-template-columns: 1fr; }
+  .header-meta { gap: 10px; }
+  .tab-btn { padding: 10px 12px; }
+}
+</style>
+
+<!-- HEADER -->
+<header class="top-header">
+  <div class="header-badge">SENA · ADSO</div>
+  <div class="header-main">
+    <h1>Bases de Datos Relacionales con PostgreSQL</h1>
+    <div class="header-meta">
+      <span>📅 Sesión: 2 de octubre, 2026</span>
+      <span>⏱ Duración: 5 horas (300 min)</span>
+      <span>🛠 pgAdmin 4 + PostgreSQL</span>
+    </div>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<nav class="nav-tabs" role="tablist">
+  <button class="tab-btn active" onclick="showTab('cronograma')" role="tab">
+    <span class="tab-dot" style="background:#1A3C6E"></span>Cronograma
+  </button>
+  <button class="tab-btn" onclick="showTab('m1')" role="tab">
+    <span class="tab-dot" style="background:#2563EB"></span>M1 Iniciación
+  </button>
+  <button class="tab-btn" onclick="showTab('m2')" role="tab">
+    <span class="tab-dot" style="background:#7C3AED"></span>M2 DDL
+  </button>
+  <button class="tab-btn" onclick="showTab('m3')" role="tab">
+    <span class="tab-dot" style="background:#059669"></span>M3 DML
+  </button>
+  <button class="tab-btn" onclick="showTab('m4')" role="tab">
+    <span class="tab-dot" style="background:#D97706"></span>M4 Consultas
+  </button>
+  <button class="tab-btn" onclick="showTab('m5')" role="tab">
+    <span class="tab-dot" style="background:#DC2626"></span>M5 Orden
+  </button>
+  <button class="tab-btn" onclick="showTab('m6')" role="tab">
+    <span class="tab-dot" style="background:#0891B2"></span>M6 JOINs
+  </button>
+  <button class="tab-btn" onclick="showTab('reto')" role="tab">
+    <span class="tab-dot" style="background:#B45309"></span>Reto Final
+  </button>
+</nav>
+
+<main class="main">
+
+<!-- ══════════════════════════════════════════════
+     TAB 0: CRONOGRAMA
+══════════════════════════════════════════════ -->
+<section id="tab-cronograma" class="section active">
+
+  <!-- Errores del original -->
+  <div class="diag-box">
+    <div class="diag-header">
+      <h3>⚠ Correcciones aplicadas al cronograma original</h3>
+    </div>
+    <div class="diag-body">
+      <div class="diag-item"><span class="diag-icon">🔢</span><span>El módulo 3 (DML) no tenía tiempo asignado en el encabezado — corregido a <strong>50 min</strong>.</span></div>
+      <div class="diag-item"><span class="diag-icon">🔢</span><span>La suma original alcanzaba ≈275 min y no incluía tiempo real para el Reto Final — redistribuido para cerrar en exactamente <strong>300 min</strong>.</span></div>
+      <div class="diag-item"><span class="diag-icon">📋</span><span>La rúbrica decía "unir 4 tablas" pero el reto une 5 (libros, autores, libro_autor, géneros, libro_géneros) — corregido a <strong>5 tablas</strong>.</span></div>
+      <div class="diag-item"><span class="diag-icon">🔑</span><span><code>libro_genero</code> en el ejemplo solución no tenía <code>ON DELETE CASCADE</code> — añadido para mantener integridad referencial consistente con <code>libro_autor</code>.</span></div>
+    </div>
+  </div>
+
+  <!-- Barra de progreso visual -->
+  <div class="progress-section">
+    <div class="progress-title">Distribución de los 300 minutos</div>
+    <div class="progress-blocks">
+      <div class="prog-block" style="width:10%;background:#2563EB" onclick="showTab('m1')" title="M1 Iniciación – 30 min">M1</div>
+      <div class="prog-block" style="width:16.7%;background:#7C3AED" onclick="showTab('m2')" title="M2 DDL – 50 min">M2</div>
+      <div class="prog-block" style="width:16.7%;background:#059669" onclick="showTab('m3')" title="M3 DML – 50 min">M3</div>
+      <div class="prog-block" style="width:16.7%;background:#D97706" onclick="showTab('m4')" title="M4 Consultas – 50 min">M4</div>
+      <div class="prog-block" style="width:10%;background:#DC2626" onclick="showTab('m5')" title="M5 Orden/Formato – 30 min">M5</div>
+      <div class="prog-block" style="width:13.3%;background:#0891B2" onclick="showTab('m6')" title="M6 JOINs – 40 min">M6</div>
+      <div class="prog-block" style="width:13.3%;background:#B45309" onclick="showTab('reto')" title="Reto Final – 40 min">Reto</div>
+      <div class="prog-block" style="width:3.3%;background:#1A6E4A" title="Cierre – 10 min">✓</div>
+    </div>
+    <div class="prog-legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#2563EB"></span>M1 Iniciación · 30 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#7C3AED"></span>M2 DDL · 50 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#059669"></span>M3 DML · 50 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#D97706"></span>M4 Consultas · 50 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#DC2626"></span>M5 Orden · 30 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#0891B2"></span>M6 JOINs · 40 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#B45309"></span>Reto Final · 40 min</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#1A6E4A"></span>Cierre · 10 min</span>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="card">
+    <div class="card-title">🗓 Secuencia de la sesión</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-time">0:00</div>
+        <div>
+          <div class="tl-body">
+            <h3>M1 · Iniciación — Herramientas</h3>
+            <p>Conceptos de SGBD, PostgreSQL vs pgAdmin, abrir Query Tool, crear servidor.</p>
+            <span class="tl-mins">30 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">0:30</div>
+        <div>
+          <div class="tl-body">
+            <h3>M2 · DDL — Estructura relacional</h3>
+            <p>Crear BD, 3 tablas (autores, libros, libro_autor), modelar relación N:M con tabla intermedia.</p>
+            <span class="tl-mins">50 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">1:20</div>
+        <div>
+          <div class="tl-body">
+            <h3>M3 · DML — Datos colombianos</h3>
+            <p>INSERT de 20 autores y 20 libros colombianos, asociaciones N:M con la antología como ejemplo multi-autor.</p>
+            <span class="tl-mins">50 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">2:10</div>
+        <div>
+          <div class="tl-body">
+            <h3>M4 · Consultas y Filtros</h3>
+            <p>SELECT básico, WHERE con AND / OR / NOT, LIKE. Práctica guiada con los datos de la biblioteca.</p>
+            <span class="tl-mins">50 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">3:00</div>
+        <div>
+          <div class="tl-body">
+            <h3>M5 · Ordenamiento y Formato</h3>
+            <p>ORDER BY ASC/DESC, LIMIT, UPPER(), LOWER(), LENGTH(). Presentación de resultados limpios.</p>
+            <span class="tl-mins">30 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">3:30</div>
+        <div>
+          <div class="tl-body">
+            <h3>M6 · JOINs entre 3 tablas</h3>
+            <p>INNER JOIN, concepto de tabla puente. Listado general libros–autores. Preparación mental para el reto.</p>
+            <span class="tl-mins">40 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">4:10</div>
+        <div>
+          <div class="tl-body">
+            <h3>Reto Final Individual — Géneros literarios</h3>
+            <p>El aprendiz crea 2 tablas nuevas, inserta géneros, realiza asociaciones y construye consulta con JOINs a 5 tablas.</p>
+            <span class="tl-mins" style="background:var(--amber-lt);color:var(--amber)">40 min</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">4:50</div>
+        <div>
+          <div class="tl-body">
+            <h3>Cierre — Evidencias y retroalimentación grupal</h3>
+            <p>Instrucciones de entrega, revisión de un resultado en pantalla, retroalimentación pedagógica.</p>
+            <span class="tl-mins" style="background:var(--green-lt);color:var(--green)">10 min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Módulo</th><th>Min</th><th>Hora inicio</th><th>Actividad principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Iniciación</td><td>30</td><td>0:00</td><td>Herramientas: PostgreSQL + pgAdmin 4, Query Tool</td></tr>
+        <tr><td>2</td><td>DDL</td><td>50</td><td>0:30</td><td>CREATE DATABASE, CREATE TABLE, tabla intermedia libro_autor</td></tr>
+        <tr><td>3</td><td>DML</td><td>50</td><td>1:20</td><td>INSERT 20 autores + 20 libros + asociaciones N:M</td></tr>
+        <tr><td>4</td><td>Consultas</td><td>50</td><td>2:10</td><td>SELECT, WHERE, AND/OR/NOT, LIKE</td></tr>
+        <tr><td>5</td><td>Orden/Formato</td><td>30</td><td>3:00</td><td>ORDER BY, LIMIT, UPPER(), funciones de texto</td></tr>
+        <tr><td>6</td><td>JOINs</td><td>40</td><td>3:30</td><td>INNER JOIN entre 3 tablas (libros, libro_autor, autores)</td></tr>
+        <tr><td>—</td><td>Reto Final</td><td>40</td><td>4:10</td><td>Géneros literarios: DDL + DML + JOIN a 5 tablas</td></tr>
+        <tr><td>—</td><td>Cierre</td><td>10</td><td>4:50</td><td>Instrucciones de entrega, retroalimentación, preguntas</td></tr>
+        <tr><td colspan="2" style="font-weight:700;font-family:Montserrat">TOTAL</td><td style="font-weight:700;color:var(--green)">300</td><td colspan="2" style="color:var(--fg-muted)">= 5 horas exactas ✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB M1: INICIACIÓN
+══════════════════════════════════════════════ -->
+<section id="tab-m1" class="section">
+  <div class="sec-header">
+    <div class="sec-num">1</div>
+    <div class="sec-title">
+      <h2>Iniciación — Herramientas</h2>
+      <span class="time-badge">⏱ 30 min · 0:00 → 0:30</span>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <span class="alert-icon">🎯</span>
+    <span><strong>Objetivo:</strong> Que el aprendiz entienda qué hace PostgreSQL vs qué hace pgAdmin, y llegue al Query Tool listo para escribir SQL.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📚 Conceptos clave (10 min)</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Herramienta</th><th>Rol</th><th>Analogía</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PostgreSQL</strong></td><td>Motor / servidor de base de datos. Almacena y procesa los datos.</td><td>El motor de un carro</td></tr>
+          <tr><td><strong>pgAdmin 4</strong></td><td>Cliente visual. Permite escribir SQL, explorar tablas y ver resultados.</td><td>El tablero del carro</td></tr>
+          <tr><td><strong>Query Tool</strong></td><td>Editor de consultas dentro de pgAdmin.</td><td>El volante</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚙ Ejercicio práctico (20 min)</div>
+    <ul class="step-list">
+      <li>
+        <span class="step-num">1</span>
+        <p>Abrir pgAdmin 4. Si pide contraseña maestra, ingresarla. Verificar que PostgreSQL aparece en el árbol de servidores.</p>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <p>Si no hay servidor configurado: clic derecho en <em>Servers → Register → Server</em>. En <em>General</em>: nombre <code>Local</code>. En <em>Connection</em>: host <code>localhost</code>, puerto <code>5432</code>, usuario <code>postgres</code>.</p>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <p>Expandir el servidor → <em>Databases → postgres</em> → clic derecho → <strong>Query Tool</strong>. El editor SQL queda abierto y listo.</p>
+      </li>
+      <li>
+        <span class="step-num">4</span>
+        <p>Prueba rápida: escribir <code>SELECT version();</code> y presionar <kbd>F5</kbd>. Si aparece la versión de PostgreSQL, el entorno está listo. ✓</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="instructor-note">
+    <strong>Nota para el instructor</strong>
+    Si un aprendiz no logra conectarse, verificar que el servicio <em>postgresql</em> esté corriendo en Windows (Servicios → postgresql-x64-16). No perder más de 5 min por puesto; continuar con la demostración y que el aprendiz copie al finalizar.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB M2: DDL
+══════════════════════════════════════════════ -->
+<section id="tab-m2" class="section">
+  <div class="sec-header">
+    <div class="sec-num">2</div>
+    <div class="sec-title">
+      <h2>DDL — Estructura relacional</h2>
+      <span class="time-badge">⏱ 50 min · 0:30 → 1:20</span>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <span class="alert-icon">🎯</span>
+    <span><strong>Objetivo:</strong> El aprendiz comprende por qué existe la tabla intermedia y puede crear las 3 tablas con sus restricciones.</span>
+  </div>
+
+  <div class="alert warn">
+    <span class="alert-icon">💡</span>
+    <span><strong>El problema pedagógico central (5 min):</strong> Si pusiéramos <code>autor</code> como columna de <code>libros</code>, la <em>Antología del Cuento Colombiano</em> tendría que repetirse 3 veces para sus 3 autores. La tabla intermedia <code>libro_autor</code> resuelve eso.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 Código DDL completo</div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span>SQL — DDL</span>
+        <button class="copy-btn" onclick="copyCode(this)">COPIAR</button>
+      </div>
+      <pre><span class="cm">-- ① Crear la base de datos (ejecutar sola, luego reconectar)</span>
+<span class="kw">CREATE DATABASE</span> <span class="tbl">biblioteca_medellin</span>;
+
+<span class="cm">-- Conectarse a la nueva BD antes de continuar:
+-- En pgAdmin: clic derecho → Connect to Database</span>
+
+<span class="cm">-- ② Tabla de Autores</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">autores</span> (
+    autor_id    <span class="fn">SERIAL</span>       <span class="kw">PRIMARY KEY</span>,
+    nombre      <span class="fn">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    nacionalidad <span class="fn">VARCHAR</span>(<span class="num">50</span>)  <span class="kw">DEFAULT</span> <span class="str">'Colombiana'</span>
+);
+
+<span class="cm">-- ③ Tabla de Libros</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">libros</span> (
+    isbn             <span class="fn">VARCHAR</span>(<span class="num">20</span>)  <span class="kw">PRIMARY KEY</span>,
+    titulo           <span class="fn">VARCHAR</span>(<span class="num">200</span>) <span class="kw">NOT NULL</span>,
+    anio_publicacion <span class="fn">INTEGER</span>
+);
+
+<span class="cm">-- ④ Tabla Intermedia — rompe la relación N:M</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">libro_autor</span> (
+    isbn     <span class="fn">VARCHAR</span>(<span class="num">20</span>)  <span class="kw">REFERENCES</span> <span class="tbl">libros</span>(isbn)   <span class="kw">ON DELETE CASCADE</span>,
+    autor_id <span class="fn">INTEGER</span>      <span class="kw">REFERENCES</span> <span class="tbl">autores</span>(autor_id) <span class="kw">ON DELETE CASCADE</span>,
+    <span class="kw">PRIMARY KEY</span> (isbn, autor_id)
+);</pre>
+    </div>
+  </div>
+
+  <div class="alert tip">
+    <span class="alert-icon">✅</span>
+    <span><strong>Verificación:</strong> En el árbol de pgAdmin → <em>biblioteca_medellin → Schemas → public → Tables</em> deben aparecer las 3 tablas. Si no aparecen, clic derecho en <em>Tables → Refresh</em>.</span>
+  </div>
+
+  <div class="instructor-note">
+    <strong>Punto de pausa pedagógica (5 min)</strong>
+    Preguntar: "¿Por qué <code>libro_autor</code> no tiene un <code>id</code> propio?" → Porque la combinación (isbn + autor_id) ya es única: un autor no puede repetirse en el mismo libro. Eso se llama <strong>clave primaria compuesta</strong>.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB M3: DML
+══════════════════════════════════════════════ -->
+<section id="tab-m3" class="section">
+  <div class="sec-header">
+    <div class="sec-num">3</div>
+    <div class="sec-title">
+      <h2>DML — Datos colombianos</h2>
+      <span class="time-badge">⏱ 50 min · 1:20 → 2:10</span>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <span class="alert-icon">🎯</span>
+    <span><strong>Objetivo:</strong> Poblar las 3 tablas con datos reales de la literatura colombiana, incluyendo una relación N:M real (la Antología con 3 autores).</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 INSERT — 20 Autores Colombianos</div>
+    <div class="code-wrap">
+      <div class="code-header"><span>SQL — DML Autores</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="kw">INSERT INTO</span> <span class="tbl">autores</span> (nombre) <span class="kw">VALUES</span>
+    (<span class="str">'Gabriel García Márquez'</span>),    <span class="cm">-- autor_id = 1</span>
+    (<span class="str">'Álvaro Mutis'</span>),              <span class="cm">-- 2</span>
+    (<span class="str">'Laura Restrepo'</span>),            <span class="cm">-- 3</span>
+    (<span class="str">'Héctor Abad Faciolince'</span>),     <span class="cm">-- 4</span>
+    (<span class="str">'Mario Mendoza'</span>),             <span class="cm">-- 5</span>
+    (<span class="str">'William Ospina'</span>),            <span class="cm">-- 6</span>
+    (<span class="str">'Piedad Bonnett'</span>),            <span class="cm">-- 7</span>
+    (<span class="str">'Juan Gabriel Vásquez'</span>),       <span class="cm">-- 8</span>
+    (<span class="str">'Jorge Isaacs'</span>),              <span class="cm">-- 9</span>
+    (<span class="str">'José Eustasio Rivera'</span>),       <span class="cm">-- 10</span>
+    (<span class="str">'Fernando Vallejo'</span>),          <span class="cm">-- 11</span>
+    (<span class="str">'Germán Castro Caycedo'</span>),      <span class="cm">-- 12</span>
+    (<span class="str">'Soledad Acosta de Samper'</span>),   <span class="cm">-- 13</span>
+    (<span class="str">'Manuel Zapata Olivella'</span>),     <span class="cm">-- 14</span>
+    (<span class="str">'Rafael Pombo'</span>),              <span class="cm">-- 15</span>
+    (<span class="str">'Tomás Carrasquilla'</span>),        <span class="cm">-- 16</span>
+    (<span class="str">'Marvel Moreno'</span>),             <span class="cm">-- 17</span>
+    (<span class="str">'Evelio Rosero'</span>),             <span class="cm">-- 18</span>
+    (<span class="str">'Pilar Quintana'</span>),            <span class="cm">-- 19</span>
+    (<span class="str">'Santiago Gamboa'</span>);           <span class="cm">-- 20</span></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 INSERT — 20 Libros</div>
+    <div class="code-wrap">
+      <div class="code-header"><span>SQL — DML Libros</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="kw">INSERT INTO</span> <span class="tbl">libros</span> (isbn, titulo, anio_publicacion) <span class="kw">VALUES</span>
+    (<span class="str">'978-01'</span>, <span class="str">'Cien años de soledad'</span>,               <span class="num">1967</span>),
+    (<span class="str">'978-02'</span>, <span class="str">'El amor en los tiempos del cólera'</span>,    <span class="num">1985</span>),
+    (<span class="str">'978-03'</span>, <span class="str">'Ilona llega con la lluvia'</span>,             <span class="num">1988</span>),
+    (<span class="str">'978-04'</span>, <span class="str">'La nieve del Almirante'</span>,               <span class="num">1986</span>),
+    (<span class="str">'978-05'</span>, <span class="str">'Delirio'</span>,                              <span class="num">2004</span>),
+    (<span class="str">'978-06'</span>, <span class="str">'El olvido que seremos'</span>,                <span class="num">2006</span>),
+    (<span class="str">'978-07'</span>, <span class="str">'Satanás'</span>,                              <span class="num">2002</span>),
+    (<span class="str">'978-08'</span>, <span class="str">'Ursúa'</span>,                                <span class="num">2005</span>),
+    (<span class="str">'978-09'</span>, <span class="str">'Lo que no tiene nombre'</span>,               <span class="num">2013</span>),
+    (<span class="str">'978-10'</span>, <span class="str">'El ruido de las cosas al caer'</span>,         <span class="num">2011</span>),
+    (<span class="str">'978-11'</span>, <span class="str">'María'</span>,                                <span class="num">1867</span>),
+    (<span class="str">'978-12'</span>, <span class="str">'La vorágine'</span>,                          <span class="num">1924</span>),
+    (<span class="str">'978-13'</span>, <span class="str">'La virgen de los sicarios'</span>,             <span class="num">1994</span>),
+    (<span class="str">'978-14'</span>, <span class="str">'La marquesa de Yolombó'</span>,               <span class="num">1928</span>),
+    (<span class="str">'978-15'</span>, <span class="str">'Changó, el gran putas'</span>,                <span class="num">1983</span>),
+    (<span class="str">'978-16'</span>, <span class="str">'En diciembre llegaban las brisas'</span>,      <span class="num">1987</span>),
+    (<span class="str">'978-17'</span>, <span class="str">'Los ejércitos'</span>,                        <span class="num">2006</span>),
+    (<span class="str">'978-18'</span>, <span class="str">'La perra'</span>,                              <span class="num">2017</span>),
+    (<span class="str">'978-19'</span>, <span class="str">'Perder es cuestión de método'</span>,          <span class="num">1997</span>),
+    (<span class="str">'978-20'</span>, <span class="str">'Antología del Cuento Colombiano'</span>,        <span class="num">2020</span>);</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 INSERT — Asociaciones N:M</div>
+    <div class="code-wrap">
+      <div class="code-header"><span>SQL — DML libro_autor</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="kw">INSERT INTO</span> <span class="tbl">libro_autor</span> (isbn, autor_id) <span class="kw">VALUES</span>
+    <span class="cm">-- García Márquez → 2 libros</span>
+    (<span class="str">'978-01'</span>, <span class="num">1</span>), (<span class="str">'978-02'</span>, <span class="num">1</span>),
+    <span class="cm">-- Álvaro Mutis → 2 libros</span>
+    (<span class="str">'978-03'</span>, <span class="num">2</span>), (<span class="str">'978-04'</span>, <span class="num">2</span>),
+    <span class="cm">-- Autores individuales</span>
+    (<span class="str">'978-05'</span>, <span class="num">3</span>),  <span class="cm">-- Delirio → Laura Restrepo</span>
+    (<span class="str">'978-06'</span>, <span class="num">4</span>),  <span class="cm">-- El olvido → Abad Faciolince</span>
+    (<span class="str">'978-07'</span>, <span class="num">5</span>),  <span class="cm">-- Satanás → Mario Mendoza</span>
+    (<span class="str">'978-08'</span>, <span class="num">6</span>),  <span class="cm">-- Ursúa → William Ospina</span>
+    (<span class="str">'978-09'</span>, <span class="num">7</span>),  <span class="cm">-- Lo que no tiene nombre → Piedad Bonnett</span>
+    (<span class="str">'978-10'</span>, <span class="num">8</span>),  <span class="cm">-- El ruido → Juan Gabriel Vásquez</span>
+    (<span class="str">'978-11'</span>, <span class="num">9</span>),  <span class="cm">-- María → Jorge Isaacs</span>
+    (<span class="str">'978-12'</span>, <span class="num">10</span>), <span class="cm">-- La vorágine → Rivera</span>
+    <span class="cm">-- Antología → 3 autores distintos (ejemplo N:M real)</span>
+    (<span class="str">'978-20'</span>, <span class="num">3</span>),  <span class="cm">-- Laura Restrepo</span>
+    (<span class="str">'978-20'</span>, <span class="num">4</span>),  <span class="cm">-- Abad Faciolince</span>
+    (<span class="str">'978-20'</span>, <span class="num">8</span>);  <span class="cm">-- Juan Gabriel Vásquez</span></pre>
+    </div>
+
+    <div class="alert tip" style="margin-top:14px">
+      <span class="alert-icon">🔥</span>
+      <span><strong>Momento de reflexión (3 min):</strong> Mostrar que <code>978-20</code> aparece 3 veces en <code>libro_autor</code> sin repetir el título en la tabla <code>libros</code>. Esa es la potencia de la tabla puente.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB M4: CONSULTAS
+══════════════════════════════════════════════ -->
+<section id="tab-m4" class="section">
+  <div class="sec-header">
+    <div class="sec-num">4</div>
+    <div class="sec-title">
+      <h2>Consultas y Filtros</h2>
+      <span class="time-badge">⏱ 50 min · 2:10 → 3:00</span>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <span class="alert-icon">🎯</span>
+    <span><strong>Objetivo:</strong> El aprendiz filtra datos con confianza usando SELECT, WHERE y los operadores lógicos AND / OR / NOT.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 Progresión de consultas (practicar en orden)</div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>1. SELECT básico</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- Ver todos los libros</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="tbl">libros</span>;
+
+<span class="cm">-- Ver solo dos columnas</span>
+<span class="kw">SELECT</span> titulo, anio_publicacion <span class="kw">FROM</span> <span class="tbl">libros</span>;</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>2. WHERE con AND</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- Libros del siglo XXI</span>
+<span class="kw">SELECT</span> titulo, anio_publicacion
+<span class="kw">FROM</span>   <span class="tbl">libros</span>
+<span class="kw">WHERE</span>  anio_publicacion > <span class="num">2000</span>;</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>3. WHERE con NOT LIKE</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- Autores cuyo nombre NO empieza con 'G'</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span>   <span class="tbl">autores</span>
+<span class="kw">WHERE</span>  nombre <span class="kw">NOT LIKE</span> <span class="str">'G%'</span>;</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>4. WHERE con OR (rango de años)</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- Libros del siglo XIX o anteriores al 1930</span>
+<span class="kw">SELECT</span> titulo, anio_publicacion
+<span class="kw">FROM</span>   <span class="tbl">libros</span>
+<span class="kw">WHERE</span>  anio_publicacion < <span class="num">1900</span>
+   <span class="kw">OR</span>  (anio_publicacion >= <span class="num">1900</span> <span class="kw">AND</span> anio_publicacion < <span class="num">1930</span>);</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>5. BETWEEN (equivalente más legible)</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- Libros publicados entre 1980 y 2010</span>
+<span class="kw">SELECT</span> titulo, anio_publicacion
+<span class="kw">FROM</span>   <span class="tbl">libros</span>
+<span class="kw">WHERE</span>  anio_publicacion <span class="kw">BETWEEN</span> <span class="num">1980</span> <span class="kw">AND</span> <span class="num">2010</span>;</pre>
+    </div>
+  </div>
+
+  <div class="instructor-note">
+    <strong>Ejercicio de comprobación (10 min)</strong>
+    Pedir a los aprendices que escriban ellos solos: "Muéstrame solo los libros publicados después de 1960 que contengan la letra 'a' en el título." — respuesta esperada: <code>WHERE anio_publicacion &gt; 1960 AND titulo LIKE '%a%'</code>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB M5: ORDEN Y FORMATO
+══════════════════════════════════════════════ -->
+<section id="tab-m5" class="section">
+  <div class="sec-header">
+    <div class="sec-num">5</div>
+    <div class="sec-title">
+      <h2>Ordenamiento y Formato</h2>
+      <span class="time-badge">⏱ 30 min · 3:00 → 3:30</span>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <span class="alert-icon">🎯</span>
+    <span><strong>Objetivo:</strong> Controlar el orden y la presentación visual de los resultados — habilidad directa para el Reto Final.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 ORDER BY, LIMIT y funciones de texto</div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>ORDER BY ASC / DESC</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- 5 libros más recientes</span>
+<span class="kw">SELECT</span> titulo, anio_publicacion
+<span class="kw">FROM</span>   <span class="tbl">libros</span>
+<span class="kw">ORDER BY</span> anio_publicacion <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>  <span class="num">5</span>;
+
+<span class="cm">-- Autores en orden alfabético</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span>   <span class="tbl">autores</span>
+<span class="kw">ORDER BY</span> nombre <span class="kw">ASC</span>;</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>Funciones de texto</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="cm">-- UPPER: nombres en mayúsculas</span>
+<span class="kw">SELECT</span> <span class="fn">UPPER</span>(nombre) <span class="kw">AS</span> <span class="str">"Nombre en mayúsculas"</span>
+<span class="kw">FROM</span>   <span class="tbl">autores</span>;
+
+<span class="cm">-- LENGTH: longitud del título</span>
+<span class="kw">SELECT</span> titulo, <span class="fn">LENGTH</span>(titulo) <span class="kw">AS</span> <span class="str">"Caracteres"</span>
+<span class="kw">FROM</span>   <span class="tbl">libros</span>
+<span class="kw">ORDER BY</span> <span class="fn">LENGTH</span>(titulo) <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+
+  <div class="alert tip">
+    <span class="alert-icon">💡</span>
+    <span>El alias con <code>AS "..."</code> (comillas dobles) hace que el nombre de la columna en el resultado sea legible. Es obligatorio en el Reto Final.</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB M6: JOINs
+══════════════════════════════════════════════ -->
+<section id="tab-m6" class="section">
+  <div class="sec-header">
+    <div class="sec-num">6</div>
+    <div class="sec-title">
+      <h2>JOINs — Consultas multitabla</h2>
+      <span class="time-badge">⏱ 40 min · 3:30 → 4:10</span>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <span class="alert-icon">🎯</span>
+    <span><strong>Objetivo:</strong> El aprendiz entiende cómo la tabla <code>libro_autor</code> actúa como puente y puede escribir un JOIN a 3 tablas antes del reto.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗺 Diagrama conceptual de los JOINs</div>
+    <div style="background:var(--code-bg);border-radius:var(--radius);padding:18px;font-family:'Source Code Pro',monospace;font-size:13px;color:#CDD6F4;overflow-x:auto">
+      <pre style="background:transparent;padding:0;border:none">  <span style="color:#F38BA8">autores</span>            <span style="color:#89DCEB">libro_autor</span>         <span style="color:#A6E3A1">libros</span>
+  ───────            ──────────────      ──────
+  autor_id ◄────── autor_id              isbn ◄────── isbn
+  nombre             isbn ────────────►           titulo
+  nacionalidad                              anio_publicacion
+
+  LEFT ──JOIN──────────────────────────────────►
+  (de autores hacia sus libros, pasando por el puente)</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💻 JOINs progresivos</div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>JOIN 1 — ¿Quién escribió la Antología?</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="kw">SELECT</span> l.titulo, a.nombre <span class="kw">AS</span> <span class="str">"Autor"</span>
+<span class="kw">FROM</span>   <span class="tbl">libros</span> l
+<span class="kw">JOIN</span>   <span class="tbl">libro_autor</span> la <span class="kw">ON</span> l.isbn = la.isbn
+<span class="kw">JOIN</span>   <span class="tbl">autores</span> a    <span class="kw">ON</span> la.autor_id = a.autor_id
+<span class="kw">WHERE</span>  l.titulo = <span class="str">'Antología del Cuento Colombiano'</span>;</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span>JOIN 2 — Listado general ordenado</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+      <pre><span class="kw">SELECT</span>
+    l.titulo            <span class="kw">AS</span> <span class="str">"Título"</span>,
+    a.nombre            <span class="kw">AS</span> <span class="str">"Autor"</span>,
+    l.anio_publicacion  <span class="kw">AS</span> <span class="str">"Año"</span>
+<span class="kw">FROM</span>   <span class="tbl">libros</span> l
+<span class="kw">INNER JOIN</span> <span class="tbl">libro_autor</span> la <span class="kw">ON</span> l.isbn = la.isbn
+<span class="kw">INNER JOIN</span> <span class="tbl">autores</span> a    <span class="kw">ON</span> la.autor_id = a.autor_id
+<span class="kw">ORDER BY</span> l.titulo <span class="kw">ASC</span>;</pre>
+    </div>
+  </div>
+
+  <div class="alert warn">
+    <span class="alert-icon">⚠</span>
+    <span><strong>Preparación para el Reto (5 min):</strong> Explicar que el Reto agrega 2 tablas más (<code>generos</code> y <code>libro_genero</code>) siguiendo exactamente el mismo patrón. Si entienden este JOIN, el Reto es aplicar lo mismo una vez más.</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TAB RETO FINAL
+══════════════════════════════════════════════ -->
+<section id="tab-reto" class="section">
+  <style>
+    /* ── Reto Final styles ───────────────────────── */
+    .form-aprendiz {
+      background: var(--accent-lt);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 20px 24px 18px;
+      margin-bottom: 22px;
+    }
+    .form-aprendiz h3 { font-family:'Montserrat',sans-serif; font-size:15px; color:var(--accent); margin-bottom:14px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { display:block; font-size:12px; font-weight:600; color:var(--fg-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
+    .form-field input {
+      width:100%; padding:9px 12px; border:1.5px solid var(--border);
+      border-radius:6px; font-size:14px; background:var(--surface); color:var(--fg);
+      outline:none; transition:border-color .15s;
+    }
+    .form-field input:focus { border-color:var(--accent); }
+    #form-error { font-size:13px; margin-top:10px; }
+
+    .resultado-card {
+      display:none; background:var(--green-lt); border:1.5px solid var(--green);
+      border-radius:var(--radius); padding:22px 24px; margin-top:24px;
+    }
+    .resultado-card.visible { display:block; }
+    .resultado-card h3 { font-family:'Montserrat',sans-serif; font-size:15px; color:var(--green); margin-bottom:14px; }
+    .resultado-card .meta { font-size:13px; color:var(--fg-muted); margin-bottom:14px; line-height:1.9; }
+    .resultado-card .meta strong { color:var(--fg); }
+
+    .reto-table-wrap { overflow-x:auto; margin-top:10px; }
+    .reto-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .reto-table th { background:var(--accent); color:#fff; padding:8px 14px; text-align:left; font-weight:600; font-size:13px; }
+    .reto-table td { padding:7px 14px; border-bottom:1px solid var(--border); }
+    .reto-table tr:last-child td { border-bottom:none; }
+    .reto-table td:first-child { color:var(--fg-muted); font-size:12px; width:36px; text-align:center; }
+
+    .reto-row-inputs { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center; }
+    .reto-row-inputs input {
+      padding:7px 10px; border:1.5px solid var(--border); border-radius:6px;
+      font-size:13px; background:var(--surface); color:var(--fg); outline:none;
+    }
+    .reto-row-inputs input:focus { border-color:var(--accent); }
+    .btn-del { background:var(--red-lt); color:var(--red); border:none; border-radius:6px; width:32px; height:32px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+    .btn-del:hover { background:var(--red); color:#fff; }
+
+    .btn-add-row { background:var(--accent-lt); color:var(--accent); border:1.5px dashed var(--accent); border-radius:6px; padding:7px 16px; font-size:13px; font-weight:600; cursor:pointer; margin-top:4px; }
+    .btn-add-row:hover { background:var(--accent); color:#fff; }
+
+    .btn-guardar { background:var(--green); color:#fff; border:none; border-radius:8px; padding:11px 28px; font-size:15px; font-weight:700; cursor:pointer; margin-top:18px; font-family:'Montserrat',sans-serif; letter-spacing:.03em; }
+    .btn-guardar:hover { opacity:.9; }
+    .btn-guardar:disabled { opacity:.5; cursor:default; }
+
+    .btn-pdf { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; margin-top:14px; font-family:'Montserrat',sans-serif; }
+    .btn-pdf:hover { opacity:.88; }
+
+    @media(max-width:560px){
+      .form-grid { grid-template-columns:1fr; }
+      .form-field.full { grid-column:1; }
+      .reto-row-inputs { grid-template-columns:1fr 1fr auto; }
+    }
+  </style>
+
+  <div class="sec-header">
+    <div class="sec-num" style="background:var(--amber)">🏆</div>
+    <div class="sec-title">
+      <h2>Reto Final — Géneros Literarios</h2>
+      <span class="time-badge" style="background:var(--amber-lt);color:var(--amber)">⏱ 40 min individual · 4:10 → 4:50</span>
+    </div>
+  </div>
+
+  <div class="alert warn">
+    <span class="alert-icon">📋</span>
+    <span><strong>Contexto:</strong> La Biblioteca Municipal de Medellín quiere clasificar sus libros por géneros (Novela, Realismo Mágico, Poesía, etc.). El aprendiz extiende la BD ya construida <strong>sin borrar nada</strong>: crea las tablas, inserta datos y ejecuta la consulta que muestra cada libro en MAYÚSCULAS junto a su género.</span>
+  </div>
+
+  <!-- DATOS DEL APRENDIZ -->
+  <div class="form-aprendiz">
+    <h3>👤 Datos del aprendiz</h3>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label for="inp-nombre">Nombre completo</label>
+        <input type="text" id="inp-nombre" placeholder="Ej: María Alejandra Torres Gómez">
+      </div>
+      <div class="form-field">
+        <label for="inp-doc">Número de documento</label>
+        <input type="text" id="inp-doc" placeholder="Ej: 1234567890" inputmode="numeric">
+      </div>
+      <div class="form-field">
+        <label for="inp-ficha">Ficha (grupo)</label>
+        <input type="text" id="inp-ficha" placeholder="Ej: 3387459" inputmode="numeric">
+      </div>
+    </div>
+    <p id="form-error" style="color:var(--red);display:none">⚠ Por favor completa todos los campos antes de guardar.</p>
+  </div>
+
+  <!-- PASOS DEL RETO -->
+  <div class="reto-step">
+    <div class="reto-step-header">
+      <div class="reto-step-letter">A</div>
+      <h3>Estructura (DDL) — 10 min</h3>
+    </div>
+    <div class="reto-step-body">
+      <ul>
+        <li>Crear tabla <code>generos</code>: <code>genero_id SERIAL PRIMARY KEY</code> y <code>nombre_genero VARCHAR(50) NOT NULL</code>.</li>
+        <li>Crear tabla intermedia <code>libro_genero</code> (relación N:M) con llaves foráneas a <code>libros</code> y <code>generos</code>, PK compuesta y <code>ON DELETE CASCADE</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="reto-step">
+    <div class="reto-step-header">
+      <div class="reto-step-letter">B</div>
+      <h3>Datos (DML) — 10 min</h3>
+    </div>
+    <div class="reto-step-body">
+      <ul>
+        <li>Insertar <strong>mínimo 5 géneros</strong>: 'Realismo Mágico', 'Novela', 'Terror', 'Historia', 'Poesía'.</li>
+        <li>Asociar <em>Cien años de soledad</em> (<code>'978-01'</code>) a dos géneros y <strong>otros 3 libros</strong> a al menos un género cada uno.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="reto-step">
+    <div class="reto-step-header">
+      <div class="reto-step-letter">C</div>
+      <h3>Consulta — 15 min</h3>
+    </div>
+    <div class="reto-step-body">
+      <p style="margin-bottom:10px">Ejecutar esta consulta en pgAdmin y copiar los resultados abajo:</p>
+      <div class="code-wrap">
+        <div class="code-header"><span>Consulta del Reto</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+        <pre><span class="kw">SELECT</span> <span class="fn">UPPER</span>(l.titulo) <span class="kw">AS</span> <span class="str">"Título"</span>,
+       g.nombre_genero  <span class="kw">AS</span> <span class="str">"Género"</span>
+<span class="kw">FROM</span>   <span class="tbl">libros</span>       l
+<span class="kw">JOIN</span>   <span class="tbl">libro_genero</span> lg <span class="kw">ON</span> l.isbn      = lg.isbn
+<span class="kw">JOIN</span>   <span class="tbl">generos</span>      g  <span class="kw">ON</span> lg.genero_id = g.genero_id
+<span class="kw">ORDER BY</span> l.titulo <span class="kw">ASC</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- INGRESO DE RESULTADOS -->
+  <div class="card">
+    <div class="card-title">📝 Ingresa los resultados obtenidos en pgAdmin</div>
+    <p style="font-size:13px;color:var(--fg-muted);margin-bottom:14px">Escribe cada fila que apareció en el resultado de la consulta. Agrega tantas filas como sea necesario.</p>
+
+    <div id="reto-filas"></div>
+    <button class="btn-add-row" onclick="agregarFila()">+ Agregar fila</button>
+
+    <br>
+    <button class="btn-guardar" id="btn-guardar" onclick="guardarReto()">💾 Guardar y ver resultado</button>
+  </div>
+
+  <!-- RESULTADO (oculto hasta guardar) -->
+  <div class="resultado-card" id="resultado-card">
+    <h3>✅ Reto completado</h3>
+    <div class="meta" id="meta-aprendiz"></div>
+    <div class="reto-table-wrap">
+      <table class="reto-table">
+        <thead><tr><th>#</th><th>Título (MAYÚSCULAS)</th><th>Género</th></tr></thead>
+        <tbody id="resultado-tbody"></tbody>
+      </table>
+    </div>
+    <button class="btn-pdf" onclick="generarPDF()">🖨 Generar PDF</button>
+  </div>
+
+  <!-- SOLUCIÓN INSTRUCTOR (colapsable) -->
+  <details style="margin-top:24px">
+    <summary style="cursor:pointer;font-weight:700;color:var(--red);font-size:14px;padding:10px 14px;background:var(--red-lt);border-radius:var(--radius);list-style:none">🔑 Solución esperada (solo instructor — clic para ver)</summary>
+    <div style="padding:16px 0">
+      <div class="code-wrap">
+        <div class="code-header"><span>DDL — Géneros</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+        <pre><span class="kw">CREATE TABLE</span> <span class="tbl">generos</span> (
+    genero_id     <span class="fn">SERIAL</span>      <span class="kw">PRIMARY KEY</span>,
+    nombre_genero <span class="fn">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">libro_genero</span> (
+    isbn      <span class="fn">VARCHAR</span>(<span class="num">20</span>) <span class="kw">REFERENCES</span> <span class="tbl">libros</span>(isbn)     <span class="kw">ON DELETE CASCADE</span>,
+    genero_id <span class="fn">INTEGER</span>     <span class="kw">REFERENCES</span> <span class="tbl">generos</span>(genero_id) <span class="kw">ON DELETE CASCADE</span>,
+    <span class="kw">PRIMARY KEY</span> (isbn, genero_id)
+);</pre>
+      </div>
+      <div class="code-wrap">
+        <div class="code-header"><span>DML — Géneros</span><button class="copy-btn" onclick="copyCode(this)">COPIAR</button></div>
+        <pre><span class="kw">INSERT INTO</span> <span class="tbl">generos</span> (nombre_genero) <span class="kw">VALUES</span>
+    (<span class="str">'Realismo Mágico'</span>), (<span class="str">'Novela'</span>), (<span class="str">'Terror'</span>),
+    (<span class="str">'Historia'</span>), (<span class="str">'Poesía'</span>);
+
+<span class="kw">INSERT INTO</span> <span class="tbl">libro_genero</span> <span class="kw">VALUES</span>
+    (<span class="str">'978-01'</span>, <span class="num">1</span>), (<span class="str">'978-01'</span>, <span class="num">2</span>),
+    (<span class="str">'978-07'</span>, <span class="num">3</span>), (<span class="str">'978-10'</span>, <span class="num">2</span>), (<span class="str">'978-02'</span>, <span class="num">2</span>);</pre>
+      </div>
+    </div>
+  </details>
+
+  <!-- RÚBRICA -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">📊 Rúbrica de evaluación</div>
+    <div class="rubric-row">
+      <div class="rubric-crit">① DDL correcto</div>
+      <div class="rubric-cols">
+        <div class="rubric-ok"><div class="rubric-label">✅ Logrado</div>Creó <code>libro_genero</code> con FK a <code>libros</code> y <code>generos</code>, PK compuesta y <code>ON DELETE CASCADE</code>.</div>
+        <div class="rubric-no"><div class="rubric-label">❌ No logrado</div>Omitió tabla intermedia, FK o PK compuesta.</div>
+      </div>
+    </div>
+    <div class="rubric-row">
+      <div class="rubric-crit">② DML correcto</div>
+      <div class="rubric-cols">
+        <div class="rubric-ok"><div class="rubric-label">✅ Logrado</div>5+ géneros insertados, <em>Cien años</em> con 2 géneros, otros 3 libros asociados.</div>
+        <div class="rubric-no"><div class="rubric-label">❌ No logrado</div>Faltan datos o hay errores de FK no resueltos.</div>
+      </div>
+    </div>
+    <div class="rubric-row">
+      <div class="rubric-crit">③ Consulta y resultado</div>
+      <div class="rubric-cols">
+        <div class="rubric-ok"><div class="rubric-label">✅ Logrado</div>La consulta retorna títulos en MAYÚSCULAS con su género; el aprendiz registra el resultado y genera el PDF.</div>
+        <div class="rubric-no"><div class="rubric-label">❌ No logrado</div>La consulta falla o el resultado no muestra los datos esperados.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('tab-' + id);
+  if (sec) sec.classList.add('active');
+  const btns = document.querySelectorAll('.tab-btn');
+  const tabMap = ['cronograma','m1','m2','m3','m4','m5','m6','reto'];
+  const idx = tabMap.indexOf(id);
+  if (idx >= 0 && btns[idx]) btns[idx].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ COPIADO';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }).catch(() => {
+    const range = document.createRange();
+    range.selectNodeContents(pre);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  });
+}
+
+/* ── Reto Final JS ───────────────────────────────── */
+(function() {
+  // Inicializar con 3 filas vacías
+  window.addEventListener('DOMContentLoaded', function() {
+    for (var i = 0; i < 3; i++) agregarFila();
+  });
+})();
+
+function agregarFila() {
+  var cont = document.getElementById('reto-filas');
+  var idx = cont.children.length + 1;
+  var div = document.createElement('div');
+  div.className = 'reto-row-inputs';
+  div.innerHTML =
+    '<input type="text" placeholder="TÍTULO EN MAYÚSCULAS" class="inp-titulo">' +
+    '<input type="text" placeholder="Género" class="inp-genero">' +
+    '<button class="btn-del" title="Eliminar fila" onclick="this.parentElement.remove()">×</button>';
+  cont.appendChild(div);
+}
+
+function guardarReto() {
+  // Validar datos del aprendiz
+  var nombre = document.getElementById('inp-nombre').value.trim();
+  var doc    = document.getElementById('inp-doc').value.trim();
+  var ficha  = document.getElementById('inp-ficha').value.trim();
+  var errEl  = document.getElementById('form-error');
+
+  if (!nombre || !doc || !ficha) {
+    errEl.style.display = 'block';
+    document.getElementById('inp-nombre').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  errEl.style.display = 'none';
+
+  // Recolectar filas
+  var filas = [];
+  document.querySelectorAll('#reto-filas .reto-row-inputs').forEach(function(row) {
+    var t = row.querySelector('.inp-titulo').value.trim();
+    var g = row.querySelector('.inp-genero').value.trim();
+    if (t || g) filas.push({titulo: t, genero: g});
+  });
+
+  if (filas.length === 0) {
+    alert('Ingresa al menos una fila de resultado antes de guardar.');
+    return;
+  }
+
+  // Guardar en sessionStorage
+  var datos = { nombre: nombre, doc: doc, ficha: ficha, filas: filas, fecha: new Date().toLocaleString('es-CO') };
+  try { sessionStorage.setItem('reto_datos', JSON.stringify(datos)); } catch(e) {}
+
+  // Poblar tarjeta de resultado
+  document.getElementById('meta-aprendiz').innerHTML =
+    '<strong>Aprendiz:</strong> ' + nombre + '<br>' +
+    '<strong>Documento:</strong> ' + doc + '<br>' +
+    '<strong>Ficha / Grupo:</strong> ' + ficha + '<br>' +
+    '<strong>Fecha y hora:</strong> ' + datos.fecha;
+
+  var tbody = document.getElementById('resultado-tbody');
+  tbody.innerHTML = '';
+  filas.forEach(function(f, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (i+1) + '</td><td>' + escHtml(f.titulo) + '</td><td>' + escHtml(f.genero) + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  // Mostrar tarjeta
+  var card = document.getElementById('resultado-card');
+  card.classList.add('visible');
+  document.getElementById('btn-guardar').disabled = true;
+  card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function generarPDF() {
+  var datos;
+  try { datos = JSON.parse(sessionStorage.getItem('reto_datos') || 'null'); } catch(e) { datos = null; }
+  if (!datos) { alert('Primero guarda el reto.'); return; }
+
+  var filasHtml = datos.filas.map(function(f, i) {
+    return '<tr><td style="text-align:center;color:#666;padding:7px 12px">' + (i+1) + '</td>' +
+           '<td style="padding:7px 12px;font-weight:600">' + escHtml(f.titulo) + '</td>' +
+           '<td style="padding:7px 12px">' + escHtml(f.genero) + '</td></tr>';
+  }).join('');
+
+  var html = '<!doctype html><html><head><meta charset="utf-8">' +
+    '<title>Reto Final — BD Relacional</title>' +
+    '<style>' +
+    'body{font-family:Arial,sans-serif;margin:0;padding:32px;color:#1A1D2E;font-size:14px}' +
+    '.header{background:#1A3C6E;color:#fff;padding:20px 28px;border-radius:8px;margin-bottom:24px}' +
+    '.badge{display:inline-block;background:rgba(255,255,255,.22);padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}' +
+    '.header h1{margin:0;font-size:20px;font-weight:700}' +
+    '.header p{margin:4px 0 0;font-size:12px;opacity:.85}' +
+    '.meta-box{background:#f0f4fb;border:1px solid #c5d3e8;border-radius:6px;padding:14px 20px;margin-bottom:20px;line-height:2}' +
+    '.meta-box strong{color:#1A3C6E}' +
+    '.sql-box{background:#1E2235;color:#CDD6F4;border-radius:6px;padding:14px 20px;font-family:monospace;font-size:13px;white-space:pre;margin-bottom:22px}' +
+    'table{width:100%;border-collapse:collapse}' +
+    'th{background:#1A3C6E;color:#fff;padding:9px 12px;text-align:left;font-size:13px}' +
+    'td{padding:7px 12px;border-bottom:1px solid #e2e6f0}' +
+    'tr:last-child td{border-bottom:none}' +
+    '.footer{margin-top:32px;text-align:center;font-size:11px;color:#888;border-top:1px solid #e2e6f0;padding-top:12px}' +
+    '@media print{body{padding:20px}.no-print{display:none}}' +
+    '</style></head><body>' +
+    '<div class="header">' +
+      '<div class="badge">SENA · CDMC · ADSO</div>' +
+      '<h1>Reto Final — Bases de Datos Relacionales</h1>' +
+      '<p>Centro del Diseño y la Manufactura del Cuero · Regional Antioquia · Itagüí</p>' +
+    '</div>' +
+    '<div class="meta-box">' +
+      '<strong>Aprendiz:</strong> ' + escHtml(datos.nombre) + '<br>' +
+      '<strong>Documento:</strong> ' + escHtml(datos.doc) + '<br>' +
+      '<strong>Ficha / Grupo:</strong> ' + escHtml(datos.ficha) + '<br>' +
+      '<strong>Fecha y hora:</strong> ' + escHtml(datos.fecha) +
+    '</div>' +
+    '<p style="font-weight:700;margin-bottom:6px">Consulta ejecutada:</p>' +
+    '<div class="sql-box">' +
+      'SELECT UPPER(l.titulo) AS "Título",\n' +
+      '       g.nombre_genero  AS "Género"\n' +
+      'FROM   libros       l\n' +
+      'JOIN   libro_genero lg ON l.isbn      = lg.isbn\n' +
+      'JOIN   generos      g  ON lg.genero_id = g.genero_id\n' +
+      'ORDER BY l.titulo ASC;' +
+    '</div>' +
+    '<p style="font-weight:700;margin-bottom:10px">Resultado obtenido (' + datos.filas.length + ' fila(s)):</p>' +
+    '<table><thead><tr><th style="width:40px">#</th><th>Título (MAYÚSCULAS)</th><th>Género</th></tr></thead>' +
+    '<tbody>' + filasHtml + '</tbody></table>' +
+    '<div class="footer">Centro del Diseño y la Manufactura del Cuero — Regional Antioquia · Itagüí<br>Generado el ' + escHtml(datos.fecha) + '</div>' +
+    '</body></html>';
+
+  var win = window.open('', '_blank');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+    win.onload = function() { win.print(); };
+  } else {
+    // Fallback: blob URL
+    var blob = new Blob([html], {type:'text/html'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+  }
+}
+</script>
+
+</body></html>
