@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guías de Excel — Gestión del Talento Humano | SENA CDMC</title>
+<style>
+  :root {
+    --verde: #39A900;
+    --verde-oscuro: #2D8600;
+    --verde-claro: #F1F8E9;
+    --azul: #1565C0;
+    --azul-claro: #E3F2FD;
+    --naranja: #E65100;
+    --naranja-claro: #FFF3E0;
+    --amarillo-claro: #FFF8E1;
+    --morado: #7B1FA2;
+    --morado-claro: #F3E5F5;
+    --gris-texto: #333;
+    --gris-suave: #f5f5f5;
+    --blanco: #fff;
+    --sombra: 0 2px 8px rgba(0,0,0,.08);
+    --radio: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--gris-texto);
+    background: var(--gris-suave);
+    line-height: 1.65;
+  }
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
+    color: #fff;
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: .3rem; }
+  header .subtitulo { font-size: 1.05rem; opacity: .92; }
+  header .meta { font-size: .85rem; opacity: .78; margin-top: .8rem; }
+  header .meta span { display: inline-block; margin: 0 .5rem; }
+  /* ── NAV TABS ── */
+  nav.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: #fff;
+    border-bottom: 2px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--sombra);
+    flex-wrap: wrap;
+  }
+  nav.tabs button {
+    background: none;
+    border: none;
+    padding: .9rem 1.3rem;
+    font-size: .92rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  nav.tabs button:hover { color: var(--verde); background: var(--verde-claro); }
+  nav.tabs button.active { color: var(--verde); border-bottom-color: var(--verde); }
+  /* ── MAIN ── */
+  main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  .guia-section { display: none; }
+  .guia-section.active { display: block; }
+  /* ── PORTADA DE GUÍA ── */
+  .guia-portada {
+    background: #fff;
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    border-top: 4px solid var(--verde);
+  }
+  .guia-portada h2 { color: var(--verde); font-size: 1.5rem; margin-bottom: .3rem; }
+  .guia-portada .empresa { font-style: italic; color: #777; margin-top: .3rem; }
+  .guia-portada .desc { margin-top: .8rem; font-style: italic; color: #555; max-width: 600px; margin-left: auto; margin-right: auto; }
+  /* ── TOC ── */
+  .toc {
+    background: var(--verde-claro);
+    border: 1px solid #C5E1A5;
+    border-radius: var(--radio);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .toc h3 { color: var(--verde); font-size: 1rem; margin-bottom: .5rem; }
+  .toc ul { list-style: none; padding: 0; }
+  .toc li { padding: .25rem 0; font-size: .93rem; }
+  .toc li::before { content: "▸ "; color: var(--verde); font-weight: bold; }
+  /* ── STEP SECTION ── */
+  .step-section {
+    background: #fff;
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+  }
+  .step-section h2 {
+    color: var(--verde);
+    font-size: 1.35rem;
+    margin-bottom: .15rem;
+    border-bottom: 2px solid var(--verde-claro);
+    padding-bottom: .4rem;
+  }
+  .step-section .step-subtitle {
+    font-style: italic;
+    color: #888;
+    margin-bottom: 1rem;
+    font-size: .93rem;
+  }
+  .step-section h3 {
+    color: var(--verde-oscuro);
+    font-size: 1.08rem;
+    margin: 1.2rem 0 .5rem;
+  }
+  .step-section h4 {
+    color: var(--azul);
+    font-size: 1rem;
+    margin: 1rem 0 .4rem;
+  }
+  /* ── BOXES ── */
+  .box {
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    font-size: .93rem;
+  }
+  .box-formula {
+    background: var(--azul-claro);
+    border-left: 4px solid var(--azul);
+    font-family: 'Courier New', monospace;
+    font-size: .9rem;
+    white-space: pre-wrap;
+    color: var(--azul);
+  }
+  .box-tip {
+    background: var(--verde-claro);
+    border-left: 4px solid var(--verde);
+  }
+  .box-tip strong:first-child { color: var(--verde); }
+  .box-warn {
+    background: var(--amarillo-claro);
+    border-left: 4px solid #FFA000;
+  }
+  .box-warn strong:first-child, .box-warn .box-title { color: var(--naranja); }
+  .box-example {
+    background: var(--morado-claro);
+    border-left: 4px solid var(--morado);
+  }
+  .box-example strong:first-child, .box-example .box-title { color: var(--morado); }
+  .box-error {
+    background: var(--naranja-claro);
+    border-left: 4px solid var(--naranja);
+  }
+  .box-error strong:first-child { color: var(--naranja); }
+  .box-title { font-weight: 700; display: block; margin-bottom: .4rem; }
+  /* ── STEPS ── */
+  .paso {
+    margin: .6rem 0 .6rem 1.2rem;
+    padding-left: .5rem;
+  }
+  .paso .paso-num {
+    color: var(--verde);
+    font-weight: 700;
+  }
+  .resultado {
+    margin: .3rem 0 .6rem 2.2rem;
+    color: #555;
+  }
+  .resultado::before { content: "→ "; color: var(--verde); font-weight: bold; }
+  code, .code {
+    font-family: 'Courier New', monospace;
+    background: #ECEFF1;
+    padding: .15rem .4rem;
+    border-radius: 3px;
+    font-size: .9em;
+    color: var(--azul);
+  }
+  .bold { font-weight: 700; }
+  /* ── TABLE ── */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: .92rem;
+  }
+  table.data th {
+    background: var(--verde);
+    color: #fff;
+    padding: .55rem .7rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  table.data td {
+    padding: .5rem .7rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  table.data tr:nth-child(even) td { background: #fafafa; }
+  table.data td.yellow { background: #FFFFF0; }
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: .82rem;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 2rem;
+  }
+  footer .sena { color: var(--verde); font-weight: 600; }
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.4rem; }
+    nav.tabs button { padding: .7rem .7rem; font-size: .8rem; }
+    .step-section { padding: 1.2rem 1rem; }
+    main { padding: 1rem .5rem 2rem; }
+  }
+  /* ── PRINT ── */
+  @media print {
+    nav.tabs { display: none; }
+    .guia-section { display: block !important; page-break-before: always; }
+    .guia-section:first-child { page-break-before: auto; }
+    header { background: #fff; color: var(--verde); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Guías de Excel para Gestión del Talento Humano</h1>
+  <div class="subtitulo">Confecciones del Cuero S.A.S. — Caso Transversal</div>
+  <div class="meta">
+    <span>Instructor: Ing. Luis Eladio Porras Camargo</span> ·
+    <span>SENA — Centro del Diseño y la Manufactura del Cuero</span> ·
+    <span>Ficha 3311944</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" onclick="showTab('inicio')">Inicio</button>
+  <button onclick="showTab('rapida')">Guía Rápida</button>
+  <button onclick="showTab('introductoria')">Guía Introductoria</button>
+  <button onclick="showTab('ejercicio')">Ejercicio Excel</button>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB: INICIO                                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="guia-section active" id="inicio">
+  <div class="guia-portada">
+    <h2>Bienvenido/a al componente TIC</h2>
+    <p class="empresa">Tecnólogo en Gestión del Talento Humano</p>
+    <p class="desc">En Talento Humano, Excel no es una herramienta matemática; es un <strong>asistente personal</strong> que nos ayuda a organizar carpetas, filtrar candidatos y pagar la nómina sin errores.</p>
+  </div>
+
+  <div class="step-section">
+    <h2>¿Qué encontrarás aquí?</h2>
+    <p style="margin:.8rem 0">Este sitio reúne tres recursos pedagógicos diseñados para que aprendas Excel paso a paso, sin conocimientos previos, usando datos reales del área de Talento Humano.</p>
+
+    <div class="box box-tip">
+      <span class="box-title">1. Guía Rápida — "De Cero a Analista"</span>
+      Resumen ejecutivo de los 5 conceptos clave de Excel para TH. Ideal como referencia rápida o repaso antes de un examen. Cubre: Limpieza de datos, Fórmulas de nómina, Función SI, SI anidado y BUSCARV.
+    </div>
+
+    <div class="box box-example">
+      <span class="box-title">2. Guía Introductoria — Paso a Paso con Ejercicios</span>
+      Guía detallada con explicaciones profundas, anatomía de cada función, errores frecuentes y resultados esperados. Se trabaja junto con el archivo Excel de práctica.
+    </div>
+
+    <div class="box" style="background:#E3F2FD; border-left:4px solid #1565C0;">
+      <span class="box-title" style="color:#1565C0">3. Ejercicio Introductorio (Excel)</span>
+      Archivo <strong>Ejercicio_Introductorio_Excel_TH.xlsx</strong> con 5 hojas de trabajo. Las celdas amarillas son las que debes completar con fórmulas siguiendo las guías.
+    </div>
+
+    <h3>Valores laborales 2025 utilizados</h3>
+    <table class="data">
+      <tr><th>Concepto</th><th>Valor</th></tr>
+      <tr><td>Salario Mínimo (SMMLV)</td><td>$1.423.500</td></tr>
+      <tr><td>Auxilio de Transporte</td><td>$200.000</td></tr>
+      <tr><td>Límite Auxilio (2 × SMMLV)</td><td>$2.847.000</td></tr>
+      <tr><td>Aporte Salud (empleado)</td><td>4%</td></tr>
+      <tr><td>Aporte Pensión (empleado)</td><td>4%</td></tr>
+    </table>
+
+    <h3>Empleados de Confecciones del Cuero S.A.S.</h3>
+    <table class="data">
+      <tr><th>Nombre</th><th>Cargo</th><th>Salario</th></tr>
+      <tr><td>Ana Lucía Ramírez Vélez</td><td>Asistente de TH</td><td>$1.423.500</td></tr>
+      <tr><td>Carlos Andrés Mejía López</td><td>Auxiliar de Nómina</td><td>$1.600.000</td></tr>
+      <tr><td>María Fernanda Torres Gil</td><td>Coordinadora de Bienestar</td><td>$2.500.000</td></tr>
+      <tr><td>Juan Pablo Gómez Ríos</td><td>Jefe de Selección</td><td>$3.200.000</td></tr>
+      <tr><td>Laura Cristina Herrera M.</td><td>Directora de TH</td><td>$4.500.000</td></tr>
+      <tr><td>Diego Alejandro Castro P.</td><td>Gerente General</td><td>$8.000.000</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB: GUÍA RÁPIDA                                   -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="guia-section" id="rapida">
+  <div class="guia-portada">
+    <h2>Guía Rápida de Excel</h2>
+    <p><em>"De Cero a Analista"</em></p>
+    <p class="empresa">Confecciones del Cuero S.A.S.</p>
+  </div>
+
+  <div class="toc">
+    <h3>Contenido</h3>
+    <ul>
+      <li>Paso 1 — Limpieza de datos: corregir nombres con ESPACIOS y NOMPROPIO</li>
+      <li>Paso 2 — Fórmulas de nómina: calcular descuentos con porcentajes</li>
+      <li>Paso 3 — Función SI: decidir quién recibe auxilio de transporte</li>
+      <li>Paso 4 — Decisiones anidadas: clasificar desempeño en niveles</li>
+      <li>Paso 5 — BUSCARV: consultar datos de un empleado por su cédula</li>
+      <li>Consejos de oro para no frustrarse</li>
+      <li>Ejercicio final de certificación</li>
+    </ul>
+  </div>
+
+  <!-- Paso 1 -->
+  <div class="step-section">
+    <h2>Paso 1: Limpieza de Datos</h2>
+    <p class="step-subtitle">El "maquillaje" de la información</p>
+
+    <h3>Concepto</h3>
+    <p>A veces recibimos bases de datos de otros departamentos donde los nombres están en desorden (ejemplo: <code>jUAN perez</code>). Antes de usar esos datos en un contrato, una carta o un certificado, hay que "limpiar la casa": corregir los espacios y el formato de las letras.</p>
+
+    <h3>Tu reto</h3>
+    <p>Tienes una lista de empleados con espacios de más y letras mezcladas. Corrígelos.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Escribe en la celda <strong>A2</strong>: <code>  mArIa rOdRiGuEz  </code> (con espacios al inicio y al final).</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> En la celda <strong>B2</strong>, escribe: <code>=ESPACIOS(A2)</code></p>
+    <p class="resultado">Excel quita los espacios sobrantes (al inicio, al final y los dobles entre palabras). El resultado es: <code>mArIa rOdRiGuEz</code> (sin espacios de más, pero las letras no cambian).</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> En la celda <strong>C2</strong>, escribe: <code>=NOMPROPIO(B2)</code></p>
+    <p class="resultado">Excel pone la primera letra de cada palabra en mayúscula y el resto en minúscula. El resultado es: <code>Maria Rodriguez</code>.</p>
+
+    <div class="box box-tip">
+      <span class="box-title">Fundamento</span>
+      Excel entiende "instrucciones de texto". No estás sumando ni calculando; le estás dando una orden de ortografía.<br>
+      ESPACIOS trabaja solo con espacios. NOMPROPIO trabaja solo con mayúsculas y minúsculas. Por eso se usan en orden: primero limpiar espacios, luego corregir formato.
+    </div>
+  </div>
+
+  <!-- Paso 2 -->
+  <div class="step-section">
+    <h2>Paso 2: Fórmulas de Nómina</h2>
+    <p class="step-subtitle">Sin miedo a los porcentajes</p>
+
+    <h3>Concepto</h3>
+    <p>En Colombia, la salud y la pensión se calculan sobre el sueldo. No pienses en "multiplicar por decimales". Piensa en <strong>partes de un pastel</strong>: si el pastel es tu sueldo, la salud es una rebanada del 4%.</p>
+
+    <h3>Tu reto</h3>
+    <p>Calcular el descuento de Salud (4%) para un empleado.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> En la celda <strong>A5</strong>, escribe el sueldo: <code>1423500</code> (Salario Mínimo 2025).</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> En la celda <strong>B5</strong>, escribe: <code>=A5*4%</code></p>
+    <p class="resultado">Resultado: <strong>$56.940</strong>. Excel entiende que <strong>4%</strong> significa "4 de cada 100" (es decir, 0,04). No necesitas escribir el decimal tú mismo.</p>
+
+    <div class="box box-formula">=A5 * 4%
+
+Es exactamente lo mismo que escribir:
+=A5 * 0,04
+
+Ambas fórmulas dan el mismo resultado.
+La primera es más fácil de leer.</div>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> El <strong>Neto Pagado</strong> es lo que le queda al trabajador. En otra celda escribe: <code>=A5-B5</code></p>
+    <p class="resultado">Sueldo menos Salud: $1.423.500 − $56.940 = <strong>$1.366.560</strong>.</p>
+  </div>
+
+  <!-- Paso 3 -->
+  <div class="step-section">
+    <h2>Paso 3: La Función SI</h2>
+    <p class="step-subtitle">El "guardián de la empresa"</p>
+
+    <h3>Concepto</h3>
+    <p>La función SI es como un vigilante en la puerta: <strong>"Si traes el carné, entras; si no, te quedas afuera".</strong> En Talento Humano la usamos para decidir automáticamente quién recibe un beneficio.</p>
+
+    <h3>Tu reto</h3>
+    <p>Decidir quién recibe Auxilio de Transporte. En 2025, solo lo reciben quienes ganan hasta <strong>2 salarios mínimos: $2.847.000</strong>. El valor del auxilio es <strong>$200.000</strong> mensuales.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> En la celda <strong>A8</strong>, escribe el sueldo de un gerente: <code>5000000</code>.</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> En la celda <strong>B8</strong>, escribe: <code>=SI(A8&lt;=2847000; 200000; 0)</code></p>
+
+    <div class="box box-tip">
+      <span class="box-title">Traducción de la fórmula a lenguaje humano</span>
+      <strong>SI</strong>: "Excel, revisa esto..."<br>
+      <strong>A8&lt;=2847000</strong>: "...¿Es el sueldo menor o igual a $2.847.000?"<br>
+      <strong>200000</strong>: "Si la respuesta es SÍ, escribe $200.000 (le corresponde auxilio)."<br>
+      <strong>0</strong>: "Si la respuesta es NO, escribe $0 (no le corresponde)."
+    </div>
+
+    <p class="resultado">Como $5.000.000 es mayor que $2.847.000, la respuesta es NO. Excel escribe <strong>$0</strong>.</p>
+
+    <p>Prueba cambiando el valor de A8 a <code>1423500</code>. Ahora la respuesta es SÍ y Excel escribe <strong>$200.000</strong>.</p>
+  </div>
+
+  <!-- Paso 4 -->
+  <div class="step-section">
+    <h2>Paso 4: Decisiones Anidadas</h2>
+    <p class="step-subtitle">El "escalafón de bonos"</p>
+
+    <h3>Concepto</h3>
+    <p>A veces no es solo "Sí o No". A veces hay <strong>niveles</strong> (Oro, Plata, Bronce). Anidar es poner un SI dentro de otro SI, como un filtro de café: lo que no "cayó" en el primer filtro pasa al siguiente.</p>
+
+    <h3>Escala de evaluación</h3>
+    <div class="box box-formula">  0 a 59 puntos  →  "Bajo"
+ 60 a 84 puntos  →  "Medio"
+ 85 a 100 puntos →  "Alto"</div>
+
+    <h3>Tu reto</h3>
+    <p>Calificar el desempeño de un empleado según su puntaje.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> En la celda <strong>A11</strong>, escribe un puntaje: <code>75</code>.</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> En la celda <strong>B11</strong>, escribe:</p>
+    <div class="box box-formula">=SI(A11&lt;60; "Bajo"; SI(A11&lt;85; "Medio"; "Alto"))</div>
+
+    <div class="box box-example">
+      <span class="box-title">Cómo lo lee Excel, paso a paso (para puntaje 75)</span>
+      <strong>Pregunta 1:</strong> ¿75 es menor que 60? → NO.<br>
+      Como la respuesta fue NO, Excel pasa al segundo SI.<br><br>
+      <strong>Pregunta 2:</strong> ¿75 es menor que 85? → SÍ.<br>
+      Como la respuesta fue SÍ, Excel escribe <strong>"Medio"</strong>.
+    </div>
+
+    <p>Prueba con otros valores: escribe <code>45</code> (resultado: "Bajo") o <code>92</code> (resultado: "Alto").</p>
+
+    <div class="box box-warn">
+      <span class="box-title">Punto clave: el orden importa</span>
+      En un SI anidado, siempre pregunta primero por el límite menor (60) y luego por el siguiente (85).<br>
+      Si invirtieras el orden (primero &lt;85, luego &lt;60), todos los puntajes menores a 60 también son menores a 85, así que caerían en la primera pregunta y nunca se clasificarían como "Bajo".
+    </div>
+  </div>
+
+  <!-- Paso 5 -->
+  <div class="step-section">
+    <h2>Paso 5: BUSCARV — Búsqueda Vertical</h2>
+    <p class="step-subtitle">El "archivista digital"</p>
+
+    <h3>Concepto</h3>
+    <p>Tienes 500 empleados. No vas a buscar uno por uno. BUSCARV es como decirle a Excel: <strong>"Ve a la bodega, busca esta cédula y tráeme el nombre que está al lado".</strong></p>
+
+    <h3>Tu reto</h3>
+    <p>Buscar el cargo de una persona usando su número de cédula.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Crea una tabla pequeña en el rango <strong>A15:B17</strong>:</p>
+
+    <div class="box box-formula">  1010  |  Analista
+  2020  |  Coordinador
+  3030  |  Gerente</div>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> En la celda <strong>E15</strong>, escribe la cédula que quieres buscar: <code>2020</code>.</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> En la celda <strong>F15</strong>, escribe: <code>=BUSCARV(E15; A15:B17; 2; FALSO)</code></p>
+
+    <div class="box box-tip">
+      <span class="box-title">Los 4 argumentos de BUSCARV explicados</span>
+      <strong>E15</strong>: ¿Qué busco? → La cédula que escribiste.<br>
+      <strong>A15:B17</strong>: ¿Dónde está la bodega? → Toda tu tabla de datos.<br>
+      <strong>2</strong>: ¿En qué columna está el "tesoro"? → El cargo está en la columna 2.<br>
+      <strong>FALSO</strong>: Significa "búscalo idéntico, no me traigas algo parecido".
+    </div>
+
+    <p class="resultado">Excel busca 2020 en la columna A, lo encuentra, y devuelve el valor de la columna 2: <strong>"Coordinador"</strong>.</p>
+  </div>
+
+  <!-- Consejos de Oro -->
+  <div class="step-section">
+    <h2>Consejos de Oro para No Frustrarse</h2>
+
+    <h3>1. El separador de argumentos</h3>
+    <p>Si Excel te muestra un error al escribir una fórmula, cambia los <code>;</code> (punto y coma) por <code>,</code> (coma), o al revés. El separador depende de cómo esté configurado tu computador. En Colombia, la mayoría usa <strong>punto y coma (;)</strong>.</p>
+
+    <h3>2. Las comillas</h3>
+    <p>Si quieres que Excel escriba una palabra (como "Aprobado" o "Bajo"), la palabra <strong>siempre debe ir entre comillas dobles</strong> (<code>" "</code>). Los números van sin comillas.</p>
+
+    <div class="box box-formula">Correcto:   =SI(A1>10; "Aprobado"; "Reprobado")
+Correcto:   =SI(A1>10; 100; 0)
+Incorrecto: =SI(A1>10; Aprobado; Reprobado)  ← falta comillas</div>
+
+    <h3>3. El imán de las fórmulas (tecla F4)</h3>
+    <p>Cuando arrastras una fórmula hacia abajo, Excel ajusta las referencias automáticamente: A2 se convierte en A3, luego A4, etc. Esto es normal y útil.</p>
+    <p>Pero si necesitas que una celda <strong>no se mueva</strong> al arrastrar (por ejemplo, una celda de parámetros), haz clic en el nombre de la celda dentro de la fórmula y presiona la tecla <strong>F4</strong>. Aparecerá el signo <strong>$</strong>:</p>
+
+    <div class="box box-formula">A2   → al presionar F4 se convierte en → $A$2
+
+$A$2 significa: "esta celda está bloqueada,
+no se moverá cuando arrastre la fórmula".</div>
+  </div>
+
+  <!-- Ejercicio Final -->
+  <div class="step-section">
+    <h2>Ejercicio Final de Certificación</h2>
+    <p class="step-subtitle">Autoevaluación</p>
+
+    <p>Crea una tabla con <strong>3 compañeros</strong> (pueden ser nombres ficticios) y completa los siguientes pasos:</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> <strong>Limpia sus nombres:</strong> escríbelos con errores (espacios de más, mezcla de mayúsculas) y corrígelos usando ESPACIOS y NOMPROPIO.</p>
+    <p class="paso"><span class="paso-num">Paso 2.</span> <strong>Ponles un sueldo ficticio:</strong> uno que gane menos de $2.847.000 y otro que gane más.</p>
+    <p class="paso"><span class="paso-num">Paso 3.</span> <strong>Calcula si tienen derecho a auxilio de transporte:</strong> usa la función SI para que Excel decida automáticamente.</p>
+    <p class="paso"><span class="paso-num">Paso 4.</span> <strong>Usa BUSCARV:</strong> arma una tabla con cédula y nombre. En otra celda, escribe una cédula y usa BUSCARV para que Excel te diga el nombre correspondiente.</p>
+
+    <div class="box box-example">
+      <span class="box-title">Al completar estos 4 pasos has practicado:</span>
+      Funciones de texto (ESPACIOS, NOMPROPIO)<br>
+      Operaciones con porcentajes<br>
+      Toma de decisiones con SI<br>
+      Búsqueda de datos con BUSCARV<br><br>
+      Estas son las herramientas que un Tecnólogo en Gestión del Talento Humano necesita para trabajar con datos de empleados de forma eficiente y sin errores.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB: GUÍA INTRODUCTORIA                            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="guia-section" id="introductoria">
+  <div class="guia-portada">
+    <h2>Guía Introductoria</h2>
+    <p>Excel para Gestión del Talento Humano</p>
+    <p class="empresa">Confecciones del Cuero S.A.S.</p>
+    <p class="desc"><strong>Archivo de práctica:</strong> Ejercicio_Introductorio_Excel_TH.xlsx</p>
+  </div>
+
+  <div class="toc">
+    <h3>Contenido</h3>
+    <ul>
+      <li>Parte 1 — Limpieza de datos: funciones ESPACIOS y NOMPROPIO</li>
+      <li>Parte 2 — Cálculos de nómina: operaciones con porcentajes</li>
+      <li>Parte 3 — Función SI: tomar decisiones automáticas</li>
+      <li>Parte 4 — SI anidado: clasificar en varios niveles</li>
+      <li>Parte 5 — BUSCARV: consultar datos por cédula</li>
+    </ul>
+  </div>
+  <p style="margin-bottom:1.5rem">Cada parte se trabaja en la hoja correspondiente del archivo <strong>Ejercicio_Introductorio_Excel_TH.xlsx</strong>. Las celdas con fondo amarillo son las que debes completar con fórmulas.</p>
+
+  <!-- Parte 1 -->
+  <div class="step-section">
+    <h2>Parte 1: Limpieza de Datos</h2>
+
+    <h3>¿Qué problema resolvemos?</h3>
+    <p>En Talento Humano es frecuente recibir listados de empleados con errores de escritura: nombres en MAYÚSCULAS, con espacios de más o con mezcla de mayúsculas y minúsculas. Antes de usar estos datos en un contrato, un certificado laboral o una carta, hay que corregirlos. Excel tiene funciones que hacen esta corrección de forma automática.</p>
+
+    <h3>Funciones que vas a usar</h3>
+
+    <h4>ESPACIOS</h4>
+    <p><strong>Qué hace:</strong> Elimina los espacios sobrantes de un texto. Quita los espacios al inicio, al final y reduce los espacios dobles entre palabras a uno solo.</p>
+    <div class="box box-formula">=ESPACIOS( texto )</div>
+    <p><strong>Ejemplo:</strong> Si la celda A5 contiene <code>"  ana LUCÍA ramírez vélez  "</code>, la fórmula <code>=ESPACIOS(A5)</code> produce: <code>"ana LUCÍA ramírez vélez"</code>.</p>
+    <p><strong>Observa:</strong> Los espacios sobrantes desaparecieron, pero las letras no cambiaron. ESPACIOS solo trabaja con espacios, no con mayúsculas ni minúsculas.</p>
+
+    <h4>NOMPROPIO</h4>
+    <p><strong>Qué hace:</strong> Pone en mayúscula la primera letra de cada palabra y convierte el resto a minúscula. Es el formato correcto para nombres de personas en documentos oficiales.</p>
+    <div class="box box-formula">=NOMPROPIO( texto )</div>
+    <p><strong>Ejemplo:</strong> Si la celda B5 contiene <code>"ana LUCÍA ramírez vélez"</code>, la fórmula <code>=NOMPROPIO(B5)</code> produce: <code>"Ana Lucía Ramírez Vélez"</code>.</p>
+
+    <h3>Paso a paso en el archivo Excel</h3>
+    <p>Abre el archivo <strong>Ejercicio_Introductorio_Excel_TH.xlsx</strong> y ve a la hoja <strong>1_Limpieza</strong>.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Haz clic en la celda <strong>B5</strong> (la primera celda amarilla de la columna "Sin Espacios Sobrantes").</p>
+    <p class="paso"><span class="paso-num">Paso 2.</span> Escribe exactamente: <code>=ESPACIOS(A5)</code> y presiona <strong>Enter</strong>.</p>
+    <p class="resultado">La celda B5 muestra: "ana LUCÍA ramírez vélez" (sin espacios de más).</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> Haz clic en la celda <strong>C5</strong> (la primera celda amarilla de la columna "Nombre en Formato Correcto").</p>
+    <p class="paso"><span class="paso-num">Paso 4.</span> Escribe: <code>=NOMPROPIO(B5)</code> y presiona <strong>Enter</strong>.</p>
+    <p class="resultado">La celda C5 muestra: "Ana Lucía Ramírez Vélez".</p>
+
+    <p class="paso"><span class="paso-num">Paso 5.</span> Selecciona la celda <strong>B5</strong>. Ubica el cursor en la esquina inferior derecha de la celda hasta que aparezca una cruz negra fina (+). Haz clic y arrastra hacia abajo hasta la celda <strong>B10</strong>. Repite lo mismo con <strong>C5</strong> hasta <strong>C10</strong>.</p>
+    <p class="resultado">Los 6 nombres quedan corregidos en la columna C.</p>
+
+    <div class="box box-error">
+      <span class="box-title">Errores frecuentes</span>
+      • Olvidar el signo <code>=</code> al inicio de la fórmula. Sin él, Excel interpreta el texto como dato, no como instrucción.<br>
+      • Escribir NOMPROPIO(A5) en vez de NOMPROPIO(B5). El orden importa: primero se quitan los espacios (columna B) y luego se corrige el formato (columna C).
+    </div>
+  </div>
+
+  <!-- Parte 2 -->
+  <div class="step-section">
+    <h2>Parte 2: Cálculos Básicos de Nómina</h2>
+
+    <h3>¿Qué problema resolvemos?</h3>
+    <p>Todo empleado en Colombia tiene descuentos obligatorios sobre su salario. El empleado aporta el <strong>4%</strong> de su salario a <strong>Salud</strong> y otro <strong>4%</strong> a <strong>Pensión</strong>. Estos porcentajes están definidos por la ley colombiana y se aplican sobre el salario básico mensual.</p>
+
+    <h3>Cómo maneja Excel los porcentajes</h3>
+    <p>Cuando escribes <strong>4%</strong> en una fórmula, Excel lo interpreta como <strong>4 dividido entre 100</strong>, es decir, <strong>0,04</strong>. Así:</p>
+
+    <div class="box box-formula">=C5 * 4%
+
+Es lo mismo que escribir:
+=C5 * 0,04
+
+Ambas son correctas. La primera es más fácil de leer.</div>
+
+    <h3>Paso a paso en el archivo Excel</h3>
+    <p>Ve a la hoja <strong>2_Nómina</strong>. Encontrarás 6 empleados con su nombre, cargo y salario en las columnas A, B y C.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Haz clic en la celda <strong>D5</strong> (columna "Aporte Salud"). Escribe: <code>=C5*4%</code> y presiona <strong>Enter</strong>.</p>
+    <p class="resultado">Para Ana Lucía ($1.423.500): $1.423.500 × 0,04 = $56.940.</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> Haz clic en la celda <strong>E5</strong> (columna "Aporte Pensión"). Escribe: <code>=C5*4%</code> y presiona <strong>Enter</strong>.</p>
+    <p class="resultado">El resultado es igual: $56.940, porque ambos aportes son del 4%.</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> Haz clic en la celda <strong>F5</strong> (columna "Total Descuentos"). Escribe: <code>=D5+E5</code> y presiona <strong>Enter</strong>.</p>
+    <p class="resultado">$56.940 + $56.940 = $113.880 en total de descuentos.</p>
+
+    <p class="paso"><span class="paso-num">Paso 4.</span> Haz clic en la celda <strong>G5</strong> (columna "Salario Neto"). Escribe: <code>=C5-F5</code> y presiona <strong>Enter</strong>.</p>
+    <p class="resultado">$1.423.500 − $113.880 = $1.309.620 es lo que recibe el empleado.</p>
+
+    <p class="paso"><span class="paso-num">Paso 5.</span> Selecciona el rango <strong>D5:G5</strong> (las 4 celdas con fórmulas). Arrastra hacia abajo hasta la fila 10.</p>
+
+    <div class="box box-tip">
+      <span class="box-title">Verificación rápida</span>
+      El gerente (Diego, salario $8.000.000) debe tener:<br>
+      Salud: $320.000 | Pensión: $320.000 | Total: $640.000 | Neto: $7.360.000
+    </div>
+  </div>
+
+  <!-- Parte 3 -->
+  <div class="step-section">
+    <h2>Parte 3: Función SI — Decisiones Automáticas</h2>
+
+    <h3>¿Qué problema resolvemos?</h3>
+    <p>En Colombia, los empleados que ganan hasta <strong>2 salarios mínimos ($2.847.000 en 2025)</strong> tienen derecho a recibir un <strong>auxilio de transporte de $200.000</strong> mensuales. El área de Talento Humano debe verificar el salario de cada empleado para determinar si le corresponde o no. La función SI automatiza esta decisión.</p>
+
+    <h3>Anatomía de la función SI</h3>
+    <p>La función SI tiene exactamente <strong>tres partes</strong>, separadas por punto y coma:</p>
+
+    <div class="box box-formula">=SI( condición ; valor_si_verdadero ; valor_si_falso )
+
+Parte 1: condición         → La pregunta que Excel evalúa.
+Parte 2: valor_si_verdadero → Qué escribe si la respuesta es SÍ.
+Parte 3: valor_si_falso     → Qué escribe si la respuesta es NO.</div>
+
+    <p><strong>Ejemplo con palabras:</strong> "SI el salario es menor o igual a $2.847.000, escribe "SÍ"; de lo contrario, escribe "NO"."</p>
+    <p><strong>Traducido a fórmula:</strong> <code>=SI(C5&lt;=2847000; "SÍ"; "NO")</code></p>
+
+    <h3>Paso a paso en el archivo Excel</h3>
+    <p>Ve a la hoja <strong>3_Decisiones</strong>. Encontrarás los 6 empleados con su salario.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Haz clic en la celda <strong>D5</strong>. Escribe: <code>=SI(C5&lt;=2847000; "SÍ"; "NO")</code> y presiona Enter.</p>
+    <p>Excel evalúa: ¿$1.423.500 es ≤ $2.847.000? <strong>Sí</strong>, entonces escribe "SÍ".</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> Haz clic en la celda <strong>E5</strong>. Escribe: <code>=SI(C5&lt;=2847000; 200000; 0)</code> y presiona Enter.</p>
+    <p>Esta fórmula escribe el valor monetario: $200.000 si cumple la condición, $0 si no.</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> Arrastra ambas fórmulas desde la fila 5 hasta la fila 10.</p>
+
+    <div class="box box-tip">
+      <span class="box-title">Resultados esperados</span>
+      Ana Lucía ($1.423.500) → SÍ → $200.000<br>
+      Carlos ($1.600.000) → SÍ → $200.000<br>
+      María ($2.500.000) → SÍ → $200.000<br>
+      Juan Pablo ($3.200.000) → NO → $0<br>
+      Laura ($4.500.000) → NO → $0<br>
+      Diego ($8.000.000) → NO → $0
+    </div>
+
+    <div class="box box-error">
+      <span class="box-title">Errores frecuentes</span>
+      • Olvidar las comillas en "SÍ" y "NO". Las palabras siempre van entre comillas. Los números no.<br>
+      • Escribir 2.847.000 con puntos. En las fórmulas de Excel, los números se escriben sin puntos de miles: 2847000.<br>
+      • Confundir el separador: en algunos computadores se usa coma (,) en vez de punto y coma (;). Si la fórmula da error, prueba con el otro separador.
+    </div>
+  </div>
+
+  <!-- Parte 4 -->
+  <div class="step-section">
+    <h2>Parte 4: SI Anidado — Clasificar en Varios Niveles</h2>
+
+    <h3>¿Qué problema resolvemos?</h3>
+    <p>La función SI que vimos en la Parte 3 decide entre <strong>dos opciones</strong> (SÍ o NO). Pero a veces necesitamos clasificar en <strong>tres o más niveles</strong>. Por ejemplo, el desempeño de un empleado puede ser Bajo, Medio o Alto según su puntaje de evaluación.</p>
+
+    <h3>Escala de clasificación</h3>
+    <p>Confecciones del Cuero S.A.S. clasifica el desempeño así:</p>
+    <div class="box box-formula">  0 a 59 puntos  →  "Bajo"   →  Plan de mejoramiento
+ 60 a 84 puntos  →  "Medio"  →  Seguimiento trimestral
+ 85 a 100 puntos →  "Alto"   →  Candidato a promoción</div>
+
+    <h3>Cómo funciona un SI anidado</h3>
+    <p>Un SI anidado coloca <strong>otro SI dentro del tercer argumento</strong> (el valor_si_falso) del primer SI:</p>
+
+    <div class="box box-example">
+      <span class="box-title">Lectura paso a paso</span>
+      <code>=SI( B5&lt;60 ; "Bajo" ; SI( B5&lt;85 ; "Medio" ; "Alto" ) )</code><br><br>
+      <strong>Pregunta 1:</strong> ¿El puntaje es menor que 60?<br>
+      → SÍ: escribe "Bajo" y se detiene.<br>
+      → NO: pasa a la segunda pregunta.<br><br>
+      <strong>Pregunta 2:</strong> ¿El puntaje es menor que 85?<br>
+      → SÍ: escribe "Medio".<br>
+      → NO: escribe "Alto" (porque si no es &lt;60 ni &lt;85, es ≥85).
+    </div>
+
+    <h3>Paso a paso en el archivo Excel</h3>
+    <p>Ve a la hoja <strong>4_Clasificación</strong>. Encontrarás los 6 empleados con su puntaje de evaluación.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Haz clic en la celda <strong>C5</strong>. Escribe: <code>=SI(B5&lt;60; "Bajo"; SI(B5&lt;85; "Medio"; "Alto"))</code> y presiona Enter.</p>
+    <p>Para Ana Lucía (puntaje 78): ¿78&lt;60? No. ¿78&lt;85? Sí → <strong>"Medio"</strong>.</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> Haz clic en la celda <strong>D5</strong>. Escribe:</p>
+    <div class="box box-formula">=SI(C5="Bajo"; "Plan de mejoramiento"; SI(C5="Medio"; "Seguimiento trimestral"; "Candidato a promoción"))</div>
+    <p>Esta fórmula lee el resultado de la columna C y asigna la acción correspondiente.</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> Arrastra ambas fórmulas desde la fila 5 hasta la fila 10.</p>
+
+    <div class="box box-tip">
+      <span class="box-title">Resultados esperados</span>
+      Ana Lucía (78) → Medio → Seguimiento trimestral<br>
+      Carlos (55) → Bajo → Plan de mejoramiento<br>
+      María (92) → Alto → Candidato a promoción<br>
+      Juan Pablo (68) → Medio → Seguimiento trimestral<br>
+      Laura (88) → Alto → Candidato a promoción<br>
+      Diego (45) → Bajo → Plan de mejoramiento
+    </div>
+
+    <div class="box box-warn">
+      <span class="box-title">Punto clave: el orden de las preguntas</span>
+      En un SI anidado, el orden importa. Si primero preguntaras ¿es &lt;85? y luego ¿es &lt;60?, todos los puntajes menores a 60 también son menores a 85, así que caerían en la primera pregunta y nunca llegarían a clasificarse como "Bajo".<br>
+      <strong>Regla: pregunta siempre primero por el límite menor.</strong>
+    </div>
+  </div>
+
+  <!-- Parte 5 -->
+  <div class="step-section">
+    <h2>Parte 5: BUSCARV — Consultar Datos por Cédula</h2>
+
+    <h3>¿Qué problema resolvemos?</h3>
+    <p>En una empresa con muchos empleados, buscar manualmente el nombre o el cargo de alguien por su número de cédula es lento y propenso a errores. La función BUSCARV (Búsqueda Vertical) permite que Excel busque un valor en una tabla y devuelva un dato relacionado.</p>
+
+    <h3>Los 4 argumentos de BUSCARV</h3>
+    <div class="box box-formula">=BUSCARV( valor_buscado ; tabla ; número_columna ; coincidencia )</div>
+    <p><strong>1. Valor buscado:</strong> el dato que quieres encontrar. En este caso, el número de cédula.</p>
+    <p><strong>2. Tabla:</strong> el rango de celdas donde están todos los datos. La cédula debe estar en la primera columna de este rango.</p>
+    <p><strong>3. Número de columna:</strong> qué columna de la tabla contiene el dato que necesitas. Se cuenta desde la primera columna del rango: 1 = Cédula, 2 = Nombre, 3 = Cargo, 4 = Salario.</p>
+    <p><strong>4. Coincidencia:</strong> escribe FALSO para que Excel busque la cédula exacta. Si escribes VERDADERO o lo omites, Excel puede devolver un resultado incorrecto.</p>
+
+    <h3>Paso a paso en el archivo Excel</h3>
+    <p>Ve a la hoja <strong>5_Consultas</strong>. A la izquierda está la tabla de empleados (A4:D10). A la derecha está la zona de consulta.</p>
+
+    <p class="paso"><span class="paso-num">Paso 1.</span> Verifica que la celda <strong>G5</strong> tiene un número de cédula (por defecto: 1098765432). Este es el valor que BUSCARV va a buscar.</p>
+
+    <p class="paso"><span class="paso-num">Paso 2.</span> Haz clic en la celda <strong>G7</strong> (al lado de "Nombre:"). Escribe: <code>=BUSCARV(G5; A5:D10; 2; FALSO)</code> y presiona Enter.</p>
+    <p class="resultado">Excel busca 1098765432 en la primera columna de A5:D10, lo encuentra en A5, y devuelve el valor de la columna 2: <strong>"Ana Lucía Ramírez Vélez"</strong>.</p>
+
+    <p class="paso"><span class="paso-num">Paso 3.</span> Haz clic en la celda <strong>G8</strong> (al lado de "Cargo:"). Escribe: <code>=BUSCARV(G5; A5:D10; 3; FALSO)</code> y presiona Enter.</p>
+    <p class="resultado">Resultado: "Asistente de TH" (columna 3 de la tabla).</p>
+
+    <p class="paso"><span class="paso-num">Paso 4.</span> Haz clic en la celda <strong>G9</strong> (al lado de "Salario:"). Escribe: <code>=BUSCARV(G5; A5:D10; 4; FALSO)</code> y presiona Enter.</p>
+    <p class="resultado">Resultado: $1.423.500 (columna 4 de la tabla).</p>
+
+    <p class="paso"><span class="paso-num">Paso 5.</span> Cambia la cédula en <strong>G5</strong> por otra de la tabla (ejemplo: <code>1076543210</code>). Las tres celdas se actualizan automáticamente.</p>
+
+    <div class="box box-error">
+      <span class="box-title">Errores frecuentes</span>
+      • Error #N/D: aparece cuando la cédula que buscas no existe en la tabla. Verifica que el número esté escrito exactamente como aparece en la columna A.<br>
+      • Olvidar FALSO en el cuarto argumento: sin él, Excel puede devolver un dato que no corresponde a la cédula buscada.<br>
+      • Rango incorrecto: la cédula debe estar en la PRIMERA columna del rango indicado. Si el rango empieza en la columna B, BUSCARV no encontrará la cédula.
+    </div>
+  </div>
+
+  <!-- Consejos Finales -->
+  <div class="step-section">
+    <h2>Consejos Finales</h2>
+
+    <h3>El separador de argumentos</h3>
+    <p>En Colombia, la mayoría de los computadores usan <strong>punto y coma (;)</strong> para separar los argumentos de las funciones. Sin embargo, algunos equipos configurados en inglés usan <strong>coma (,)</strong>. Si una fórmula te da error, prueba cambiando todos los <code>;</code> por <code>,</code> (o al revés).</p>
+
+    <h3>Los números en las fórmulas</h3>
+    <p>Dentro de una fórmula, los números se escriben <strong>sin puntos de miles y sin signo de pesos</strong>. Escribe <code>2847000</code>, no $2.847.000. Excel entiende el número puro; el formato de moneda es visual, se configura aparte.</p>
+
+    <h3>Las comillas</h3>
+    <p>Cuando quieres que Excel escriba una palabra (como "SÍ", "NO", "Bajo"), esa palabra <strong>debe ir entre comillas dobles (" ")</strong>. Los números van sin comillas. Si pones un número entre comillas, Excel lo tratará como texto y no podrás hacer operaciones con él.</p>
+
+    <h3>La tecla F4 y las referencias absolutas</h3>
+    <p>Cuando arrastras una fórmula hacia abajo, Excel ajusta las referencias automáticamente: C5 se convierte en C6, luego C7, etc. Esto es útil y correcto la mayoría de las veces. Pero si necesitas que una celda <strong>no cambie</strong> al arrastrar, haz clic en esa referencia dentro de la fórmula y presiona la tecla <strong>F4</strong>. Aparecerá el signo $: <code>$C$5</code> significa que esa referencia no se moverá al arrastrar.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB: EJERCICIO EXCEL                               -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="guia-section" id="ejercicio">
+  <div class="guia-portada">
+    <h2>Ejercicio Introductorio</h2>
+    <p>Archivo de práctica en Excel</p>
+    <p class="empresa">Confecciones del Cuero S.A.S.</p>
+  </div>
+
+  <div class="step-section">
+    <h2>Sobre el archivo de práctica</h2>
+    <p>El archivo <strong>Ejercicio_Introductorio_Excel_TH.xlsx</strong> contiene 5 hojas de trabajo, una por cada parte de la Guía Introductoria. Cada hoja tiene celdas con <span style="background:#FFFFF0; padding:2px 6px; border:1px solid #ccc;">fondo amarillo</span> donde debes escribir las fórmulas indicadas en la guía.</p>
+
+    <h3>Estructura del archivo</h3>
+    <table class="data">
+      <tr><th>Hoja</th><th>Contenido</th><th>Fórmulas a escribir</th></tr>
+      <tr><td><strong>1_Limpieza</strong></td><td>6 nombres con errores de formato</td><td>=ESPACIOS() y =NOMPROPIO()</td></tr>
+      <tr><td><strong>2_Nómina</strong></td><td>6 empleados con salario</td><td>=C5*4%, =D5+E5, =C5-F5</td></tr>
+      <tr><td><strong>3_Decisiones</strong></td><td>6 empleados para auxilio</td><td>=SI(C5&lt;=2847000; ...)</td></tr>
+      <tr><td><strong>4_Clasificación</strong></td><td>6 empleados con puntaje</td><td>=SI(B5&lt;60; "Bajo"; SI(...))</td></tr>
+      <tr><td><strong>5_Consultas</strong></td><td>Tabla de empleados + zona de búsqueda</td><td>=BUSCARV(G5; A5:D10; 2; FALSO)</td></tr>
+    </table>
+  </div>
+
+  <div class="step-section">
+    <h2>Empleados del ejercicio</h2>
+    <p>Los 6 empleados de Confecciones del Cuero S.A.S. que encontrarás en todas las hojas:</p>
+
+    <table class="data">
+      <tr><th>Cédula</th><th>Nombre</th><th>Cargo</th><th>Salario</th><th>Puntaje</th></tr>
+      <tr><td>1098765432</td><td>Ana Lucía Ramírez Vélez</td><td>Asistente de TH</td><td>$1.423.500</td><td>78</td></tr>
+      <tr><td>1087654321</td><td>Carlos Andrés Mejía López</td><td>Auxiliar de Nómina</td><td>$1.600.000</td><td>55</td></tr>
+      <tr><td>1076543210</td><td>María Fernanda Torres Gil</td><td>Coord. de Bienestar</td><td>$2.500.000</td><td>92</td></tr>
+      <tr><td>1065432109</td><td>Juan Pablo Gómez Ríos</td><td>Jefe de Selección</td><td>$3.200.000</td><td>68</td></tr>
+      <tr><td>1054321098</td><td>Laura Cristina Herrera M.</td><td>Directora de TH</td><td>$4.500.000</td><td>88</td></tr>
+      <tr><td>1043210987</td><td>Diego Alejandro Castro P.</td><td>Gerente General</td><td>$8.000.000</td><td>45</td></tr>
+    </table>
+  </div>
+
+  <div class="step-section">
+    <h2>Instrucciones de uso</h2>
+
+    <div class="box box-tip">
+      <span class="box-title">Antes de empezar</span>
+      1. Descarga el archivo <strong>Ejercicio_Introductorio_Excel_TH.xlsx</strong><br>
+      2. Ábrelo en Microsoft Excel o en Google Sheets<br>
+      3. Sigue las instrucciones de la <strong>Guía Introductoria</strong> paso a paso<br>
+      4. Escribe las fórmulas SOLO en las celdas con fondo amarillo
+    </div>
+
+    <div class="box box-warn">
+      <span class="box-title">Importante</span>
+      • No borres ni modifiques las celdas con datos (nombres, salarios, cédulas).<br>
+      • El archivo tiene una hoja oculta (RESPUESTAS_INSTRUCTOR) con las fórmulas esperadas. Tu instructor puede usarla para verificar tu trabajo.<br>
+      • Si la fórmula da error, revisa los <strong>Consejos Finales</strong> de la Guía Introductoria.
+    </div>
+
+    <div class="box box-example">
+      <span class="box-title">Resultados que debes obtener al finalizar</span>
+      <strong>Hoja 2_Nómina:</strong> El gerente Diego debe tener Salud = $320.000, Neto = $7.360.000<br>
+      <strong>Hoja 3_Decisiones:</strong> Ana, Carlos y María = SÍ (auxilio). Juan Pablo, Laura y Diego = NO.<br>
+      <strong>Hoja 4_Clasificación:</strong> María y Laura = "Alto". Carlos y Diego = "Bajo".<br>
+      <strong>Hoja 5_Consultas:</strong> Al escribir cédula 1076543210, debe aparecer "María Fernanda Torres Gil".
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><span class="sena">Componente TIC — Gestión del Talento Humano — Ficha 3311944</span></p>
+  <p>Instructor: Ing. Luis Eladio Porras Camargo — SENA · Centro del Diseño y la Manufactura del Cuero</p>
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.guia-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const btns = document.querySelectorAll('nav.tabs button');
+  const map = { inicio: 0, rapida: 1, introductoria: 2, ejercicio: 3 };
+  btns[map[id]].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
