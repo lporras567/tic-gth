@@ -1,0 +1,1402 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Manual del Aprendiz – Sesión 1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* ── Token system ─────────────────────────────────────────────
+   Layout: single-column wizard, sticky header with progress
+   Color: SENA teal as anchor, warm white surface, rich dark text
+   Type: Inter (UI/labels) + Source Serif 4 (headings/content)
+───────────────────────────────────────────────────────────── */
+:root {
+  --teal:       #006C6C;
+  --teal-mid:   #008080;
+  --teal-lt:    #D6EFEF;
+  --teal-xlt:   #EEF7F7;
+  --amber:      #B45309;
+  --amber-lt:   #FEF3C7;
+  --blue:       #1E40AF;
+  --blue-lt:    #DBEAFE;
+  --green:      #166534;
+  --green-lt:   #DCFCE7;
+  --red:        #991B1B;
+  --red-lt:     #FEE2E2;
+
+  --bg:         #FAFAFA;
+  --surface:    #FFFFFF;
+  --border:     #D1D5DB;
+  --border-lt:  #E5E7EB;
+  --fg:         #111827;
+  --fg-mid:     #374151;
+  --fg-muted:   #6B7280;
+  --fg-subtle:  #9CA3AF;
+
+  --font-ui:    'Inter', system-ui, sans-serif;
+  --font-body:  'Source Serif 4', Georgia, serif;
+
+  --radius:     8px;
+  --radius-lg:  12px;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:     0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #0F1117;
+    --surface:   #1A1E2A;
+    --border:    #2D3348;
+    --border-lt: #252A3A;
+    --fg:        #F1F3F9;
+    --fg-mid:    #C8CDD8;
+    --fg-muted:  #8B92A8;
+    --fg-subtle: #5A617A;
+    --teal-lt:   #0D3535;
+    --teal-xlt:  #091E1E;
+    --amber-lt:  #2D1F00;
+    --blue-lt:   #0C1A45;
+    --green-lt:  #0A2018;
+    --red-lt:    #2D0808;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:        #0F1117;
+  --surface:   #1A1E2A;
+  --border:    #2D3348;
+  --border-lt: #252A3A;
+  --fg:        #F1F3F9;
+  --fg-mid:    #C8CDD8;
+  --fg-muted:  #8B92A8;
+  --fg-subtle: #5A617A;
+  --teal-lt:   #0D3535;
+  --teal-xlt:  #091E1E;
+  --amber-lt:  #2D1F00;
+  --blue-lt:   #0C1A45;
+  --green-lt:  #0A2018;
+  --red-lt:    #2D0808;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+/* ── Header ── */
+.app-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--teal);
+  color: #fff;
+  padding: 0 max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 12px;
+}
+.header-logo {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  flex: 1;
+}
+.header-logo span { display: block; font-size: .72rem; font-weight: 400; opacity: .8; font-family: var(--font-ui); letter-spacing: .02em; text-transform: uppercase; }
+.progress-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 120px; }
+.progress-label { font-size: .7rem; opacity: .85; white-space: nowrap; }
+.progress-bar { width: 120px; height: 5px; background: rgba(255,255,255,.3); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; background: #fff; border-radius: 99px; transition: width .4s ease; }
+
+/* ── Main container ── */
+.main { max-width: 720px; margin: 0 auto; padding-block: 32px 80px; }
+
+/* ── Step cards ── */
+.step { display: none; animation: fadeIn .25s ease; }
+.step.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.step-header {
+  border-left: 4px solid var(--teal);
+  padding: 4px 0 4px 16px;
+  margin-bottom: 24px;
+}
+.step-eyebrow { font-size: .7rem; font-weight: 600; color: var(--teal-mid); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+.step-title { font-family: var(--font-body); font-size: 1.5rem; font-weight: 600; color: var(--fg); line-height: 1.25; text-wrap: balance; }
+.step-subtitle { font-size: .88rem; color: var(--fg-muted); margin-top: 6px; line-height: 1.5; }
+
+/* ── Form elements ── */
+.field { margin-bottom: 20px; }
+.field-row { display: grid; gap: 16px; }
+.field-row.cols2 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 500px) { .field-row.cols2 { grid-template-columns: 1fr; } }
+
+label { display: block; font-size: .82rem; font-weight: 600; color: var(--fg-mid); margin-bottom: 6px; letter-spacing: .01em; }
+label .req { color: var(--teal-mid); margin-left: 2px; }
+
+input[type=text], input[type=number], input[type=date], select, textarea {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 13px;
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus, textarea:focus {
+  border-color: var(--teal-mid);
+  box-shadow: 0 0 0 3px rgba(0,108,108,.15);
+}
+textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+textarea.tall { min-height: 130px; }
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px; cursor: pointer; }
+
+/* ── Info / note boxes ── */
+.note-box {
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.note-box .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.note-box .body { flex: 1; }
+.note-box .label { font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+.note-box .text { font-size: .88rem; line-height: 1.6; color: var(--fg-mid); }
+.note-teal  { background: var(--teal-xlt); border-left: 3px solid var(--teal); }
+.note-teal .label { color: var(--teal); }
+.note-amber { background: var(--amber-lt); border-left: 3px solid var(--amber); }
+.note-amber .label { color: var(--amber); }
+.note-blue  { background: var(--blue-lt);  border-left: 3px solid var(--blue); }
+.note-blue .label  { color: var(--blue); }
+.note-green { background: var(--green-lt); border-left: 3px solid var(--green); }
+.note-green .label { color: var(--green); }
+
+/* ── Content blocks ── */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.section-card h3 {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--teal);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-lt);
+}
+.section-card p, .section-card li {
+  font-size: .9rem;
+  line-height: 1.7;
+  color: var(--fg-mid);
+}
+.section-card ul { padding-left: 20px; }
+.section-card li { margin-bottom: 4px; }
+
+/* ── Comparison table ── */
+.compare-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.compare-table th { background: var(--teal); color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; font-family: var(--font-ui); }
+.compare-table th:first-child { border-radius: var(--radius) 0 0 0; }
+.compare-table th:last-child  { border-radius: 0 var(--radius) 0 0; }
+.compare-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-lt); color: var(--fg-mid); vertical-align: top; }
+.compare-table tr:nth-child(even) td { background: var(--teal-xlt); }
+.compare-table-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+
+/* ── Radio / option group ── */
+.radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.radio-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.radio-opt:hover { border-color: var(--teal-mid); background: var(--teal-xlt); }
+.radio-opt input[type=radio] { margin-top: 2px; flex-shrink: 0; accent-color: var(--teal); width: 16px; height: 16px; cursor: pointer; }
+.radio-opt .opt-text { font-size: .88rem; color: var(--fg-mid); line-height: 1.5; }
+.radio-opt.selected { border-color: var(--teal); background: var(--teal-xlt); }
+
+/* ── App map table (interactive) ── */
+.app-map { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.app-map th { background: var(--teal); color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; }
+.app-map td { padding: 6px 10px; border-bottom: 1px solid var(--border-lt); vertical-align: middle; color: var(--fg-mid); }
+.app-map tr:nth-child(even) td { background: var(--teal-xlt); }
+.app-map td input { border: none; background: transparent; width: 100%; font-family: var(--font-ui); font-size: .84rem; color: var(--fg); outline: none; padding: 4px 6px; border-radius: 4px; }
+.app-map td input:focus { background: var(--surface); box-shadow: 0 0 0 2px rgba(0,108,108,.2); }
+.app-map-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+
+/* ── Detective sector table ── */
+.detective-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.detective-table th { background: var(--teal); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+.detective-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-lt); vertical-align: top; color: var(--fg-mid); }
+.detective-table tr:nth-child(even) td { background: var(--teal-xlt); }
+.detective-table textarea { border: none; background: transparent; width: 100%; min-height: 56px; font-family: var(--font-ui); font-size: .83rem; color: var(--fg); outline: none; resize: vertical; padding: 4px 6px; border-radius: 4px; }
+.detective-table textarea:focus { background: var(--surface); box-shadow: 0 0 0 2px rgba(0,108,108,.2); }
+.detective-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+
+/* ── Exercise blocks ── */
+.ejercicio {
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.ejercicio-header {
+  background: var(--teal);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.ejercicio-body { padding: 16px; background: var(--surface); }
+.ejercicio-body p { font-size: .88rem; line-height: 1.65; color: var(--fg-mid); margin-bottom: 12px; }
+
+/* ── Classify row ── */
+.classify-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.classify-row .item-text { font-size: .88rem; color: var(--fg-mid); flex: 1; min-width: 180px; }
+.classify-row select { max-width: 200px; font-size: .85rem; padding: 7px 30px 7px 10px; }
+
+/* ── Glosario ── */
+.glosario-item { margin-bottom: 14px; }
+.glosario-item dt { font-weight: 700; font-size: .9rem; color: var(--teal); margin-bottom: 3px; }
+.glosario-item dd { font-size: .88rem; color: var(--fg-mid); line-height: 1.6; margin-left: 14px; }
+
+/* ── Navigation ── */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+  z-index: 90;
+}
+.nav-inner { max-width: 720px; margin: 0 auto; display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+.btn {
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  font-weight: 600;
+  padding: 11px 22px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+.btn:active { transform: scale(.97); }
+.btn-ghost { background: transparent; color: var(--fg-muted); border: 1.5px solid var(--border); }
+.btn-ghost:hover { border-color: var(--teal-mid); color: var(--teal); }
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { opacity: .9; }
+.btn-save { background: var(--blue); color: #fff; font-size: .82rem; padding: 9px 16px; }
+.btn-pdf  { background: var(--amber); color: #fff; font-size: .82rem; padding: 9px 16px; }
+.btn-danger { background: var(--red); color: #fff; font-size: .82rem; padding: 9px 16px; }
+.step-count { font-size: .78rem; color: var(--fg-muted); white-space: nowrap; }
+
+/* ── Summary card ── */
+.summary-header {
+  background: linear-gradient(135deg, var(--teal), var(--teal-mid));
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.summary-header .big-check { font-size: 2.5rem; margin-bottom: 8px; }
+.summary-header h2 { font-family: var(--font-body); font-size: 1.4rem; margin-bottom: 6px; }
+.summary-header p { font-size: .88rem; opacity: .9; }
+.summary-id { background: var(--surface); border: 1px solid var(--border-lt); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.summary-id table { width: 100%; font-size: .88rem; border-collapse: collapse; }
+.summary-id td { padding: 6px 8px; color: var(--fg-mid); }
+.summary-id td:first-child { font-weight: 600; color: var(--fg); width: 45%; }
+.action-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; }
+.action-btn {
+  font-family: var(--font-ui); font-size: .9rem; font-weight: 600;
+  padding: 13px 24px; border: none; border-radius: var(--radius);
+  cursor: pointer; transition: opacity .15s; display: flex; align-items: center; gap: 8px;
+}
+.action-btn:hover { opacity: .88; }
+.action-btn.save { background: var(--blue); color: #fff; }
+.action-btn.pdf  { background: var(--teal); color: #fff; }
+.action-btn.reset { background: var(--surface); color: var(--fg-muted); border: 1.5px solid var(--border); }
+
+/* ── Validation error ── */
+.field-error { font-size: .78rem; color: var(--red); margin-top: 5px; font-weight: 500; display: none; }
+.field-error.show { display: block; }
+input.invalid, select.invalid, textarea.invalid { border-color: var(--red) !important; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--fg); color: var(--bg);
+  padding: 10px 20px; border-radius: 99px;
+  font-size: .85rem; font-weight: 500;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap;
+  z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Saved indicator ── */
+.saved-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--fg-subtle); display: inline-block;
+  transition: background .3s;
+}
+.saved-dot.saved { background: #22c55e; }
+
+@media print {
+  .app-header, .nav-bar { display: none !important; }
+  .step { display: block !important; }
+  .section-card, .ejercicio, .summary-id { box-shadow: none; border: 1px solid #ccc; }
+  body { color: #000; }
+  textarea, input[type=text], input[type=number], input[type=date], select { border: 1px solid #999; }
+}
+</style>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-logo">
+      Manual del Aprendiz
+      <span>Sesión 1 · Fundamentos de IA · SENA 21730210</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="step-label">Paso 1 de 9</span>
+        &nbsp;<span class="saved-dot" id="saved-dot" title="Guardado automáticamente"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:11%"></div></div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main" id="main">
+
+  <!-- ══ PASO 0: IDENTIFICACIÓN ══ -->
+  <section class="step active" id="step-0">
+    <div class="step-header">
+      <div class="step-eyebrow">Identificación del aprendiz</div>
+      <h1 class="step-title">¿Quién eres tú?</h1>
+      <p class="step-subtitle">Esta información quedará registrada en tu manual. Completa todos los campos antes de continuar.</p>
+    </div>
+
+    <div class="note-box note-teal">
+      <span class="icon">📋</span>
+      <div class="body">
+        <div class="label">Información del programa</div>
+        <div class="text">Programa: <strong>Fundamentos de Inteligencia Artificial para la Vida Académica y Productiva</strong> · Diseño Curricular SENA 21730210 · Sesión 1 de 8 · 2 horas 30 minutos · Centro del Diseño y la Manufactura del Cuero – Regional Antioquia</div>
+      </div>
+    </div>
+
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Tipo de documento <span class="req">*</span></label>
+        <select id="tipo-doc" required>
+          <option value="">— Selecciona —</option>
+          <option value="CC">Cédula de Ciudadanía (CC)</option>
+          <option value="TI">Tarjeta de Identidad (TI)</option>
+          <option value="CE">Cédula de Extranjería (CE)</option>
+          <option value="PAS">Pasaporte</option>
+          <option value="PPT">Permiso de Protección Temporal (PPT)</option>
+        </select>
+        <div class="field-error" id="err-tipo-doc">Selecciona el tipo de documento.</div>
+      </div>
+      <div class="field">
+        <label>Número de documento <span class="req">*</span></label>
+        <input type="text" id="num-doc" placeholder="Ej. 1023456789" required maxlength="20">
+        <div class="field-error" id="err-num-doc">Ingresa el número de documento.</div>
+      </div>
+    </div>
+
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Nombres completos <span class="req">*</span></label>
+        <input type="text" id="nombres" placeholder="Ej. María Alejandra" required>
+        <div class="field-error" id="err-nombres">Ingresa tus nombres completos.</div>
+      </div>
+      <div class="field">
+        <label>Apellidos completos <span class="req">*</span></label>
+        <input type="text" id="apellidos" placeholder="Ej. González Restrepo" required>
+        <div class="field-error" id="err-apellidos">Ingresa tus apellidos completos.</div>
+      </div>
+    </div>
+
+    <div class="field-row cols2">
+      <div class="field">
+        <label>Número de ficha SENA <span class="req">*</span></label>
+        <input type="text" id="ficha" placeholder="Ej. 3387459" required maxlength="10">
+        <div class="field-error" id="err-ficha">Ingresa tu número de ficha.</div>
+      </div>
+      <div class="field">
+        <label>Fecha de la sesión</label>
+        <input type="date" id="fecha-sesion">
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 1: OBJETIVOS ══ -->
+  <section class="step" id="step-1">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 1</div>
+      <h1 class="step-title">¿Qué vamos a aprender hoy?</h1>
+      <p class="step-subtitle">Lee con atención los objetivos de esta sesión.</p>
+    </div>
+
+    <div class="section-card">
+      <h3>Al terminar esta sesión podrás…</h3>
+      <ul>
+        <li>Explicarle a alguien de tu familia qué es la IA con tus propias palabras.</li>
+        <li>Identificar al menos 5 aplicaciones de IA que ya usas en tu día a día.</li>
+        <li>Distinguir entre IA débil e IA fuerte con ejemplos reales.</li>
+        <li>Completar la encuesta diagnóstica para que el instructor conozca tu punto de partida.</li>
+        <li>Participar en la actividad "Detective de IA" con tu equipo.</li>
+        <li>Formular una pregunta o reflexión personal sobre la IA y su impacto en tu vida.</li>
+      </ul>
+    </div>
+
+    <div class="note-box note-blue">
+      <span class="icon">🎯</span>
+      <div class="body">
+        <div class="label">Resultado de Aprendizaje (RA1)</div>
+        <div class="text">Preparar el entorno de trabajo según las condiciones tecnológicas del proyecto. Esta sesión es el punto de partida: todo lo que identifiques aquí guiará el contenido de las sesiones 2 y 3.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Qué esperas aprender en este curso? Escribe con tus propias palabras. <span class="req">*</span></label>
+      <textarea id="expectativas" class="tall" placeholder="Escribe aquí lo que esperas aprender, qué te interesa de la IA, o qué preguntas tienes antes de empezar..." required></textarea>
+      <div class="field-error" id="err-expectativas">Escribe al menos una oración.</div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 2: ENCUESTA DIAGNÓSTICA ══ -->
+  <section class="step" id="step-2">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 2</div>
+      <h1 class="step-title">¿Qué sé yo sobre IA?</h1>
+      <p class="step-subtitle">Encuesta diagnóstica — responde lo que piensas, no hay respuestas incorrectas.</p>
+    </div>
+
+    <div class="note-box note-amber">
+      <span class="icon">✏️</span>
+      <div class="body">
+        <div class="label">Instrucción</div>
+        <div class="text">Esta encuesta no es un examen. El objetivo es que el instructor conozca lo que ya sabes para ajustar mejor la clase. Responde con honestidad — todas las respuestas son válidas.</div>
+      </div>
+    </div>
+
+    <div id="encuesta-container"></div>
+  </section>
+
+  <!-- ══ PASO 3: CONCEPTOS CLAVE ══ -->
+  <section class="step" id="step-3">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 3</div>
+      <h1 class="step-title">Conceptos clave</h1>
+      <p class="step-subtitle">Lee cada concepto y luego completa las actividades que aparecen al final de cada bloque.</p>
+    </div>
+
+    <div class="section-card">
+      <h3>3.1 ¿Qué es la Inteligencia Artificial?</h3>
+      <p>La Inteligencia Artificial es la capacidad de una máquina para <strong>aprender de datos</strong> y tomar decisiones o hacer predicciones, de manera similar a como lo haría un ser humano — pero sin entender, sentir ni ser consciente de lo que hace.</p>
+      <p>Una definición técnica sencilla: <em>"Sistema que recibe datos, identifica patrones en ellos y usa esos patrones para actuar o decidir en situaciones nuevas."</em></p>
+    </div>
+
+    <div class="field">
+      <label>Con tus propias palabras: ¿Qué es la Inteligencia Artificial? <span class="req">*</span></label>
+      <textarea id="def-ia" placeholder="Escribe tu propia definición, como si se la fueras a explicar a alguien que no sabe nada de tecnología..." required></textarea>
+      <div class="field-error" id="err-def-ia">Escribe tu definición.</div>
+    </div>
+
+    <div class="section-card">
+      <h3>3.2 IA Débil vs. IA Fuerte</h3>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th style="width:30%">Criterio</th><th>IA Débil (Narrow AI)</th><th>IA Fuerte (General AI)</th></tr></thead>
+          <tbody>
+            <tr><td>¿Qué hace?</td><td>Una sola tarea específica</td><td>Cualquier tarea intelectual humana</td></tr>
+            <tr><td>¿Existe hoy?</td><td>Sí — toda la IA actual</td><td>No — es teórica / ciencia ficción</td></tr>
+            <tr><td>Ejemplos reales</td><td>Siri, Alexa, FaceID, ChatGPT</td><td>HAL 9000, Skynet (ficción)</td></tr>
+            <tr><td>¿Entiende?</td><td>No — procesa patrones</td><td>Teóricamente sí, con consciencia</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Escribe un ejemplo de IA débil que uses en tu celular o computador, y explica qué tarea específica realiza. <span class="req">*</span></label>
+      <textarea id="ej-ia-debil" placeholder="Aplicación: ___  ·  Tarea específica que hace la IA: ..." required></textarea>
+      <div class="field-error" id="err-ej-ia-debil">Describe tu ejemplo.</div>
+    </div>
+
+    <div class="section-card">
+      <h3>3.3 Automatización vs. Inteligencia Artificial</h3>
+      <p>Esta es la diferencia más importante de entender para no confundirse:</p>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th style="width:22%">Criterio</th><th>Automatización</th><th>Inteligencia Artificial</th></tr></thead>
+          <tbody>
+            <tr><td>Programación</td><td>Reglas escritas por humanos</td><td>Aprende patrones de datos</td></tr>
+            <tr><td>Adaptación</td><td>No se adapta — siempre igual</td><td>Mejora con más datos</td></tr>
+            <tr><td>Ejemplo clásico</td><td>Termostato, semáforo, lavadora</td><td>Spotify, FaceID, ChatGPT</td></tr>
+            <tr><td>Cuando falla</td><td>Escenario no programado</td><td>Datos insuficientes o sesgados</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>3.4 Mapa de IA en tu vida diaria</h3>
+      <p style="margin-bottom:12px">Estas 10 aplicaciones que probablemente ya usas tienen IA incorporada. Completa la columna <strong>"¿Qué hace la IA aquí?"</strong> con lo que aprendiste en clase:</p>
+    </div>
+
+    <div class="app-map-wrap">
+      <table class="app-map">
+        <thead><tr><th>#</th><th style="width:130px">App / Servicio</th><th>¿Qué función cumple la IA?</th><th style="width:110px">¿La sabías antes?</th></tr></thead>
+        <tbody id="app-map-body"></tbody>
+      </table>
+    </div>
+
+    <div class="field">
+      <label>De las 10 apps de arriba, ¿cuál te sorprendió más? ¿Por qué? <span class="req">*</span></label>
+      <textarea id="app-sorpresa" placeholder="Escribe el nombre de la app y explica qué fue lo que te sorprendió de cómo usa la IA..." required></textarea>
+      <div class="field-error" id="err-app-sorpresa">Escribe tu respuesta.</div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 4: DETECTIVE DE IA ══ -->
+  <section class="step" id="step-4">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 4 — Actividad en equipo</div>
+      <h1 class="step-title">Detective de IA</h1>
+      <p class="step-subtitle">Trabaja con tu grupo para investigar cómo se usa la IA en tu sector asignado.</p>
+    </div>
+
+    <div class="note-box note-teal">
+      <span class="icon">🔍</span>
+      <div class="body">
+        <div class="label">Instrucciones</div>
+        <div class="text">Tu instructor te asignará un sector. Con tu equipo, busquen al menos 4 apps o servicios de ese sector que usen IA. Luego registra aquí los hallazgos de tu grupo. Tienes 20 minutos para esta actividad.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Sector asignado a tu equipo <span class="req">*</span></label>
+      <select id="sector" required>
+        <option value="">— Selecciona tu sector —</option>
+        <option>Redes Sociales</option>
+        <option>Transporte</option>
+        <option>Educación</option>
+        <option>Salud</option>
+        <option>Comercio</option>
+      </select>
+      <div class="field-error" id="err-sector">Selecciona tu sector.</div>
+    </div>
+
+    <div class="field">
+      <label>Nombres de los integrantes de tu equipo <span class="req">*</span></label>
+      <textarea id="equipo" placeholder="Escribe los nombres de tus compañeros de equipo, uno por línea..." required></textarea>
+      <div class="field-error" id="err-equipo">Escribe los nombres de tu equipo.</div>
+    </div>
+
+    <p style="font-size:.85rem;color:var(--fg-muted);margin-bottom:12px;font-weight:600;">Hallazgos del equipo — completa mínimo 3 apps:</p>
+    <div class="detective-wrap">
+      <table class="detective-table">
+        <thead><tr><th>#</th><th style="width:120px">App / Servicio</th><th>¿Qué hace la IA en esta app?</th><th style="width:110px">¿Es sorprendente? ¿Por qué?</th></tr></thead>
+        <tbody id="detective-body"></tbody>
+      </table>
+    </div>
+
+    <div class="field">
+      <label>¿Qué fue lo más interesante o inesperado que encontró tu equipo? <span class="req">*</span></label>
+      <textarea id="detective-reflexion" class="tall" placeholder="Describe el hallazgo más sorprendente de tu equipo y por qué les pareció importante..." required></textarea>
+      <div class="field-error" id="err-detective-reflexion">Escribe la reflexión de tu equipo.</div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 5: EJEMPLOS ══ -->
+  <section class="step" id="step-5">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 5</div>
+      <h1 class="step-title">Ejemplos completos</h1>
+      <p class="step-subtitle">Lee cada ejemplo y responde la pregunta que aparece al final.</p>
+    </div>
+
+    <div class="section-card">
+      <h3>🎵 Spotify — Motor de recomendaciones</h3>
+      <p>Cada vez que escuchas una canción en Spotify, el sistema de IA registra: qué canción era, cuánto tiempo la escuchaste, si la saltaste o la repetiste, a qué hora del día fue, y desde qué dispositivo. Con millones de usuarios haciendo lo mismo, la IA aprende que personas con patrones similares a los tuyos también disfrutan ciertos artistas que tú no conoces todavía.</p>
+      <p><strong>Resultado:</strong> La playlist "Descubrimiento Semanal" se genera completamente por IA — ningún humano la diseña para ti.</p>
+    </div>
+    <div class="field">
+      <label>¿Alguna vez Spotify (u otra plataforma) te recomendó algo que te sorprendió y resultó ser bueno? Descríbelo. <span class="req">*</span></label>
+      <textarea id="ej-spotify" placeholder="Describe la recomendación y por qué crees que la IA te la sugirió..." required></textarea>
+      <div class="field-error" id="err-ej-spotify">Escribe tu respuesta.</div>
+    </div>
+
+    <div class="section-card">
+      <h3>📱 TikTok — Algoritmo de contenido</h3>
+      <p>TikTok analiza cuántos segundos ves cada video, si lo compartes, si lo comentas, si lo pones en pausa, y hasta la velocidad con que haces scroll. En los primeros 30 minutos de uso, la IA ya está construyendo un perfil tuyo. Después de unas horas, el "For You Page" (FYP) se adapta completamente a tus preferencias — incluso a las que tú no sabías que tenías.</p>
+      <p><strong>Técnica usada:</strong> Filtrado colaborativo + procesamiento de señales implícitas de comportamiento.</p>
+    </div>
+    <div class="field">
+      <label>¿Qué tipo de contenido te aparece más en tu FYP? ¿Crees que la IA te "conoce" bien? Explica. <span class="req">*</span></label>
+      <textarea id="ej-tiktok" placeholder="Describe qué tipo de videos te aparecen y si crees que el algoritmo acertó con tus gustos..." required></textarea>
+      <div class="field-error" id="err-ej-tiktok">Escribe tu respuesta.</div>
+    </div>
+
+    <div class="section-card">
+      <h3>🗺️ Google Maps — Predicción de tráfico</h3>
+      <p>Google Maps no solo muestra rutas — predice el tráfico futuro. Sabe que el Puente de la Madre Laura en Medellín se congestiona los viernes a las 5:30 pm porque millones de teléfonos con Maps activado le reportan su velocidad en tiempo real. La IA cruza datos históricos + datos en vivo + eventos (partidos, manifestaciones) para calcular el tiempo de llegada con una precisión de ±2 minutos.</p>
+    </div>
+    <div class="field">
+      <label>¿Usas Google Maps o Waze? Describe una situación donde la predicción fue muy acertada o muy equivocada. <span class="req">*</span></label>
+      <textarea id="ej-maps" placeholder="Describe la situación y qué piensas que hizo que la predicción fuera buena o mala..." required></textarea>
+      <div class="field-error" id="err-ej-maps">Escribe tu respuesta.</div>
+    </div>
+
+    <div class="section-card">
+      <h3>💬 WhatsApp — Reconocimiento y traducción</h3>
+      <p>WhatsApp usa IA para: (1) transcribir notas de voz a texto automáticamente; (2) comprimir fotos y videos al nivel óptimo sin pérdida notoria de calidad; (3) detectar spam y mensajes fraudulentos; (4) los stickers animados usan reconocimiento de expresiones faciales para sincronizarse con tus emociones. Todo esto ocurre sin que lo notes.</p>
+    </div>
+    <div class="field">
+      <label>¿Usas la función de transcripción de notas de voz? ¿Qué tan precisa te parece? ¿En qué falla? <span class="req">*</span></label>
+      <textarea id="ej-whatsapp" placeholder="Describe tu experiencia con la transcripción de notas de voz o cualquier otra función de IA en WhatsApp..." required></textarea>
+      <div class="field-error" id="err-ej-whatsapp">Escribe tu respuesta.</div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 6: EJERCICIOS ══ -->
+  <section class="step" id="step-6">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 6 — Ejercicios</div>
+      <h1 class="step-title">Practica lo aprendido</h1>
+      <p class="step-subtitle">Cinco ejercicios para aplicar los conceptos de la sesión. Resuelve cada uno con tus propias palabras.</p>
+    </div>
+
+    <!-- Ejercicio 1 -->
+    <div class="ejercicio">
+      <div class="ejercicio-header">Ejercicio 1 — Clasifica: ¿IA o Automatización?</div>
+      <div class="ejercicio-body">
+        <p>Para cada situación, selecciona si es un ejemplo de <strong>Inteligencia Artificial</strong> o de <strong>Automatización simple</strong>. Piensa en si el sistema <em>aprende</em> o solo <em>sigue instrucciones fijas</em>.</p>
+        <div id="ej1-container"></div>
+      </div>
+    </div>
+
+    <!-- Ejercicio 2 -->
+    <div class="ejercicio">
+      <div class="ejercicio-header">Ejercicio 2 — Identifica el tipo de IA</div>
+      <div class="ejercicio-body">
+        <p>Lee la descripción de cada sistema y clasifícalo según su función principal.</p>
+        <div id="ej2-container"></div>
+      </div>
+    </div>
+
+    <!-- Ejercicio 3 -->
+    <div class="ejercicio">
+      <div class="ejercicio-header">Ejercicio 3 — Analiza una aplicación de tu entorno</div>
+      <div class="ejercicio-body">
+        <p>Elige una aplicación o servicio digital que uses frecuentemente (diferente a los ejemplos del curso) y analízala según los criterios que aprendiste.</p>
+        <div class="field-row cols2" style="margin-top:12px">
+          <div class="field"><label>Nombre de la app <span class="req">*</span></label><input type="text" id="ej3-app" placeholder="Ej. Duolingo, Nequi, Rappi..." required><div class="field-error" id="err-ej3-app">Escribe el nombre.</div></div>
+          <div class="field"><label>Categoría <span class="req">*</span></label>
+            <select id="ej3-categoria" required>
+              <option value="">— Selecciona —</option>
+              <option>Redes Sociales</option><option>Transporte / Navegación</option>
+              <option>Educación</option><option>Salud / Bienestar</option>
+              <option>Comercio / Pagos</option><option>Entretenimiento</option>
+              <option>Productividad</option><option>Comunicación</option>
+            </select>
+            <div class="field-error" id="err-ej3-categoria">Selecciona una categoría.</div>
+          </div>
+        </div>
+        <div class="field"><label>¿Qué datos recopila esta app? <span class="req">*</span></label><textarea id="ej3-datos" placeholder="Describe qué tipo de datos crees que esta app recopila cuando la usas..." required></textarea><div class="field-error" id="err-ej3-datos">Escribe tu respuesta.</div></div>
+        <div class="field"><label>¿Qué hace la IA con esos datos? ¿Qué decisiones o predicciones toma? <span class="req">*</span></label><textarea id="ej3-ia-accion" placeholder="Explica qué función cumple la IA en esta app: ¿qué aprende? ¿qué mejora? ¿qué personaliza?..." required></textarea><div class="field-error" id="err-ej3-ia-accion">Escribe tu respuesta.</div></div>
+        <div class="field"><label>¿Es IA débil o fuerte? Justifica. <span class="req">*</span></label><textarea id="ej3-tipo" placeholder="Indica si es IA débil o fuerte y explica por qué..." required></textarea><div class="field-error" id="err-ej3-tipo">Escribe tu justificación.</div></div>
+      </div>
+    </div>
+
+    <!-- Ejercicio 4 -->
+    <div class="ejercicio">
+      <div class="ejercicio-header">Ejercicio 4 — Detecta riesgos éticos</div>
+      <div class="ejercicio-body">
+        <p>Lee cada situación e identifica si hay un riesgo ético. Si lo hay, explica cuál es y cómo podría mitigarse.</p>
+        <div id="ej4-container"></div>
+      </div>
+    </div>
+
+    <!-- Ejercicio 5 -->
+    <div class="ejercicio">
+      <div class="ejercicio-header">Ejercicio 5 — Construye tu Mapa de IA Personal</div>
+      <div class="ejercicio-body">
+        <p>Revisa las últimas 24 horas de tu vida. Completa la siguiente tabla con al menos 5 interacciones donde usaste un sistema con IA (sin saberlo o conscientemente).</p>
+        <div class="detective-wrap" style="margin-top:12px">
+          <table class="detective-table">
+            <thead><tr><th>#</th><th>Momento del día</th><th>App / Servicio</th><th>¿Qué hizo la IA?</th><th>¿Lo sabías?</th></tr></thead>
+            <tbody id="mapa-personal-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 7: REFLEXIÓN ══ -->
+  <section class="step" id="step-7">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 7</div>
+      <h1 class="step-title">Mi reflexión de hoy</h1>
+      <p class="step-subtitle">Cierra la sesión con una reflexión personal sobre lo que aprendiste.</p>
+    </div>
+
+    <div class="note-box note-green">
+      <span class="icon">💬</span>
+      <div class="body">
+        <div class="label">Para el instructor</div>
+        <div class="text">Esta sección no tiene respuestas correctas o incorrectas. El objetivo es que el aprendiz exprese su pensamiento crítico y emocional respecto al tema. Se valora la autenticidad.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>¿Qué fue lo más sorprendente o impactante que aprendiste hoy? <span class="req">*</span></label>
+      <textarea id="ref-sorprendente" class="tall" placeholder="Describe el concepto, ejemplo o momento de la clase que más te llamó la atención y por qué..." required></textarea>
+      <div class="field-error" id="err-ref-sorprendente">Escribe tu respuesta.</div>
+    </div>
+
+    <div class="field">
+      <label>¿Qué pregunta te quedó sin responder? ¿Qué te gustaría entender mejor? <span class="req">*</span></label>
+      <textarea id="ref-pregunta" placeholder="Escribe una o más preguntas que te surgieron durante la sesión..." required></textarea>
+      <div class="field-error" id="err-ref-pregunta">Escribe al menos una pregunta.</div>
+    </div>
+
+    <div class="field">
+      <label>¿Cómo crees que la IA va a impactar tu carrera o tu vida profesional en los próximos 5 años? <span class="req">*</span></label>
+      <textarea id="ref-futuro" class="tall" placeholder="Reflexiona sobre tu carrera, tu programa SENA, o el sector productivo en el que quieres trabajar..." required></textarea>
+      <div class="field-error" id="err-ref-futuro">Escribe tu reflexión.</div>
+    </div>
+
+    <div class="field">
+      <label>Autoevalúa tu participación en la sesión de hoy (1 = Mínima, 5 = Muy activa) <span class="req">*</span></label>
+      <div class="radio-group" id="autoevaluacion">
+        <label class="radio-opt"><input type="radio" name="autoeval" value="1"> <span class="opt-text"><strong>1 — Mínima:</strong> Escuché pero casi no participé.</span></label>
+        <label class="radio-opt"><input type="radio" name="autoeval" value="2"> <span class="opt-text"><strong>2 — Baja:</strong> Participé poco, me costó concentrarme.</span></label>
+        <label class="radio-opt"><input type="radio" name="autoeval" value="3"> <span class="opt-text"><strong>3 — Media:</strong> Participé en algunas actividades, me mantuve atento la mayor parte del tiempo.</span></label>
+        <label class="radio-opt"><input type="radio" name="autoeval" value="4"> <span class="opt-text"><strong>4 — Alta:</strong> Participé activamente en la mayoría de actividades.</span></label>
+        <label class="radio-opt"><input type="radio" name="autoeval" value="5"> <span class="opt-text"><strong>5 — Muy activa:</strong> Participé en todo, hice preguntas y colaboré con mis compañeros.</span></label>
+      </div>
+      <div class="field-error" id="err-autoeval">Selecciona una opción.</div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 8: GLOSARIO + RECURSOS ══ -->
+  <section class="step" id="step-8">
+    <div class="step-header">
+      <div class="step-eyebrow">Sección 8</div>
+      <h1 class="step-title">Glosario y recursos</h1>
+      <p class="step-subtitle">Términos clave de esta sesión y materiales para seguir aprendiendo.</p>
+    </div>
+
+    <div class="section-card">
+      <h3>Glosario rápido — 10 términos clave</h3>
+      <dl>
+        <div class="glosario-item"><dt>Inteligencia Artificial (IA)</dt><dd>Capacidad de una máquina para aprender de datos y tomar decisiones o predicciones de manera similar a un humano, sin ser consciente ni tener emociones.</dd></div>
+        <div class="glosario-item"><dt>IA Débil (Narrow AI)</dt><dd>Sistema de IA diseñado para realizar una única tarea específica. Es toda la IA que existe hoy. Ejemplo: Siri, FaceID, el algoritmo de TikTok.</dd></div>
+        <div class="glosario-item"><dt>IA Fuerte (General AI)</dt><dd>Sistema hipotético capaz de realizar cualquier tarea intelectual que haría un humano. No existe todavía — es un concepto teórico.</dd></div>
+        <div class="glosario-item"><dt>Automatización</dt><dd>Sistema que sigue instrucciones fijas escritas por humanos. No aprende ni se adapta. Ejemplo: un semáforo, una lavadora automática.</dd></div>
+        <div class="glosario-item"><dt>Algoritmo</dt><dd>Conjunto de instrucciones que sigue un sistema para resolver un problema. En IA, los algoritmos aprenden de datos en lugar de ser programados paso a paso.</dd></div>
+        <div class="glosario-item"><dt>Datos de entrenamiento</dt><dd>Los ejemplos con los que se "enseña" a un sistema de IA. La calidad y cantidad de estos datos determinan qué tan bien aprende el sistema.</dd></div>
+        <div class="glosario-item"><dt>Sesgo algorítmico</dt><dd>Error sistemático en las decisiones de una IA causado por datos de entrenamiento que no representan correctamente a todos los grupos de personas.</dd></div>
+        <div class="glosario-item"><dt>Filtrado colaborativo</dt><dd>Técnica usada por plataformas como Spotify y Netflix: recomienda contenido basándose en lo que gustó a personas con patrones similares a los tuyos.</dd></div>
+        <div class="glosario-item"><dt>Reconocimiento de patrones</dt><dd>Capacidad central de la IA: identificar regularidades en datos (imágenes, textos, audio, comportamientos) para hacer predicciones o clasificaciones.</dd></div>
+        <div class="glosario-item"><dt>Ética en IA</dt><dd>Conjunto de principios que guían el desarrollo y uso responsable de la IA: privacidad, transparencia, equidad, explicabilidad y control humano.</dd></div>
+      </dl>
+    </div>
+
+    <div class="section-card">
+      <h3>📚 Para seguir aprendiendo</h3>
+      <ul>
+        <li><strong>DotCSV</strong> — Canal de YouTube en español (Colombia). Busca: "¿Qué es la IA? DotCSV". Explicaciones visuales y muy claras.</li>
+        <li><strong>Elements of AI</strong> — Curso gratuito, certificado, en español. URL: <em>elementsofai.com/es</em> — Universidad de Helsinki + Reaktor.</li>
+        <li><strong>AI for Everyone (Andrew Ng)</strong> — Coursera, versión auditable gratuita. No requiere matemáticas avanzadas.</li>
+        <li><strong>Platzi — "Inteligencia Artificial en 5 minutos"</strong> — Buscar en YouTube para una introducción muy accesible.</li>
+      </ul>
+    </div>
+
+    <div class="field">
+      <label>¿Cuál de estos recursos te interesaría explorar primero? ¿Por qué?</label>
+      <textarea id="recursos-interes" placeholder="Opcional — escribe si algún recurso te llamó la atención y qué esperas encontrar en él..."></textarea>
+    </div>
+  </section>
+
+  <!-- ══ PASO FINAL: RESUMEN ══ -->
+  <section class="step" id="step-final">
+    <div class="summary-header">
+      <div class="big-check">✅</div>
+      <h2>Manual completado</h2>
+      <p id="summary-name-line">Sesión 1 — Diagnóstico, Presentación e Introducción a la IA</p>
+    </div>
+
+    <div class="summary-id">
+      <table>
+        <tr><td>Aprendiz</td><td id="s-nombre">—</td></tr>
+        <tr><td>Documento</td><td id="s-doc">—</td></tr>
+        <tr><td>Ficha SENA</td><td id="s-ficha">—</td></tr>
+        <tr><td>Fecha</td><td id="s-fecha">—</td></tr>
+        <tr><td>Programa</td><td>Fundamentos de IA — SENA 21730210</td></tr>
+        <tr><td>Sesión</td><td>Sesión 1 de 8 — 2 horas 30 minutos</td></tr>
+      </table>
+    </div>
+
+    <div class="note-box note-teal">
+      <span class="icon">💾</span>
+      <div class="body">
+        <div class="label">Cómo guardar tu manual</div>
+        <div class="text"><strong>Opción 1 — Guardar borrador:</strong> Descarga un archivo HTML con todas tus respuestas. Puedes volver a abrirlo y editarlo.<br><br><strong>Opción 2 — Guardar como PDF:</strong> Abre el menú de tu navegador → "Imprimir" → selecciona "Guardar como PDF" como impresora → guarda el archivo. Luego súbelo a tu Google Drive.</div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="action-btn save" onclick="saveHTML()">💾 Guardar borrador (.html)</button>
+      <button class="action-btn pdf" onclick="preparePrint()">📄 Instrucciones para PDF</button>
+      <button class="action-btn reset" onclick="confirmReset()">🔄 Reiniciar manual</button>
+    </div>
+
+    <div id="pdf-instructions" style="display:none;margin-top:20px">
+      <div class="note-box note-amber">
+        <span class="icon">🖨️</span>
+        <div class="body">
+          <div class="label">Pasos para guardar como PDF</div>
+          <div class="text">
+            <strong>En computador:</strong><br>
+            1. Presiona <kbd>Ctrl+P</kbd> (Windows) o <kbd>Cmd+P</kbd> (Mac)<br>
+            2. En "Destino / Impresora" selecciona <strong>"Guardar como PDF"</strong><br>
+            3. Activa "Más configuraciones" → "Gráficos de fondo" ✓<br>
+            4. Haz clic en <strong>Guardar</strong><br><br>
+            <strong>En celular (Chrome / Android):</strong><br>
+            1. Toca el menú ⋮ → "Compartir" → "Imprimir"<br>
+            2. Selecciona "Guardar como PDF"<br>
+            3. Toca el botón de descarga ⬇
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- NAV BAR -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <button class="btn btn-ghost" id="btn-prev" onclick="navigate(-1)">← Anterior</button>
+    <span class="step-count" id="step-count-label">Paso 1 de 9</span>
+    <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">Siguiente →</button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DATA
+// ─────────────────────────────────────────────
+const TOTAL_STEPS = 10; // 0..9 (step-0..step-8 + step-final)
+
+const ENCUESTA = [
+  { id: 'e1', pregunta: '¿Habías escuchado el término "Inteligencia Artificial" antes de hoy?', opciones: ['Nunca', 'Sí, pero no sé qué es exactamente', 'Sí, tengo una idea general', 'Sí, lo conozco bastante bien'] },
+  { id: 'e2', pregunta: '¿Crees que la Inteligencia Artificial es algo que usas en tu vida diaria?', opciones: ['No la uso para nada', 'Tal vez, pero no estoy seguro/a', 'Sí, la uso en algunas apps', 'Sí, la uso constantemente y lo sé'] },
+  { id: 'e3', pregunta: '¿Qué tan cómodo/a te sientes con la tecnología en general?', opciones: ['Me cuesta mucho usarla', 'La uso básicamente (llamadas, WhatsApp)', 'Me manejo bien con apps y redes sociales', 'Soy muy hábil — aprendo rápido cualquier app'] },
+  { id: 'e4', pregunta: '¿Has usado alguna vez ChatGPT, Gemini, Copilot u otro asistente de IA?', opciones: ['Nunca', 'Lo he escuchado pero no lo he probado', 'Lo usé una o dos veces', 'Lo uso regularmente'] },
+  { id: 'e5', pregunta: '¿Qué sientes cuando escuchas que "la IA va a reemplazar empleos"?', opciones: ['Me preocupa mucho — es una amenaza', 'Me preocupa un poco', 'Me genera curiosidad más que miedo', 'No me preocupa — creo que crea más oportunidades'] },
+  { id: 'e6', pregunta: '¿Crees que aprender sobre IA es importante para tu carrera?', opciones: ['No, no tiene que ver con mi carrera', 'Tal vez un poco', 'Sí, bastante importante', 'Es fundamental — quien no lo aprenda quedará atrás'] },
+  { id: 'e7', pregunta: 'En tu programa de formación SENA, ¿qué tan seguido usas herramientas digitales?', opciones: ['Casi nunca', 'En algunas clases', 'En la mayoría de clases', 'En todas las clases — es central para mi programa'] },
+  { id: 'e8', pregunta: '¿Qué tipo de IA conoces o has escuchado mencionar? (Selecciona la que mejor se ajuste)', opciones: ['Ninguna en particular', 'Asistentes de voz (Siri, Alexa, OK Google)', 'Generadores de imagen o texto (ChatGPT, Midjourney)', 'Todas las anteriores'] },
+  { id: 'e9', pregunta: '¿Crees que la IA toma decisiones justas para todas las personas por igual?', opciones: ['Sí — las máquinas no tienen prejuicios', 'No lo sé, nunca lo había pensado', 'No siempre — depende de cómo fue programada', 'No — refleja los sesgos de quien la creó'] },
+  { id: 'e10', pregunta: '¿Qué te gustaría poder hacer con la IA al terminar este curso?', opciones: ['Entender de qué trata cuando lo mencionan', 'Usarla para hacer mis tareas o trabajo más fácil', 'Crear algo con IA (app, contenido, herramienta)', 'Especializarme y construir una carrera relacionada con IA'] },
+];
+
+const APPS_COTIDIANAS = [
+  ['Spotify / YouTube Music', ''],
+  ['TikTok / Instagram Reels', ''],
+  ['Google Maps / Waze', ''],
+  ['WhatsApp (notas de voz)', ''],
+  ['Google Fotos (álbumes automáticos)', ''],
+  ['Duolingo', ''],
+  ['Mercado Libre / Amazon', ''],
+  ['Uber / InDrive', ''],
+  ['Cámara del celular (modo retrato / noche)', ''],
+  ['Netflix / Prime Video', ''],
+];
+
+const EJ1_ITEMS = [
+  'El termostato de tu casa sube la temperatura cuando detecta que bajó de 18°C.',
+  'Netflix te recomienda una serie que no conocías y que terminas amando.',
+  'Una alarma suena todos los días a las 6:00 am.',
+  'Facebook te muestra anuncios de zapatos después de buscarlos en Google.',
+  'Una lavadora automática avanza al siguiente ciclo cuando termina el anterior.',
+  'Google Translate detecta el idioma de un texto automáticamente.',
+  'Un semáforo cambia de verde a rojo cada 45 segundos.',
+  'Spotify genera una playlist nueva cada lunes basada en tu historial.',
+];
+
+const EJ2_ITEMS = [
+  { desc: 'Sistema que analiza radiografías y detecta tumores con mayor precisión que un médico promedio.', opciones: ['Diagnóstico médico (Computer Vision)', 'Reconocimiento de voz', 'Filtrado de spam', 'Recomendación de contenido'] },
+  { desc: 'App que escucha una canción y te dice el nombre del artista y la canción en segundos.', opciones: ['Reconocimiento de audio (Shazam)', 'Predicción de tráfico', 'Traducción automática', 'Detección de fraude'] },
+  { desc: 'Nequi / Bancolombia detecta que una transacción es inusual y la bloquea preventivamente.', opciones: ['Detección de fraude financiero', 'Reconocimiento facial', 'Clasificación de imágenes', 'Chatbot de atención'] },
+  { desc: 'Grammarly corrige tu inglés en tiempo real mientras escribes y te explica por qué es un error.', opciones: ['Procesamiento de lenguaje natural (NLP)', 'Predicción del clima', 'Recomendación de rutas', 'Análisis de sentimientos'] },
+];
+
+const EJ4_ITEMS = [
+  { situacion: 'Un banco usa IA para decidir quién recibe crédito, entrenada con datos de los últimos 20 años que tienen sesgo contra personas de ciertos barrios.', tiene_riesgo: true },
+  { situacion: 'Una empresa usa IA para ordenar los currículums de los candidatos y mostrar primero los más relevantes al reclutador humano.', tiene_riesgo: false },
+  { situacion: 'Un colegio usa IA para detectar si los estudiantes están atentos analizando sus rostros con la cámara sin informarles.', tiene_riesgo: true },
+  { situacion: 'Un aprendiz del SENA usa Canva IA para generar el logo de su proyecto y lo entrega como creación propia sin declararlo.', tiene_riesgo: true },
+];
+
+const MAPA_PERSONAL_ROWS = 6;
+const DETECTIVE_ROWS = 5;
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let currentStep = 0;
+const STEP_IDS = ['step-0','step-1','step-2','step-3','step-4','step-5','step-6','step-7','step-8','step-final'];
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+function init() {
+  buildEncuesta();
+  buildAppMap();
+  buildDetectiveTable();
+  buildEj1();
+  buildEj2();
+  buildEj4();
+  buildMapaPersonal();
+  setDateDefault();
+  loadDraft();
+  updateNav();
+  attachRadioHighlight();
+  // auto-save on any input change
+  document.addEventListener('input', debounce(saveDraft, 800));
+  document.addEventListener('change', debounce(saveDraft, 400));
+}
+
+function setDateDefault() {
+  const d = document.getElementById('fecha-sesion');
+  if (d && !d.value) d.value = new Date().toISOString().slice(0,10);
+}
+
+// ─────────────────────────────────────────────
+//  BUILD DYNAMIC TABLES
+// ─────────────────────────────────────────────
+function buildEncuesta() {
+  const c = document.getElementById('encuesta-container');
+  ENCUESTA.forEach((q,i) => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '20px';
+    div.innerHTML = `<div style="font-size:.88rem;font-weight:600;color:var(--fg-mid);margin-bottom:8px;line-height:1.5">${i+1}. ${q.pregunta}</div><div class="radio-group">` +
+      q.opciones.map((op,j) => `<label class="radio-opt"><input type="radio" name="${q.id}" value="${j}"> <span class="opt-text">${op}</span></label>`).join('') +
+      `</div><div class="field-error" id="err-${q.id}">Selecciona una opción.</div>`;
+    c.appendChild(div);
+  });
+}
+
+function buildAppMap() {
+  const tbody = document.getElementById('app-map-body');
+  APPS_COTIDIANAS.forEach(([app], i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:var(--fg-subtle);font-size:.8rem;padding:6px 10px">${i+1}</td>
+      <td style="font-weight:500;font-size:.85rem">${app}</td>
+      <td><input type="text" id="apm-${i}" placeholder="Escribe aquí lo que hace la IA en esta app..." style="min-width:180px"></td>
+      <td><select id="apm-sabias-${i}" style="font-size:.8rem;padding:6px 8px;padding-right:26px">
+        <option value="">—</option><option value="si">Sí lo sabía</option>
+        <option value="no">No lo sabía</option><option value="sospechaba">Lo sospechaba</option>
+      </select></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function buildDetectiveTable() {
+  const tbody = document.getElementById('detective-body');
+  for (let i = 0; i < DETECTIVE_ROWS; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:var(--fg-subtle);font-size:.8rem;text-align:center">${i+1}</td>
+      <td><textarea id="det-app-${i}" placeholder="App o servicio..."></textarea></td>
+      <td><textarea id="det-que-${i}" placeholder="¿Qué hace la IA aquí?..."></textarea></td>
+      <td><textarea id="det-sorp-${i}" placeholder="¿Por qué?..."></textarea></td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function buildEj1() {
+  const c = document.getElementById('ej1-container');
+  EJ1_ITEMS.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'classify-row';
+    div.innerHTML = `<span class="item-text">${i+1}. ${item}</span>
+      <select id="ej1-${i}">
+        <option value="">— Selecciona —</option>
+        <option value="ia">Inteligencia Artificial</option>
+        <option value="auto">Automatización simple</option>
+      </select>`;
+    c.appendChild(div);
+  });
+  const exp = document.createElement('div');
+  exp.className = 'field';
+  exp.style.marginTop = '14px';
+  exp.innerHTML = `<label>Explica en una oración cómo distinguiste la IA de la automatización en estos ejemplos. <span class="req">*</span></label>
+    <textarea id="ej1-explicacion" placeholder="La clave fue que la IA..." required></textarea>
+    <div class="field-error" id="err-ej1-explicacion">Escribe tu explicación.</div>`;
+  c.appendChild(exp);
+}
+
+function buildEj2() {
+  const c = document.getElementById('ej2-container');
+  EJ2_ITEMS.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '14px';
+    div.innerHTML = `<div style="font-size:.88rem;color:var(--fg-mid);margin-bottom:7px;line-height:1.5;font-style:italic">${i+1}. "${item.desc}"</div>
+      <select id="ej2-${i}">
+        <option value="">— ¿Qué tipo de IA es? —</option>
+        ${item.opciones.map(o => `<option value="${o}">${o}</option>`).join('')}
+      </select>`;
+    c.appendChild(div);
+  });
+  const just = document.createElement('div');
+  just.className = 'field';
+  just.style.marginTop = '14px';
+  just.innerHTML = `<label>Elige el caso que más te sorprendió y explica por qué ese tipo de IA te parece relevante. <span class="req">*</span></label>
+    <textarea id="ej2-justif" placeholder="El caso que más me sorprendió fue..." required></textarea>
+    <div class="field-error" id="err-ej2-justif">Escribe tu justificación.</div>`;
+  c.appendChild(just);
+}
+
+function buildEj4() {
+  const c = document.getElementById('ej4-container');
+  EJ4_ITEMS.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '18px';
+    div.innerHTML = `<div style="font-size:.87rem;color:var(--fg-mid);margin-bottom:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border-lt);border-radius:6px;line-height:1.6"><strong>${i+1}.</strong> ${item.situacion}</div>
+      <div class="field-row cols2">
+        <div class="field" style="margin-bottom:0">
+          <label>¿Hay riesgo ético?</label>
+          <select id="ej4-riesgo-${i}">
+            <option value="">— Selecciona —</option>
+            <option value="si">Sí, hay riesgo ético</option>
+            <option value="no">No, es uso ético</option>
+            <option value="depende">Depende del contexto</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>Si hay riesgo: ¿cómo mitigarlo?</label>
+          <input type="text" id="ej4-mitigacion-${i}" placeholder="Posible solución o salvaguarda...">
+        </div>
+      </div>`;
+    c.appendChild(div);
+  });
+  const refl = document.createElement('div');
+  refl.className = 'field';
+  refl.style.marginTop = '14px';
+  refl.innerHTML = `<label>De los 4 casos, ¿cuál te genera más preocupación? ¿Por qué? <span class="req">*</span></label>
+    <textarea id="ej4-reflexion" placeholder="El caso que más me preocupa es..." required></textarea>
+    <div class="field-error" id="err-ej4-reflexion">Escribe tu reflexión.</div>`;
+  c.appendChild(refl);
+}
+
+function buildMapaPersonal() {
+  const tbody = document.getElementById('mapa-personal-body');
+  const momentos = ['Mañana – al despertar','Camino al SENA / trabajo','En el descanso','En clase / trabajo','Por la tarde','En la noche'];
+  for (let i = 0; i < MAPA_PERSONAL_ROWS; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:var(--fg-subtle);font-size:.8rem;text-align:center">${i+1}</td>
+      <td><input type="text" id="mp-momento-${i}" value="${momentos[i]||''}" style="min-width:110px"></td>
+      <td><input type="text" id="mp-app-${i}" placeholder="App o servicio..." style="min-width:100px"></td>
+      <td><textarea id="mp-que-${i}" placeholder="¿Qué hizo la IA?..."></textarea></td>
+      <td><select id="mp-sabia-${i}" style="font-size:.8rem;padding:6px 8px;padding-right:26px">
+        <option value="">—</option><option value="si">Sí</option>
+        <option value="no">No</option><option value="sospechaba">Lo sospechaba</option>
+      </select></td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ─────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────
+function navigate(dir) {
+  if (dir > 0 && !validateStep(currentStep)) return;
+  if (dir > 0 && currentStep === STEP_IDS.length - 2) {
+    fillSummary();
+  }
+  const next = Math.max(0, Math.min(STEP_IDS.length - 1, currentStep + dir));
+  showStep(next);
+}
+
+function showStep(n) {
+  document.getElementById(STEP_IDS[currentStep])?.classList.remove('active');
+  currentStep = n;
+  document.getElementById(STEP_IDS[currentStep])?.classList.add('active');
+  updateNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateNav() {
+  const isFinal = currentStep === STEP_IDS.length - 1;
+  const isFirst = currentStep === 0;
+  const pct = Math.round(((currentStep + 1) / STEP_IDS.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('step-label').textContent = `Paso ${currentStep+1} de ${STEP_IDS.length}`;
+  document.getElementById('step-count-label').textContent = `Paso ${currentStep+1} de ${STEP_IDS.length}`;
+  document.getElementById('btn-prev').style.visibility = isFirst ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = isFinal ? '— Completado —' : currentStep === STEP_IDS.length - 2 ? 'Ver resumen →' : 'Siguiente →';
+  nextBtn.disabled = isFinal;
+  nextBtn.style.opacity = isFinal ? '.4' : '1';
+}
+
+// ─────────────────────────────────────────────
+//  VALIDATION
+// ─────────────────────────────────────────────
+function validateStep(step) {
+  let ok = true;
+  const req = (id, errId) => {
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    const val = el ? el.value.trim() : '';
+    const invalid = !val;
+    el?.classList.toggle('invalid', invalid);
+    if (err) err.classList.toggle('show', invalid);
+    if (invalid) ok = false;
+  };
+  const reqRadio = (name, errId) => {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    const err = document.getElementById(errId);
+    if (err) err.classList.toggle('show', !checked);
+    if (!checked) ok = false;
+  };
+
+  if (step === 0) {
+    req('tipo-doc','err-tipo-doc'); req('num-doc','err-num-doc');
+    req('nombres','err-nombres'); req('apellidos','err-apellidos');
+    req('ficha','err-ficha');
+  }
+  if (step === 1) { req('expectativas','err-expectativas'); }
+  if (step === 2) {
+    ENCUESTA.forEach(q => {
+      const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+      const err = document.getElementById(`err-${q.id}`);
+      if (err) err.classList.toggle('show', !checked);
+      if (!checked) ok = false;
+    });
+  }
+  if (step === 3) {
+    req('def-ia','err-def-ia'); req('ej-ia-debil','err-ej-ia-debil'); req('app-sorpresa','err-app-sorpresa');
+  }
+  if (step === 4) {
+    req('sector','err-sector'); req('equipo','err-equipo'); req('detective-reflexion','err-detective-reflexion');
+  }
+  if (step === 5) {
+    req('ej-spotify','err-ej-spotify'); req('ej-tiktok','err-ej-tiktok');
+    req('ej-maps','err-ej-maps'); req('ej-whatsapp','err-ej-whatsapp');
+  }
+  if (step === 6) {
+    req('ej1-explicacion','err-ej1-explicacion'); req('ej2-justif','err-ej2-justif');
+    req('ej3-app','err-ej3-app'); req('ej3-categoria','err-ej3-categoria');
+    req('ej3-datos','err-ej3-datos'); req('ej3-ia-accion','err-ej3-ia-accion');
+    req('ej3-tipo','err-ej3-tipo'); req('ej4-reflexion','err-ej4-reflexion');
+  }
+  if (step === 7) {
+    req('ref-sorprendente','err-ref-sorprendente'); req('ref-pregunta','err-ref-pregunta');
+    req('ref-futuro','err-ref-futuro'); reqRadio('autoeval','err-autoeval');
+  }
+
+  if (!ok) { showToast('Completa los campos requeridos antes de continuar.'); }
+  return ok;
+}
+
+// ─────────────────────────────────────────────
+//  DRAFT SAVE / LOAD
+// ─────────────────────────────────────────────
+function collectData() {
+  const data = {};
+  document.querySelectorAll('input[type=text],input[type=number],input[type=date],select,textarea').forEach(el => {
+    if (el.id) data[el.id] = el.value;
+  });
+  document.querySelectorAll('input[type=radio]:checked').forEach(el => {
+    data['_radio_' + el.name] = el.value;
+  });
+  return data;
+}
+
+function saveDraft() {
+  try {
+    const data = collectData();
+    localStorage.setItem('manual-s1-draft', JSON.stringify(data));
+    const dot = document.getElementById('saved-dot');
+    dot.classList.add('saved');
+    setTimeout(() => dot.classList.remove('saved'), 2000);
+  } catch(e) {}
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem('manual-s1-draft');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([k, v]) => {
+      if (k.startsWith('_radio_')) {
+        const name = k.replace('_radio_','');
+        const el = document.querySelector(`input[name="${name}"][value="${v}"]`);
+        if (el) { el.checked = true; el.closest('.radio-opt')?.classList.add('selected'); }
+      } else {
+        const el = document.getElementById(k);
+        if (el) el.value = v;
+      }
+    });
+  } catch(e) {}
+}
+
+// ─────────────────────────────────────────────
+//  SUMMARY
+// ─────────────────────────────────────────────
+function fillSummary() {
+  const nombres = document.getElementById('nombres')?.value || '—';
+  const apellidos = document.getElementById('apellidos')?.value || '—';
+  const tipo = document.getElementById('tipo-doc')?.value || '';
+  const num = document.getElementById('num-doc')?.value || '—';
+  const ficha = document.getElementById('ficha')?.value || '—';
+  const fecha = document.getElementById('fecha-sesion')?.value || '—';
+  document.getElementById('s-nombre').textContent = `${nombres} ${apellidos}`;
+  document.getElementById('s-doc').textContent = tipo ? `${tipo} ${num}` : num;
+  document.getElementById('s-ficha').textContent = ficha;
+  document.getElementById('s-fecha').textContent = fecha;
+  document.getElementById('summary-name-line').textContent = `${nombres} ${apellidos} · Sesión 1 · Ficha ${ficha}`;
+}
+
+// ─────────────────────────────────────────────
+//  EXPORT HTML
+// ─────────────────────────────────────────────
+function saveHTML() {
+  const data = collectData();
+  const nombres = document.getElementById('nombres')?.value || 'aprendiz';
+  const apellidos = document.getElementById('apellidos')?.value || '';
+  const ficha = document.getElementById('ficha')?.value || '';
+  const slug = `manual-s1-${nombres.toLowerCase().replace(/\s+/g,'-')}-${ficha}`;
+
+  // Clone the current page HTML and inject the data as a prefill script
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manual S1 – ${nombres} ${apellidos}</title>
+<script>
+window._PREFILL = ${JSON.stringify(data)};
+<\/script>
+</head>
+<body>
+<p style="font-family:sans-serif;padding:20px;background:#D6EFEF;color:#006C6C;border-radius:8px;margin:20px;font-size:.9rem">
+<strong>Manual del Aprendiz – Sesión 1 (borrador guardado)</strong><br>
+Este es tu borrador con todas las respuestas guardadas.<br>
+Para ver el manual completo, <strong>abre el enlace original</strong> que te compartió tu instructor — tus respuestas se cargarán automáticamente desde tu navegador.<br><br>
+Datos guardados: <em>${nombres} ${apellidos} · Ficha ${ficha} · ${Object.keys(data).length} campos</em>
+</p>
+<script>
+if (window._PREFILL) {
+  try { localStorage.setItem('manual-s1-draft', JSON.stringify(window._PREFILL)); } catch(e) {}
+}
+<\/script>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = slug + '.html';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Borrador guardado como ' + slug + '.html');
+}
+
+function preparePrint() {
+  const el = document.getElementById('pdf-instructions');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  if (el.style.display === 'block') el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function confirmReset() {
+  if (!confirm('¿Seguro que quieres reiniciar el manual? Se borrarán todas tus respuestas.')) return;
+  try { localStorage.removeItem('manual-s1-draft'); } catch(e) {}
+  location.reload();
+}
+
+// ─────────────────────────────────────────────
+//  RADIO HIGHLIGHT
+// ─────────────────────────────────────────────
+function attachRadioHighlight() {
+  document.addEventListener('change', e => {
+    if (e.target.type === 'radio') {
+      const name = e.target.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+        r.closest('.radio-opt')?.classList.toggle('selected', r.checked);
+      });
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+//  TOAST
+// ─────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─────────────────────────────────────────────
+//  DEBOUNCE
+// ─────────────────────────────────────────────
+function debounce(fn, ms) {
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+// ── START ──
+init();
+</script>
+
+</body></html>
