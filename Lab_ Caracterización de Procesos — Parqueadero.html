@@ -1,0 +1,1606 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lab: Caracterización de Procesos — Parqueadero</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root {
+  --bg: #f8f7f4;
+  --bg-card: #ffffff;
+  --bg-code: #f1ede6;
+  --bg-phase: #fff9f0;
+  --fg: #1a1714;
+  --fg-muted: #5c5650;
+  --fg-light: #8c8480;
+  --accent: #c0580e;
+  --accent-hover: #a04a0a;
+  --accent-soft: #fdf0e8;
+  --accent-border: #f0c8a8;
+  --success: #2d7a4a;
+  --success-bg: #edf7f1;
+  --success-border: #a8d8bb;
+  --warning: #9a6700;
+  --warning-bg: #fff8e6;
+  --warning-border: #f5d888;
+  --info: #1a5fa0;
+  --info-bg: #eaf2fc;
+  --info-border: #a8cef0;
+  --border: #e0dbd4;
+  --phase-1: #2d7a4a;
+  --phase-2: #1a5fa0;
+  --phase-3: #7a3a9a;
+  --phase-4: #c0580e;
+  --radius: 10px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.07);
+  --shadow-lg: 0 6px 24px rgba(0,0,0,0.10);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #18130e;
+    --bg-card: #221c16;
+    --bg-code: #2a2218;
+    --bg-phase: #261e14;
+    --fg: #f0ebe4;
+    --fg-muted: #b0a898;
+    --fg-light: #7a7068;
+    --accent: #e07a40;
+    --accent-hover: #f09050;
+    --accent-soft: #2e1a0a;
+    --accent-border: #6a3010;
+    --success: #4aaa6e;
+    --success-bg: #0e2218;
+    --success-border: #1a5a34;
+    --warning: #d4a030;
+    --warning-bg: #221800;
+    --warning-border: #5a4000;
+    --info: #60a8e8;
+    --info-bg: #0a1e30;
+    --info-border: #1a4060;
+    --border: #3a3028;
+    --phase-1: #4aaa6e;
+    --phase-2: #60a8e8;
+    --phase-3: #c090e0;
+    --phase-4: #e07a40;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #18130e;
+  --bg-card: #221c16;
+  --bg-code: #2a2218;
+  --bg-phase: #261e14;
+  --fg: #f0ebe4;
+  --fg-muted: #b0a898;
+  --fg-light: #7a7068;
+  --accent: #e07a40;
+  --accent-hover: #f09050;
+  --accent-soft: #2e1a0a;
+  --accent-border: #6a3010;
+  --success: #4aaa6e;
+  --success-bg: #0e2218;
+  --success-border: #1a5a34;
+  --warning: #d4a030;
+  --warning-bg: #221800;
+  --warning-border: #5a4000;
+  --info: #60a8e8;
+  --info-bg: #0a1e30;
+  --info-border: #1a4060;
+  --border: #3a3028;
+  --phase-1: #4aaa6e;
+  --phase-2: #60a8e8;
+  --phase-3: #c090e0;
+  --phase-4: #e07a40;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+/* ─── HEADER ─── */
+.site-header {
+  background: var(--accent);
+  color: #fff;
+  padding: 0;
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-block: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 700; line-height: 1.2; text-wrap: balance; }
+.header-subtitle { margin: 0; opacity: .88; font-size: 15px; }
+.header-meta {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  margin-top: 4px; font-size: 13px; opacity: .82;
+}
+.header-meta span { display: flex; align-items: center; gap: 5px; }
+
+/* ─── NAV ─── */
+.phase-nav {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.nav-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-block: 10px;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.nav-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+.nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─── MAIN ─── */
+.main { max-width: 900px; margin: 0 auto; padding-block: 32px 60px; }
+
+/* ─── FICHA TÉCNICA ─── */
+.ficha {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow);
+}
+.ficha-header {
+  background: var(--accent);
+  color: #fff;
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.ficha-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 540px) { .ficha-grid { grid-template-columns: 1fr; } }
+.ficha-row {
+  display: contents;
+}
+.ficha-cell {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.ficha-cell:nth-child(even) { border-left: 1px solid var(--border); }
+.ficha-label { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-light); margin-bottom: 2px; }
+.ficha-val { font-size: 14px; color: var(--fg); }
+.ficha-cell.full { grid-column: 1 / -1; border-left: none; }
+.rap-tag {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  margin: 2px 3px 2px 0;
+}
+
+/* ─── SECTION ─── */
+.section { margin-bottom: 40px; }
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-wrap: balance;
+}
+.section-num {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── PHASE CARDS ─── */
+.phase-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--bg-phase);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.phase-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 15px; color: #fff;
+  flex-shrink: 0;
+}
+.p1 .phase-num { background: var(--phase-1); }
+.p2 .phase-num { background: var(--phase-2); }
+.p3 .phase-num { background: var(--phase-3); }
+.p4 .phase-num { background: var(--phase-4); }
+.phase-title-block { flex: 1; min-width: 0; }
+.phase-label { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-light); }
+.phase-title { font-size: 16px; font-weight: 700; color: var(--fg); text-wrap: balance; }
+.phase-toggle { font-size: 20px; color: var(--fg-light); flex-shrink: 0; transition: transform .2s; }
+.phase-header[aria-expanded="true"] .phase-toggle { transform: rotate(180deg); }
+.phase-body { padding: 24px 20px; background: var(--bg-card); display: none; }
+.phase-body.open { display: block; }
+
+/* ─── CALLOUT BOXES ─── */
+.callout {
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  border: 1px solid;
+}
+.callout-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+.callout-body { min-width: 0; }
+.callout-body strong { display: block; margin-bottom: 2px; }
+.callout.info { background: var(--info-bg); border-color: var(--info-border); color: var(--info); }
+.callout.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning); }
+.callout.accent { background: var(--accent-soft); border-color: var(--accent-border); color: var(--accent); }
+
+/* ─── STEPS ─── */
+.steps { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+.step {
+  display: flex;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 20px;
+}
+.step:last-child { padding-bottom: 0; }
+.step-track { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.step-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.step-line {
+  width: 2px;
+  flex: 1;
+  background: var(--border);
+  margin-top: 4px;
+}
+.step:last-child .step-line { display: none; }
+.step-content { min-width: 0; padding-top: 4px; }
+.step-title { font-weight: 600; color: var(--fg); margin-bottom: 4px; }
+.step-desc { color: var(--fg-muted); font-size: 14px; }
+
+/* ─── TABLES ─── */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th {
+  background: var(--bg-code);
+  color: var(--fg);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-muted);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--accent-soft); }
+
+/* ─── CODE / TEMPLATES ─── */
+.code-block {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 12px 0;
+  color: var(--fg);
+  white-space: pre;
+}
+.code-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.code-lang {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--fg-light);
+  font-family: 'JetBrains Mono', monospace;
+}
+.copy-btn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--fg-muted);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+.copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.copy-btn.copied { background: var(--success); color: #fff; border-color: var(--success); }
+
+/* ─── TEMPLATE CARD ─── */
+.template-card {
+  background: var(--bg-code);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 12px 0;
+}
+.template-card h4 { margin: 0 0 14px; font-size: 14px; color: var(--accent); font-weight: 700; }
+.template-field { margin-bottom: 12px; }
+.template-field label { display: block; font-size: 12px; font-weight: 600; color: var(--fg-light); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+.template-field .field-box {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  color: var(--fg-muted);
+  font-size: 13.5px;
+  font-style: italic;
+  min-height: 32px;
+}
+
+/* ─── SYSTEM DIAGRAM ─── */
+.system-diagram {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+@media (max-width: 600px) {
+  .system-diagram {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .arrow { display: none; }
+  .sys-box { text-align: center; }
+}
+.sys-box {
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: center;
+  border: 1px solid;
+}
+.sys-box.entrada { background: var(--info-bg); border-color: var(--info-border); }
+.sys-box.proceso { background: var(--accent-soft); border-color: var(--accent-border); }
+.sys-box.salida { background: var(--success-bg); border-color: var(--success-border); }
+.sys-box-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; opacity: .7; }
+.sys-box-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.sys-box ul { margin: 0; padding-left: 16px; font-size: 12px; text-align: left; color: var(--fg-muted); }
+.arrow { font-size: 24px; color: var(--fg-light); text-align: center; }
+
+/* ─── PROGRESS TRACKER ─── */
+.progress-bar-wrap { margin: 20px 0; }
+.progress-label { font-size: 13px; color: var(--fg-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.progress-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s; }
+
+/* ─── CHECKLIST ─── */
+.checklist { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--fg-muted);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  transition: all .15s;
+}
+.checklist li:hover { background: var(--accent-soft); border-color: var(--accent-border); }
+.checklist li.checked { color: var(--success); background: var(--success-bg); border-color: var(--success-border); }
+.check-box {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all .15s;
+}
+.checked .check-box { background: var(--success); border-color: var(--success); color: #fff; }
+
+/* ─── PROCESS MAP ─── */
+.process-map { margin: 16px 0; }
+.proc-level { margin-bottom: 16px; }
+.proc-level-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--fg-light);
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+.proc-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.proc-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid;
+  cursor: default;
+}
+.proc-pill.estrategico { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning); }
+.proc-pill.misional { background: var(--accent-soft); border-color: var(--accent-border); color: var(--accent); }
+.proc-pill.apoyo { background: var(--info-bg); border-color: var(--info-border); color: var(--info); }
+
+/* ─── CHARACTERIZATION CARD ─── */
+.char-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 16px 0;
+  box-shadow: var(--shadow);
+}
+.char-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-code);
+  border-bottom: 1px solid var(--border);
+}
+.char-card-title { font-weight: 700; font-size: 14px; }
+.char-card-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); }
+.char-card-body { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 540px) { .char-card-body { grid-template-columns: 1fr; } }
+.char-field { min-width: 0; }
+.char-field.full { grid-column: 1 / -1; }
+.char-field-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-light); margin-bottom: 4px; }
+.char-field-val { font-size: 13.5px; color: var(--fg-muted); }
+.char-field-val ul { margin: 4px 0; padding-left: 18px; }
+.char-field-val li { margin-bottom: 2px; }
+
+/* ─── EVAL TABLE ─── */
+.eval-item {
+  display: flex;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+.eval-icon { font-size: 20px; flex-shrink: 0; }
+.eval-body { min-width: 0; }
+.eval-title { font-weight: 600; font-size: 14px; color: var(--fg); margin-bottom: 2px; }
+.eval-desc { font-size: 13px; color: var(--fg-muted); }
+.eval-evidence { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--fg-light);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ─── UTILS ─── */
+p { margin: 0 0 12px; }
+p:last-child { margin-bottom: 0; }
+h3 { margin: 20px 0 10px; font-size: 16px; }
+h4 { margin: 14px 0 8px; font-size: 14px; }
+ul, ol { margin: 8px 0; padding-left: 22px; }
+li { margin-bottom: 4px; color: var(--fg-muted); }
+strong { color: var(--fg); }
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.tag.green { background: var(--success-bg); color: var(--success); }
+.tag.orange { background: var(--accent-soft); color: var(--accent); }
+.tag.blue { background: var(--info-bg); color: var(--info); }
+hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+</style>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">🔧 Laboratorio Práctico · ADSO</div>
+    <h1>Caracterización de Procesos<br>del Parqueadero</h1>
+    <p class="header-subtitle">Aplicación de la Teoría General de Sistemas para identificar, documentar y analizar los procesos de negocio — insumo para la Ingeniería de Requisitos</p>
+    <div class="header-meta">
+      <span>📋 Competencia: Caracterización de Procesos</span>
+      <span>🕒 Duración estimada: 4–6 horas</span>
+      <span>📊 Nivel: Principiante</span>
+      <span>🎯 Entregable: Documento de Caracterización</span>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="phase-nav" aria-label="Fases del laboratorio">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="scrollTo('ficha')">📋 Ficha Técnica</button>
+    <button class="nav-btn" onclick="scrollTo('prereq')">📚 Prerrequisitos</button>
+    <button class="nav-btn" onclick="scrollTo('fase1')">1. Lectura del Sistema</button>
+    <button class="nav-btn" onclick="scrollTo('fase2')">2. Mapa de Procesos</button>
+    <button class="nav-btn" onclick="scrollTo('fase3')">3. Caracterización</button>
+    <button class="nav-btn" onclick="scrollTo('fase4')">4. Documento Final</button>
+    <button class="nav-btn" onclick="scrollTo('eval')">✅ Evaluación</button>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ══════════════════════════════════════════════════
+     FICHA TÉCNICA
+══════════════════════════════════════════════════ -->
+<section class="section" id="ficha">
+  <h2 class="section-title"><span class="section-num">★</span>Ficha Técnica del Laboratorio</h2>
+  <div class="ficha">
+    <div class="ficha-header">📋 INFORMACIÓN GENERAL</div>
+    <div class="ficha-grid">
+      <div class="ficha-cell">
+        <div class="ficha-label">Nombre del Laboratorio</div>
+        <div class="ficha-val">Caracterización de Procesos: Parqueadero Manual → Sistema de Información</div>
+      </div>
+      <div class="ficha-cell">
+        <div class="ficha-label">Programa de Formación</div>
+        <div class="ficha-val">Análisis y Desarrollo de Software (ADSO) — SENA</div>
+      </div>
+      <div class="ficha-cell">
+        <div class="ficha-label">Fase del Proyecto Formativo</div>
+        <div class="ficha-val">Caracterización de Procesos → (insumo para) Ingeniería de Requisitos</div>
+      </div>
+      <div class="ficha-cell">
+        <div class="ficha-label">Duración Estimada</div>
+        <div class="ficha-val">4 a 6 horas de trabajo autónomo o presencial</div>
+      </div>
+      <div class="ficha-cell full">
+        <div class="ficha-label">RAPs Impactados</div>
+        <div class="ficha-val">
+          <span class="rap-tag">GA1-220501092-AA1-EV01</span>
+          <span class="rap-tag">GA1-220501092-AA1-EV02</span>
+          <span class="rap-tag">GA1-220501092-AA1-EV03</span>
+          <br><small style="color:var(--fg-light);margin-top:6px;display:block">EV01: Infografía TGS · EV02: Identificación de procesos · EV03: Mapa de procesos del negocio</small>
+        </div>
+      </div>
+      <div class="ficha-cell">
+        <div class="ficha-label">Caso de Estudio</div>
+        <div class="ficha-val">Parqueadero que opera con registros manuales (cuaderno de apuntes)</div>
+      </div>
+      <div class="ficha-cell">
+        <div class="ficha-label">Entregable Principal</div>
+        <div class="ficha-val">Documento de Caracterización de Procesos (PDF o físico), firmado y fechado</div>
+      </div>
+      <div class="ficha-cell full">
+        <div class="ficha-label">Objetivo General</div>
+        <div class="ficha-val">Aplicar la Teoría General de Sistemas (TGS) para identificar, clasificar y caracterizar los procesos de negocio de un parqueadero manual, generando un documento estructurado que sirva como insumo formal para la fase de Ingeniería de Requisitos del proyecto formativo ADSO.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      <strong>Importante — Alcance de este laboratorio</strong>
+      En este laboratorio <strong>NO se escribe código</strong>. El entregable es un documento de análisis. La información que recolectes aquí será la materia prima de la siguiente fase: Ingeniería de Requisitos, donde sí comenzarás a transformar estos procesos en casos de uso, historias de usuario y especificaciones técnicas.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     PRERREQUISITOS
+══════════════════════════════════════════════════ -->
+<section class="section" id="prereq">
+  <h2 class="section-title"><span class="section-num">0</span>Conceptos Previos — Lo que necesitas saber</h2>
+
+  <div class="callout info">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body">
+      <strong>¿Por qué empezamos con TGS?</strong>
+      Todo proyecto de software resuelve un problema de un negocio o proceso humano. Antes de diseñar cualquier base de datos, API o pantalla, un buen analista <em>lee el sistema actual</em> como si fuera un organismo vivo. La TGS te da el lente para hacerlo con rigor.
+    </div>
+  </div>
+
+  <h3>¿Qué es un Sistema? (Ludwig von Bertalanffy, 1950)</h3>
+  <p>Un <strong>sistema</strong> es un conjunto de elementos interrelacionados que trabajan hacia un objetivo común, en interacción con su entorno. Todo negocio — incluyendo un parqueadero — es un sistema.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Propiedad del Sistema</th><th>Qué significa</th><th>En el Parqueadero</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Totalidad</strong></td><td>El sistema es más que la suma de sus partes</td><td>El cobrador + el cuaderno + el espacio físico juntos permiten el servicio</td></tr>
+        <tr><td><strong>Retroalimentación</strong></td><td>Las salidas del sistema afectan las entradas</td><td>Si el parqueadero se llena, se cierra la entrada (o debería)</td></tr>
+        <tr><td><strong>Equifinalidad</strong></td><td>Se puede llegar al mismo objetivo por distintos caminos</td><td>El registro se puede hacer en papel, en Excel o en un sistema digital</td></tr>
+        <tr><td><strong>Homeostasis</strong></td><td>Tendencia del sistema a mantener equilibrio</td><td>El cobrador ajusta el flujo de entrada cuando se detecta cupo lleno</td></tr>
+        <tr><td><strong>Entropía</strong></td><td>Sin orden, el sistema se deteriora</td><td>Sin un sistema claro, los registros se pierden y los ingresos no cuadran</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Componentes de un Sistema de Información</h3>
+  <div class="system-diagram">
+    <div class="sys-box entrada">
+      <div class="sys-box-label">Entrada (Input)</div>
+      <div class="sys-box-title">🚗 Datos de entrada</div>
+      <ul>
+        <li>Placa del vehículo</li>
+        <li>Hora de ingreso</li>
+        <li>Tipo de vehículo</li>
+      </ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="sys-box proceso">
+      <div class="sys-box-label">Proceso</div>
+      <div class="sys-box-title">⚙️ Transformación</div>
+      <ul>
+        <li>Registro en cuaderno</li>
+        <li>Cálculo de tarifa</li>
+        <li>Cobro al cliente</li>
+      </ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="sys-box salida">
+      <div class="sys-box-label">Salida (Output)</div>
+      <div class="sys-box-title">🧾 Resultados</div>
+      <ul>
+        <li>Recibo de pago</li>
+        <li>Reporte de ingresos</li>
+        <li>Registro de salida</li>
+      </ul>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--fg-light);text-align:center;margin-top:4px;">+ Retroalimentación: alerta de capacidad → ajusta flujo de entrada &nbsp;|&nbsp; Almacenamiento: cuaderno de registros / base de datos</p>
+
+  <h3>Tipos de Procesos en una Organización</h3>
+  <div class="process-map">
+    <div class="proc-level">
+      <div class="proc-level-title">🏛️ Estratégicos — Gobiernan y dirigen el negocio</div>
+      <div class="proc-items">
+        <span class="proc-pill estrategico">Planeación del negocio</span>
+        <span class="proc-pill estrategico">Definición de tarifas</span>
+        <span class="proc-pill estrategico">Gestión de acuerdos comerciales</span>
+      </div>
+    </div>
+    <div class="proc-level">
+      <div class="proc-level-title">🎯 Misionales — Generan el valor central del negocio</div>
+      <div class="proc-items">
+        <span class="proc-pill misional">Ingreso de vehículos</span>
+        <span class="proc-pill misional">Control de permanencia</span>
+        <span class="proc-pill misional">Salida y cobro</span>
+        <span class="proc-pill misional">Gestión de mensualidades</span>
+      </div>
+    </div>
+    <div class="proc-level">
+      <div class="proc-level-title">🔧 De Apoyo — Soportan los procesos misionales</div>
+      <div class="proc-items">
+        <span class="proc-pill apoyo">Gestión de personal</span>
+        <span class="proc-pill apoyo">Contabilidad e informes</span>
+        <span class="proc-pill apoyo">Mantenimiento del espacio</span>
+        <span class="proc-pill apoyo">Atención de quejas</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     FASE 1 — LECTURA DEL SISTEMA
+══════════════════════════════════════════════════ -->
+<section class="section" id="fase1">
+  <h2 class="section-title"><span class="section-num">1</span>Fase 1 — Leer el Sistema Actual (TGS Aplicada)</h2>
+
+  <div class="phase-card p1">
+    <div class="phase-header" onclick="togglePhase(this)" aria-expanded="true">
+      <div class="phase-num">1</div>
+      <div class="phase-title-block">
+        <div class="phase-label">Fase 1 · Duración: 60–90 min</div>
+        <div class="phase-title">Análisis del Parqueadero como Sistema Abierto</div>
+      </div>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="phase-body open">
+
+      <div class="callout accent">
+        <span class="callout-icon">🎯</span>
+        <div class="callout-body">
+          <strong>Objetivo de esta fase</strong>
+          Mapear el parqueadero como un sistema usando los 5 componentes de TGS: entradas, proceso, salidas, retroalimentación y almacenamiento. También identificarás los subsistemas, el entorno y los límites del sistema.
+        </div>
+      </div>
+
+      <h3>Contexto del problema</h3>
+      <div class="callout warning">
+        <span class="callout-icon">🚨</span>
+        <div class="callout-body">
+          <strong>Situación actual del Parqueadero "El Reposo"</strong>
+          Un parqueadero familiar en zona urbana opera con un único cuaderno de registros donde el cobrador anota manualmente placa, hora de entrada y hora de salida de cada vehículo. Los problemas reportados por el dueño son:
+          <ul style="margin-top:8px;">
+            <li>No sabe en tiempo real si tiene cupos disponibles</li>
+            <li>No puede calcular rápidamente cuánto ingreso lleva en el día</li>
+            <li>Las anotaciones a veces son ilegibles o incompletas</li>
+            <li>No tiene historial confiable para negociar con clientes de mensualidad</li>
+            <li>Al final del mes, cuadrar la caja toma horas</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Actividad 1.1 — Identificar el Sistema Mayor</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-track"><div class="step-dot">1</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Define el nombre y objetivo del sistema</div>
+            <div class="step-desc">Escribe en máximo 2 oraciones qué hace este sistema y para quién existe. <br><em>Ejemplo para BiblioSmart: "Sistema de gestión bibliotecaria que permite el préstamo, seguimiento y devolución de libros para socios de la biblioteca."</em><br><strong>Tu turno:</strong> ¿Qué hace el Parqueadero y para quién?</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-track"><div class="step-dot">2</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Identifica los subsistemas</div>
+            <div class="step-desc">Un parqueadero no es un proceso único — tiene partes interconectadas. Identifica al menos 4 subsistemas internos.<br><em>Pista: piensa en "Subsistema de registro de ingreso", "Subsistema de cobro", ...</em></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-track"><div class="step-dot">3</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Define el entorno del sistema</div>
+            <div class="step-desc">¿Qué entidades externas interactúan con el parqueadero sin ser parte de él? (Clientes, proveedores, entidades reguladoras, etc.)</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-track"><div class="step-dot">4</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Establece los límites del sistema</div>
+            <div class="step-desc">¿Qué queda dentro del sistema y qué queda afuera? Los límites son las fronteras entre el sistema y su entorno. <br><em>Dentro: lo que el parqueadero controla. Afuera: lo que el parqueadero no controla pero que lo afecta.</em></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-track"><div class="step-dot">5</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Identifica los actores responsables</div>
+            <div class="step-desc">¿Quiénes participan en el sistema actual? (Cobrador, administrador, cliente, proveedor de señalización, etc.). Para cada actor, indica qué rol cumple.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Plantilla 1.1 — Ficha del Sistema Mayor</h3>
+      <div class="code-label">
+        <span class="code-lang">Documento · Para diligenciar</span>
+        <button class="copy-btn" onclick="copyCode(this, 'tpl1')">Copiar</button>
+      </div>
+      <div class="code-block" id="tpl1">FICHA DEL SISTEMA — PARQUEADERO
+═══════════════════════════════════════════════════════════
+Nombre del sistema   : [Nombre del parqueadero o "Sistema Parqueadero X"]
+Objetivo del sistema : [Qué hace y para quién]
+Tipo de sistema      : Abierto / Artificial / Determinístico-Probabilístico
+Entorno del sistema  : [Entidades externas que interactúan]
+
+LÍMITES DEL SISTEMA
+  Dentro del sistema  : [Lo que el parqueadero controla directamente]
+  Fuera del sistema   : [Lo que lo afecta pero no controla]
+
+ACTORES / USUARIOS INTERESADOS
+  Actor                | Rol en el sistema
+  ---------------------|------------------------------------------
+  Cobrador             | Registra ingresos y salidas, cobra tarifas
+  Administrador        | Revisa reportes, define tarifas, toma decisiones
+  Cliente (conductor)  | Solicita el servicio, paga la tarifa
+  [Agregar más...]     | [...]
+
+SUBSISTEMAS IDENTIFICADOS
+  1. [Nombre subsistema] : [Qué hace]
+  2. [...]
+  3. [...]
+  4. [...]
+═══════════════════════════════════════════════════════════</div>
+
+      <h3>Actividad 1.2 — Mapear Entradas, Proceso, Salidas y Retroalimentación</h3>
+      <p>Para cada subsistema que identificaste, completa la siguiente tabla de componentes del sistema de información:</p>
+      <div class="code-label">
+        <span class="code-lang">Tabla a diligenciar</span>
+        <button class="copy-btn" onclick="copyCode(this, 'tpl2')">Copiar</button>
+      </div>
+      <div class="code-block" id="tpl2">TABLA DE COMPONENTES DEL SISTEMA DE INFORMACIÓN
+═══════════════════════════════════════════════════════════════════════════════
+COMPONENTE          | DESCRIPCIÓN                        | EJEMPLO PARQUEADERO
+--------------------|------------------------------------|--------------------------
+Entrada (Input)     | Datos que entran al sistema        | Placa del vehículo,
+                    |                                    | hora de llegada,
+                    |                                    | tipo de vehículo,
+                    |                                    | nombre del cliente
+                    |                                    | [¿cuáles más?]
+--------------------|------------------------------------|--------------------------
+Proceso             | Transformaciones que ocurren       | Registro en cuaderno,
+                    |                                    | verificación de cupo,
+                    |                                    | cálculo de tarifa
+                    |                                    | [¿cuáles más?]
+--------------------|------------------------------------|--------------------------
+Salida (Output)     | Resultados que genera el sistema   | Recibo de pago,
+                    |                                    | confirmación de ingreso
+                    |                                    | [¿cuáles más?]
+--------------------|------------------------------------|--------------------------
+Retroalimentación   | Cómo el resultado ajusta el        | Aviso de parqueadero
+                    | proceso futuro                     | lleno → no admitir más
+                    |                                    | [¿cuáles más?]
+--------------------|------------------------------------|--------------------------
+Almacenamiento      | Dónde y cómo se guardan los datos  | Cuaderno de registros
+                    |                                    | [¿cuáles más?]
+═══════════════════════════════════════════════════════════════════════════════
+NOTA: Esta tabla representa el SISTEMA ACTUAL (manual). En la siguiente fase
+de Ingeniería de Requisitos la transformaremos en requisitos del sistema digital.</div>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div class="callout-body">
+          <strong>Punto de control — Fase 1 completa cuando:</strong>
+          <ul style="margin:6px 0 0;">
+            <li>Tienes la Ficha del Sistema con nombre, objetivo, entorno, límites y actores</li>
+            <li>Identificaste al menos 4 subsistemas</li>
+            <li>Completaste la tabla de componentes con ejemplos reales del parqueadero</li>
+            <li>Puedes explicar con tus palabras por qué el parqueadero es un sistema abierto</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     FASE 2 — MAPA DE PROCESOS
+══════════════════════════════════════════════════ -->
+<section class="section" id="fase2">
+  <h2 class="section-title"><span class="section-num">2</span>Fase 2 — Construir el Mapa de Procesos</h2>
+
+  <div class="phase-card p2">
+    <div class="phase-header" onclick="togglePhase(this)" aria-expanded="true">
+      <div class="phase-num">2</div>
+      <div class="phase-title-block">
+        <div class="phase-label">Fase 2 · Duración: 60–90 min</div>
+        <div class="phase-title">Identificación y Clasificación de Procesos del Parqueadero</div>
+      </div>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="phase-body open">
+
+      <div class="callout accent">
+        <span class="callout-icon">🎯</span>
+        <div class="callout-body">
+          <strong>Objetivo de esta fase</strong>
+          Identificar todos los procesos que ocurren en el parqueadero y clasificarlos en los tres niveles del mapa de procesos organizacional: Estratégico, Misional y de Apoyo.
+        </div>
+      </div>
+
+      <h3>¿Qué es un proceso?</h3>
+      <p>Un <strong>proceso</strong> es un conjunto de actividades relacionadas que transforman entradas en salidas, generando valor para un usuario o cliente. Todo proceso tiene:</p>
+      <ul>
+        <li><strong>Nombre</strong>: verbo + objeto (ej: "Registrar ingreso de vehículo")</li>
+        <li><strong>Responsable</strong>: quién lo ejecuta</li>
+        <li><strong>Disparador</strong>: qué evento lo inicia</li>
+        <li><strong>Entradas</strong>: qué información o materiales necesita</li>
+        <li><strong>Salidas</strong>: qué produce</li>
+        <li><strong>Reglas de negocio</strong>: restricciones y condiciones que lo gobiernan</li>
+      </ul>
+
+      <h3>Actividad 2.1 — Tormenta de Procesos</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-track"><div class="step-dot">1</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Lista todos los procesos que ocurren en un día típico</div>
+            <div class="step-desc">Imagina (o visita) el parqueadero. ¿Qué pasa desde que abre hasta que cierra? Escribe cada actividad/proceso sin filtrar todavía. Mínimo 10 procesos.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-track"><div class="step-dot">2</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Clasifica cada proceso en Estratégico / Misional / Apoyo</div>
+            <div class="step-desc">Pregúntate: <em>¿Este proceso genera directamente el servicio de parqueo? → Misional. ¿Dirige o controla el negocio? → Estratégico. ¿Soporta a los otros sin ser el core? → Apoyo.</em></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-track"><div class="step-dot">3</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Dibuja el mapa de procesos</div>
+            <div class="step-desc">Organiza los procesos en los tres niveles. Pueden ser tres franjas horizontales: arriba los estratégicos, en el medio los misionales, abajo los de apoyo. Las flechas muestran cómo se relacionan.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Referencia — Procesos Identificados (tabla de partida)</h3>
+      <p>Esta tabla es una referencia inicial. Debes validar, completar y ajustar según lo que observes en el contexto real del parqueadero:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Código</th><th>Nombre del Proceso</th><th>Tipo</th><th>¿Lo tiene el parqueadero actual?</th><th>Responsable actual</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>PE-01</code></td><td>Planeación y definición de tarifas</td><td><span class="tag green">Estratégico</span></td><td>Sí (informal)</td><td>Propietario</td></tr>
+            <tr><td><code>PE-02</code></td><td>Gestión de acuerdos de mensualidad</td><td><span class="tag green">Estratégico</span></td><td>Sí (verbal)</td><td>Propietario</td></tr>
+            <tr><td><code>PE-03</code></td><td>Revisión de resultados del negocio</td><td><span class="tag green">Estratégico</span></td><td>Parcial (fin de mes)</td><td>Propietario</td></tr>
+            <tr><td><code>PM-01</code></td><td>Registro de ingreso de vehículo</td><td><span class="tag orange">Misional</span></td><td>Sí (manual)</td><td>Cobrador</td></tr>
+            <tr><td><code>PM-02</code></td><td>Control de ocupación / cupos</td><td><span class="tag orange">Misional</span></td><td>Parcial (visual)</td><td>Cobrador</td></tr>
+            <tr><td><code>PM-03</code></td><td>Cálculo y cobro de tarifa</td><td><span class="tag orange">Misional</span></td><td>Sí (manual)</td><td>Cobrador</td></tr>
+            <tr><td><code>PM-04</code></td><td>Registro de salida de vehículo</td><td><span class="tag orange">Misional</span></td><td>Sí (manual)</td><td>Cobrador</td></tr>
+            <tr><td><code>PM-05</code></td><td>Gestión de clientes de mensualidad</td><td><span class="tag orange">Misional</span></td><td>Parcial</td><td>Cobrador / Propietario</td></tr>
+            <tr><td><code>PA-01</code></td><td>Cierre de caja y cuadre diario</td><td><span class="tag blue">Apoyo</span></td><td>Sí</td><td>Cobrador / Propietario</td></tr>
+            <tr><td><code>PA-02</code></td><td>Generación de reportes de ingresos</td><td><span class="tag blue">Apoyo</span></td><td>No formal</td><td>Propietario</td></tr>
+            <tr><td><code>PA-03</code></td><td>Gestión de turno y personal</td><td><span class="tag blue">Apoyo</span></td><td>Sí (informal)</td><td>Propietario</td></tr>
+            <tr><td><code>PA-04</code></td><td>Atención de quejas o incidentes</td><td><span class="tag blue">Apoyo</span></td><td>Reactivo</td><td>Cobrador</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Plantilla 2.1 — Tu Mapa de Procesos</h3>
+      <div class="code-label">
+        <span class="code-lang">Para diligenciar en el documento</span>
+        <button class="copy-btn" onclick="copyCode(this, 'tpl3')">Copiar</button>
+      </div>
+      <div class="code-block" id="tpl3">MAPA DE PROCESOS — PARQUEADERO [Nombre]
+Fecha: ____________  Elaborado por: ____________
+═══════════════════════════════════════════════════════════
+
+┌─────────────────── PROCESOS ESTRATÉGICOS ───────────────────────┐
+│  [PE-01] ________________  [PE-02] ________________             │
+│  Responsable: ___________  Responsable: ___________             │
+└─────────────────────────────────────────────────────────────────┘
+              ↕ Los procesos estratégicos orientan a los misionales
+
+┌─────────────────── PROCESOS MISIONALES ─────────────────────────┐
+│                                                                 │
+│  [PM-01]                [PM-02]               [PM-03]           │
+│  Registro ingreso  →    Control cupos    →    Cobro tarifa      │
+│                                                                 │
+│  [PM-04]                [PM-05]                                 │
+│  Registro salida   →    Mensualidades                           │
+│                                                                 │
+│  → flujo principal del servicio de parqueo                      │
+└─────────────────────────────────────────────────────────────────┘
+              ↕ Los procesos de apoyo soportan a los misionales
+
+┌─────────────────── PROCESOS DE APOYO ───────────────────────────┐
+│  [PA-01] Cierre de caja   [PA-02] Reportes   [PA-03] Personal   │
+│  [PA-04] Atención quejas  [Agregar más...]                      │
+└─────────────────────────────────────────────────────────────────┘
+
+Nota: Ajusta este mapa según lo que identifiques en el análisis
+real del parqueadero que selecciones como caso de estudio.</div>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div class="callout-body">
+          <strong>Punto de control — Fase 2 completa cuando:</strong>
+          <ul style="margin:6px 0 0;">
+            <li>Identificaste mínimo 10 procesos del parqueadero</li>
+            <li>Clasificaste correctamente cada proceso (Estratégico / Misional / Apoyo)</li>
+            <li>Tienes un mapa de procesos dibujado (a mano o digital) con los tres niveles</li>
+            <li>Cada proceso tiene código, nombre y responsable</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     FASE 3 — CARACTERIZACIÓN DETALLADA
+══════════════════════════════════════════════════ -->
+<section class="section" id="fase3">
+  <h2 class="section-title"><span class="section-num">3</span>Fase 3 — Caracterización Detallada de Procesos</h2>
+
+  <div class="phase-card p3">
+    <div class="phase-header" onclick="togglePhase(this)" aria-expanded="true">
+      <div class="phase-num">3</div>
+      <div class="phase-title-block">
+        <div class="phase-label">Fase 3 · Duración: 90–120 min</div>
+        <div class="phase-title">Ficha de Caracterización por Proceso Misional</div>
+      </div>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="phase-body open">
+
+      <div class="callout accent">
+        <span class="callout-icon">🎯</span>
+        <div class="callout-body">
+          <strong>Objetivo de esta fase</strong>
+          Para cada proceso misional, completar una ficha de caracterización detallada que documente actividades, actores, reglas de negocio, entradas, salidas, problemas actuales y oportunidades de mejora.
+        </div>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <strong>¿Cuántos procesos caracterizar?</strong>
+          Debes caracterizar <strong>todos los procesos misionales</strong> (PM-01 a PM-05) y al menos <strong>un proceso de apoyo</strong> (PA-01, generalmente cierre de caja). Los procesos estratégicos se describen de forma general en el resumen ejecutivo.
+        </div>
+      </div>
+
+      <h3>Ejemplo resuelto — PM-01: Registro de Ingreso de Vehículo</h3>
+      <div class="char-card">
+        <div class="char-card-header">
+          <span class="char-card-title">PM-01 · Registro de Ingreso de Vehículo</span>
+          <span class="char-card-code">EJEMPLO RESUELTO</span>
+        </div>
+        <div class="char-card-body">
+          <div class="char-field">
+            <div class="char-field-label">Código del Proceso</div>
+            <div class="char-field-val">PM-01</div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Tipo</div>
+            <div class="char-field-val">Misional · Operativo</div>
+          </div>
+          <div class="char-field full">
+            <div class="char-field-label">Objetivo del Proceso</div>
+            <div class="char-field-val">Registrar de forma ordenada el ingreso de cada vehículo al parqueadero, capturando los datos necesarios para calcular posteriormente el tiempo de permanencia y la tarifa correspondiente.</div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Responsable Principal</div>
+            <div class="char-field-val">Cobrador de turno</div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Disparador / Evento de Inicio</div>
+            <div class="char-field-val">Llegada de un vehículo a la entrada del parqueadero</div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Entradas (Inputs)</div>
+            <div class="char-field-val">
+              <ul>
+                <li>Placa del vehículo</li>
+                <li>Hora actual (reloj del cobrador)</li>
+                <li>Tipo de vehículo (automóvil, moto, camión)</li>
+                <li>¿Es cliente mensual? (Sí/No)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Salidas (Outputs)</div>
+            <div class="char-field-val">
+              <ul>
+                <li>Registro escrito en el cuaderno (placa, hora, fila)</li>
+                <li>Tiquete o indicación verbal al cliente</li>
+                <li>Cupo ocupado en el conteo mental del cobrador</li>
+              </ul>
+            </div>
+          </div>
+          <div class="char-field full">
+            <div class="char-field-label">Actividades del Proceso (paso a paso)</div>
+            <div class="char-field-val">
+              <ol>
+                <li>Cobrador observa la placa del vehículo</li>
+                <li>Verifica mentalmente si hay cupo disponible</li>
+                <li>Si hay cupo: indica al conductor que puede ingresar</li>
+                <li>Anota en el cuaderno: número de fila, placa, hora de entrada, tipo de vehículo</li>
+                <li>Si es mensual: verifica en lista de mensualidades activas</li>
+                <li>Actualiza conteo mental de vehículos dentro</li>
+              </ol>
+            </div>
+          </div>
+          <div class="char-field full">
+            <div class="char-field-label">Reglas de Negocio</div>
+            <div class="char-field-val">
+              <ul>
+                <li><strong>RN-01:</strong> Solo se admite un vehículo si hay cupo disponible (capacidad máxima: [X] espacios)</li>
+                <li><strong>RN-02:</strong> Siempre se debe registrar placa, hora y tipo — sin excepción</li>
+                <li><strong>RN-03:</strong> Los clientes de mensualidad no pagan al ingresar, pero sí deben registrarse</li>
+                <li><strong>RN-04:</strong> Las motos y automóviles tienen tarifas diferenciadas</li>
+              </ul>
+            </div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Problemas Actuales</div>
+            <div class="char-field-val">
+              <ul>
+                <li>Letra ilegible en el cuaderno</li>
+                <li>Olvido de anotar la hora exacta</li>
+                <li>No hay verificación formal de cupos — solo conteo mental</li>
+                <li>No hay distinción clara entre mensual y ocasional en el registro</li>
+              </ul>
+            </div>
+          </div>
+          <div class="char-field">
+            <div class="char-field-label">Oportunidades de Mejora</div>
+            <div class="char-field-val">
+              <ul>
+                <li>Registro digital con hora automática</li>
+                <li>Contador de cupos en tiempo real</li>
+                <li>Lectura de placa o código QR</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Plantilla en blanco — Para diligenciar por proceso</h3>
+      <p>Usa esta plantilla para caracterizar <strong>cada uno</strong> de los procesos misionales y el proceso de apoyo PA-01:</p>
+      <div class="code-label">
+        <span class="code-lang">Plantilla · Para copiar y diligenciar</span>
+        <button class="copy-btn" onclick="copyCode(this, 'tpl4')">Copiar</button>
+      </div>
+      <div class="code-block" id="tpl4">FICHA DE CARACTERIZACIÓN DE PROCESO
+Parqueadero: ___________________  Fecha: ____________
+Elaborado por: _________________  Revisado por: ______
+═══════════════════════════════════════════════════════════
+
+INFORMACIÓN GENERAL
+  Código del proceso    : [PM-XX o PA-XX]
+  Nombre del proceso    : [Verbo + objeto, ej: "Registrar ingreso de vehículo"]
+  Tipo de proceso       : [ ] Estratégico  [ ] Misional  [ ] Apoyo
+  Objetivo              : [Qué logra este proceso y para quién genera valor]
+  Responsable principal : [Cargo / persona que ejecuta el proceso]
+  Disparador / Inicio   : [Qué evento activa este proceso]
+
+ENTRADAS (INPUTS)
+  - [Dato o material que necesita el proceso para iniciar]
+  - [...]
+
+ACTIVIDADES (PASO A PASO)
+  1. [Primera actividad que ocurre]
+  2. [Segunda actividad]
+  3. [...]
+  (Incluye los puntos de decisión: "Si... entonces...")
+
+SALIDAS (OUTPUTS)
+  - [Resultado que produce el proceso al terminar]
+  - [...]
+
+ACTORES / ROLES
+  Actor             | Acción en el proceso
+  ------------------|--------------------------------------
+  [Cobrador]        | [Qué hace]
+  [Administrador]   | [Qué hace]
+  [Cliente]         | [Qué hace]
+
+REGLAS DE NEGOCIO
+  RN-[XX]: [Restricción o condición que siempre debe cumplirse]
+  RN-[XX]: [...]
+  (Mínimo 3 reglas de negocio por proceso misional)
+
+ALMACENAMIENTO ACTUAL
+  - Dónde se guarda la información: [Cuaderno, memoria, archivo...]
+  - Formato: [Tabla, texto libre, verbal...]
+
+PROBLEMAS ACTUALES DEL PROCESO
+  - [Problema concreto observado o reportado]
+  - [...]
+
+OPORTUNIDADES DE MEJORA (input para Ingeniería de Requisitos)
+  - [Qué debería hacer un sistema digital que el proceso manual no puede]
+  - [...]
+
+═══════════════════════════════════════════════════════════
+FIN DE FICHA [PM-XX] — Continuar con el siguiente proceso</div>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div class="callout-body">
+          <strong>Punto de control — Fase 3 completa cuando:</strong>
+          <ul style="margin:6px 0 0;">
+            <li>Tienes fichas completadas para PM-01, PM-02, PM-03, PM-04, PM-05 y PA-01</li>
+            <li>Cada ficha tiene mínimo 3 reglas de negocio</li>
+            <li>Cada ficha documenta problemas actuales y oportunidades de mejora</li>
+            <li>Las actividades están descritas en pasos numerados y ordenados</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     FASE 4 — DOCUMENTO FINAL
+══════════════════════════════════════════════════ -->
+<section class="section" id="fase4">
+  <h2 class="section-title"><span class="section-num">4</span>Fase 4 — Documento de Caracterización (Entregable)</h2>
+
+  <div class="phase-card p4">
+    <div class="phase-header" onclick="togglePhase(this)" aria-expanded="true">
+      <div class="phase-num">4</div>
+      <div class="phase-title-block">
+        <div class="phase-label">Fase 4 · Duración: 60 min</div>
+        <div class="phase-title">Compilar y estructurar el Documento de Caracterización</div>
+      </div>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="phase-body open">
+
+      <div class="callout accent">
+        <span class="callout-icon">🎯</span>
+        <div class="callout-body">
+          <strong>Objetivo de esta fase</strong>
+          Compilar todo el trabajo de las fases anteriores en un documento formal y coherente, que sea el insumo oficial para la siguiente fase del proyecto ADSO: Ingeniería de Requisitos.
+        </div>
+      </div>
+
+      <h3>Estructura del Documento de Entrega</h3>
+      <div class="code-label">
+        <span class="code-lang">Estructura del documento</span>
+        <button class="copy-btn" onclick="copyCode(this, 'tpl5')">Copiar</button>
+      </div>
+      <div class="code-block" id="tpl5">DOCUMENTO DE CARACTERIZACIÓN DE PROCESOS
+Proyecto: Parqueadero [Nombre]
+Versión: 1.0
+Fecha: ____________
+Autores: ____________ (Aprendiz(ces) ADSO - Ficha XXXXXXX)
+Instructor: Ing. Luis Eladio Porras Camargo
+SENA - CDMC Itagüí
+══════════════════════════════════════════════════════════
+
+TABLA DE CONTENIDO
+  1. Resumen Ejecutivo
+  2. Descripción del Negocio (contexto)
+  3. Análisis TGS — El Parqueadero como Sistema
+     3.1 Ficha del Sistema Mayor
+     3.2 Tabla de Componentes del Sistema de Información
+     3.3 Subsistemas identificados
+  4. Mapa de Procesos (diagrama)
+  5. Fichas de Caracterización
+     5.1 PM-01: Registro de Ingreso de Vehículo
+     5.2 PM-02: Control de Ocupación / Cupos
+     5.3 PM-03: Cálculo y Cobro de Tarifa
+     5.4 PM-04: Registro de Salida de Vehículo
+     5.5 PM-05: Gestión de Clientes de Mensualidad
+     5.6 PA-01: Cierre de Caja y Cuadre Diario
+  6. Resumen de Problemas y Oportunidades de Mejora
+  7. Conclusiones
+  8. Glosario
+  9. Firmas y fecha
+
+══════════════════════════════════════════════════════════
+
+SECCIÓN 1 — RESUMEN EJECUTIVO
+[Párrafo de 150-200 palabras que describa el propósito del
+ documento, el negocio analizado, los procesos identificados
+ y las principales conclusiones del análisis]
+
+SECCIÓN 2 — DESCRIPCIÓN DEL NEGOCIO
+Nombre del parqueadero : [...]
+Ubicación              : [Barrio/ciudad - no es necesaria la dirección exacta]
+Capacidad              : [Número de espacios]
+Horario de operación   : [...]
+Tipo de clientes       : [Ocasionales, mensualidades, ambos]
+Personal actual        : [Número y roles]
+Medios de pago         : [Efectivo, tarjeta, app...]
+Situación actual       : [Párrafo descripción del problema actual]
+
+SECCIÓN 3 — ANÁLISIS TGS
+  [Incluir Ficha del Sistema, tabla de componentes y diagrama]
+
+SECCIÓN 4 — MAPA DE PROCESOS
+  [Incluir el diagrama de los tres niveles]
+
+SECCIÓN 5 — FICHAS DE CARACTERIZACIÓN
+  [Una ficha completa por proceso — ver plantilla Fase 3]
+
+SECCIÓN 6 — RESUMEN DE PROBLEMAS Y OPORTUNIDADES
+  Proceso  | Problema Principal             | Oportunidad de Mejora
+  ---------|-------------------------------|---------------------------
+  PM-01    | [Problema del proceso 1]      | [Mejora propuesta]
+  PM-02    | [...]                         | [...]
+  [...]    | [...]                         | [...]
+
+SECCIÓN 7 — CONCLUSIONES
+  [3-5 puntos concretos sobre lo que aprendiste del análisis
+   y qué información entregará este documento a la Ingeniería
+   de Requisitos]
+
+SECCIÓN 8 — GLOSARIO
+  TGS            : Teoría General de Sistemas
+  Proceso Misional: [definición]
+  Regla de Negocio: [definición]
+  Entrada (Input) : [definición]
+  [Agregar términos usados en el documento]
+
+SECCIÓN 9 — FIRMAS
+  Aprendiz(ces)  : ___________________  Fecha: _______
+  Instructor     : ___________________  Fecha: _______
+══════════════════════════════════════════════════════════
+Este documento es insumo para: Ingeniería de Requisitos (Fase siguiente)</div>
+
+      <h3>Conexión con la siguiente fase — Ingeniería de Requisitos</h3>
+      <div class="callout info">
+        <span class="callout-icon">🔗</span>
+        <div class="callout-body">
+          <strong>¿Cómo usará el instructor este documento?</strong>
+          En la fase de Ingeniería de Requisitos, cada proceso caracterizado aquí se convertirá en:
+          <ul style="margin-top:8px;">
+            <li><strong>Casos de uso</strong>: cada proceso misional → un caso de uso del sistema digital</li>
+            <li><strong>Historias de usuario</strong>: cada actor + actividad → una historia de usuario</li>
+            <li><strong>Requisitos funcionales</strong>: cada regla de negocio → un requisito funcional</li>
+            <li><strong>Requisitos no funcionales</strong>: las oportunidades de mejora → requisitos de rendimiento, usabilidad, etc.</li>
+          </ul>
+          Un documento de caracterización bien hecho ahorra horas de trabajo en la siguiente fase.
+        </div>
+      </div>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div class="callout-body">
+          <strong>Punto de control — Fase 4 y laboratorio completo cuando:</strong>
+          <ul style="margin:6px 0 0;">
+            <li>El documento tiene todas las 9 secciones</li>
+            <li>Está redactado en lenguaje profesional (sin errores ortográficos graves)</li>
+            <li>Incluye el resumen de problemas vs. oportunidades de mejora</li>
+            <li>Está fechado y firmado por el(los) aprendiz(ces)</li>
+            <li>Las 6 fichas de caracterización están completas</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     EVALUACIÓN
+══════════════════════════════════════════════════ -->
+<section class="section" id="eval">
+  <h2 class="section-title"><span class="section-num">5</span>Criterios de Evaluación y Evidencias</h2>
+
+  <div class="eval-item">
+    <span class="eval-icon">📊</span>
+    <div class="eval-body">
+      <div class="eval-title">EV01 — Infografía / esquema TGS aplicado al parqueadero</div>
+      <div class="eval-desc">El aprendiz presenta una representación visual (diagrama, infografía o esquema a mano) que muestra el parqueadero como sistema: entradas, proceso, salidas, retroalimentación y almacenamiento correctamente identificados.</div>
+      <div class="eval-evidence">GA1-220501092-AA1-EV01 · Evidencia de conocimiento</div>
+    </div>
+  </div>
+  <div class="eval-item">
+    <span class="eval-icon">🗂️</span>
+    <div class="eval-body">
+      <div class="eval-title">EV02 — Tabla de identificación y clasificación de procesos</div>
+      <div class="eval-desc">El aprendiz presenta la tabla con mínimo 10 procesos identificados, correctamente clasificados en Estratégico / Misional / Apoyo, con código, nombre y responsable para cada uno.</div>
+      <div class="eval-evidence">GA1-220501092-AA1-EV02 · Evidencia de desempeño</div>
+    </div>
+  </div>
+  <div class="eval-item">
+    <span class="eval-icon">🗺️</span>
+    <div class="eval-body">
+      <div class="eval-title">EV03 — Mapa de procesos del parqueadero (tres niveles)</div>
+      <div class="eval-desc">El aprendiz entrega un mapa de procesos coherente con los tres niveles (Estratégico, Misional, Apoyo) y las relaciones entre ellos claramente representadas.</div>
+      <div class="eval-evidence">GA1-220501092-AA1-EV03 · Evidencia de producto</div>
+    </div>
+  </div>
+  <div class="eval-item">
+    <span class="eval-icon">📄</span>
+    <div class="eval-body">
+      <div class="eval-title">Entregable principal — Documento de Caracterización completo</div>
+      <div class="eval-desc">Documento con las 9 secciones: resumen ejecutivo, descripción del negocio, análisis TGS, mapa de procesos, 6 fichas de caracterización (5 misionales + 1 apoyo), resumen de oportunidades, conclusiones, glosario y firmas.</div>
+      <div class="eval-evidence">Evidencia de producto · Fase Caracterización de Procesos</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:28px;">Lista de verificación — ¿Tu documento está listo?</h3>
+  <ul class="checklist" id="checklist">
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha del Sistema Mayor completada (nombre, objetivo, entorno, límites, actores)</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Tabla de componentes TGS completada (Entrada, Proceso, Salida, Retroalimentación, Almacenamiento)</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Mínimo 4 subsistemas identificados</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Mapa de procesos con 3 niveles dibujado</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Mínimo 10 procesos identificados y clasificados</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha PM-01: Registro de Ingreso completada</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha PM-02: Control de Cupos completada</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha PM-03: Cálculo y Cobro completada</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha PM-04: Registro de Salida completada</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha PM-05: Mensualidades completada</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Ficha PA-01: Cierre de Caja completada</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Cada ficha tiene mínimo 3 reglas de negocio</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Resumen de problemas y oportunidades de mejora documentado</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Documento redactado en lenguaje profesional y sin errores graves</li>
+    <li onclick="toggleCheck(this)"><span class="check-box"></span>Fechado y firmado por el aprendiz(ces)</li>
+  </ul>
+  <div class="progress-bar-wrap">
+    <div class="progress-label"><span>Progreso del checklist</span><span id="progress-pct">0 / 15</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <h3 style="margin-top:28px;">🚀 Reto de Extensión — Aprendices avanzados</h3>
+  <div class="callout accent">
+    <span class="callout-icon">🧠</span>
+    <div class="callout-body">
+      <strong>Desafío: Anticipa los requisitos</strong>
+      Tomando los procesos PM-01 y PM-03 (ingreso y cobro), escribe en lenguaje natural 3 historias de usuario con el formato:
+      <div class="code-block" style="margin-top:12px;font-size:12px;">Como [ACTOR],
+quiero [FUNCIONALIDAD QUE NECESITA],
+para [BENEFICIO O VALOR QUE OBTIENE].
+
+Criterios de aceptación:
+  - Dado que [CONDICIÓN]
+  - Cuando [ACCIÓN]
+  - Entonces [RESULTADO ESPERADO]</div>
+      Esta actividad adelanta el trabajo de la <strong>próxima fase: Ingeniería de Requisitos</strong>, donde transformaremos estos procesos en especificaciones técnicas del sistema digital del parqueadero.
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      <strong>Advertencia metodológica — Calidad de la información</strong>
+      Un análisis de procesos es tan bueno como las fuentes que lo sustentan. Si trabajas con un parqueadero real, valida tu documento con el dueño o el cobrador — una sola conversación de 20 minutos puede revelar reglas de negocio críticas que no son evidentes desde afuera. Si trabajas con el caso hipotético de este laboratorio, documenta explícitamente las suposiciones que estás haciendo. Las suposiciones no documentadas son la causa #1 de proyectos de software que no satisfacen al cliente.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <strong>SENA — Análisis y Desarrollo de Software (ADSO)</strong> · Fase: Caracterización de Procesos<br>
+  Instructor: Ing. Luis Eladio Porras Camargo · CDMC Itagüí<br>
+  Este laboratorio es insumo para la siguiente fase: Ingeniería de Requisitos
+</footer>
+
+<script>
+// ─── PHASE TOGGLE
+function togglePhase(header) {
+  const body = header.nextElementSibling;
+  const expanded = header.getAttribute('aria-expanded') === 'true';
+  header.setAttribute('aria-expanded', !expanded);
+  body.classList.toggle('open', !expanded);
+}
+
+// ─── NAV SCROLL
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ─── COPY CODE
+function copyCode(btn, id) {
+  const text = document.getElementById(id).textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => fallbackCopy(btn, text));
+  } else { fallbackCopy(btn, text); }
+}
+function fallbackCopy(btn, text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); btn.textContent = '✓ Copiado'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+// ─── CHECKLIST
+function toggleCheck(li) {
+  li.classList.toggle('checked');
+  const box = li.querySelector('.check-box');
+  box.textContent = li.classList.contains('checked') ? '✓' : '';
+  updateProgress();
+}
+function updateProgress() {
+  const items = document.querySelectorAll('.checklist li');
+  const done = document.querySelectorAll('.checklist li.checked').length;
+  const pct = Math.round(done / items.length * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = done + ' / ' + items.length;
+}
+
+// ─── NAV HIGHLIGHT ON SCROLL
+const sections = ['ficha','prereq','fase1','fase2','fase3','fase4','eval'];
+const navBtns = document.querySelectorAll('.nav-btn');
+window.addEventListener('scroll', () => {
+  let current = sections[0];
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 120) current = id;
+  });
+  navBtns.forEach((b, i) => b.classList.toggle('active', i === sections.indexOf(current)));
+}, { passive: true });
+</script>
+
+</body></html>
