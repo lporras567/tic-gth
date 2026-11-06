@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio BD — Pipeline PostgreSQL</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --surface2: #242740;
+      --border: #2e3250;
+      --accent: #6366f1;
+      --accent2: #22d3ee;
+      --accent3: #34d399;
+      --warn: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --code-bg: #0d1117;
+      --keyword: #ff79c6;
+      --type: #8be9fd;
+      --string: #f1fa8c;
+      --comment: #6272a4;
+      --number: #bd93f9;
+      --fn: #50fa7b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1d2e 0%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p { color: var(--muted); margin-top: .4rem; font-size: .95rem; }
+    nav {
+      display: flex; gap: .5rem; justify-content: center;
+      padding: 1rem 2rem; flex-wrap: wrap;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    nav button {
+      padding: .45rem 1.1rem; border-radius: 20px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer;
+      font-size: .85rem; transition: all .2s;
+    }
+    nav button.active, nav button:hover {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .section { display: none; }
+    .section.active { display: block; }
+    h2 {
+      font-size: 1.3rem; font-weight: 600; color: var(--accent2);
+      margin-bottom: 1.2rem; display: flex; align-items: center; gap: .5rem;
+    }
+    h3 { font-size: 1rem; font-weight: 600; color: var(--accent3); margin: 1.2rem 0 .6rem; }
+    p { color: var(--muted); margin-bottom: .8rem; font-size: .93rem; }
+
+    /* ── ERD ── */
+    .erd-wrap {
+      overflow: auto; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+    }
+    svg.erd { display: block; margin: 0 auto; }
+    .entity { fill: var(--surface2); stroke: var(--border); stroke-width: 1.5; rx: 8; }
+    .entity-header { fill: var(--accent); }
+    .entity-header2 { fill: #0e7490; }
+    .entity-header3 { fill: #065f46; }
+    text { font-family: 'Courier New', monospace; }
+    .ent-title { fill: #fff; font-weight: 700; font-size: 13px; }
+    .field { fill: var(--text); font-size: 11px; }
+    .field-pk { fill: var(--warn); font-size: 11px; }
+    .field-fk { fill: var(--accent2); font-size: 11px; }
+    .field-uq { fill: var(--accent3); font-size: 11px; }
+    .rel-line { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 3; }
+    .rel-label { fill: var(--warn); font-size: 10px; font-family: 'Segoe UI', sans-serif; }
+    .legend-box { fill: var(--surface2); stroke: var(--border); rx: 6; }
+
+    /* ── SQL ── */
+    .code-block {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.2rem; margin: 1rem 0;
+      font-family: 'Courier New', monospace; font-size: .82rem;
+      line-height: 1.7; overflow-x: auto; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: .6rem; right: .6rem;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); border-radius: 6px; padding: .3rem .7rem;
+      font-size: .75rem; cursor: pointer; transition: all .2s;
+    }
+    .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .copy-btn.ok { background: var(--accent3); color: #fff; }
+    .kw { color: var(--keyword); }
+    .tp { color: var(--type); }
+    .st { color: var(--string); }
+    .cm { color: var(--comment); }
+    .nm { color: var(--number); }
+    .fn { color: var(--fn); }
+
+    /* ── cards ── */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.1rem;
+    }
+    .card h4 { font-size: .9rem; font-weight: 600; color: var(--accent2); margin-bottom: .5rem; }
+    .tag {
+      display: inline-block; padding: .15rem .5rem; border-radius: 20px;
+      font-size: .72rem; font-weight: 600; margin: .15rem;
+    }
+    .tag-pk { background: rgba(245,158,11,.2); color: var(--warn); }
+    .tag-uq { background: rgba(52,211,153,.2); color: var(--accent3); }
+    .tag-fk { background: rgba(34,211,238,.2); color: var(--accent2); }
+    .tag-idx { background: rgba(99,102,241,.2); color: var(--accent); }
+    .tag-nn { background: rgba(255,255,255,.1); color: var(--muted); }
+
+    .rules-list { list-style: none; }
+    .rules-list li {
+      padding: .5rem .8rem; margin: .4rem 0;
+      background: var(--surface); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; font-size: .88rem; color: var(--muted);
+    }
+    .rules-list li strong { color: var(--text); }
+
+    .pipeline-steps { display: flex; flex-direction: column; gap: .8rem; margin: 1rem 0; }
+    .step {
+      display: flex; gap: 1rem; align-items: flex-start;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem;
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent); color: #fff; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: .9rem;
+    }
+    .step-body h4 { color: var(--text); font-size: .9rem; margin-bottom: .2rem; }
+    .step-body p { margin: 0; font-size: .83rem; }
+
+    .badge-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .6rem 0; }
+    .badge {
+      padding: .25rem .65rem; border-radius: 20px; font-size: .75rem;
+      font-weight: 600; border: 1px solid;
+    }
+    .badge-ind { color: var(--accent2); border-color: var(--accent2); background: rgba(34,211,238,.08); }
+    .badge-uniq { color: var(--accent3); border-color: var(--accent3); background: rgba(52,211,153,.08); }
+    .badge-pk { color: var(--warn); border-color: var(--warn); background: rgba(245,158,11,.08); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🗄️ Laboratorio — Pipeline de Base de Datos</h1>
+  <p>Sistema de Clientes, Productos y Facturación · PostgreSQL</p>
+</header>
+
+<nav>
+  <button class="active" onclick="show('pipeline')">Pipeline</button>
+  <button onclick="show('erd')">Modelo ER</button>
+  <button onclick="show('schema')">Esquema SQL</button>
+  <button onclick="show('tablas')">Tablas</button>
+  <button onclick="show('indices')">Índices</button>
+  <button onclick="show('reglas')">Reglas de Negocio</button>
+</nav>
+
+<main>
+
+<!-- ═══════ PIPELINE ═══════ -->
+<section id="pipeline" class="section active">
+  <h2>⚙️ Pipeline de Construcción</h2>
+  <p>Secuencia de pasos para construir y validar la base de datos en PostgreSQL, desde el análisis hasta la verificación.</p>
+
+  <div class="pipeline-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Análisis de requisitos y reglas de negocio</h4>
+        <p>Identificar entidades, atributos, cardinalidades y restricciones de unicidad antes de escribir una sola línea de SQL.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Modelado Entidad-Relación (ER)</h4>
+        <p>Diseñar el diagrama ER normalizando hasta 3FN: entidades <strong>cliente, producto, factura, detalle_factura</strong> y sus relaciones.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Creación del esquema en PostgreSQL</h4>
+        <p>Crear la base de datos y el esquema dedicado (<code>ventas</code>), separando objetos del esquema público.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>DDL — Tablas con restricciones</h4>
+        <p>Definir tablas con PK, FK, NOT NULL, UNIQUE y CHECK directamente en la declaración de columnas y a nivel de tabla.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Índices de rendimiento</h4>
+        <p>Crear índices sobre columnas de búsqueda frecuente (documento, correo, número de factura, FK de relaciones) para garantizar planes de consulta eficientes.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h4>Datos de prueba y validación de constraints</h4>
+        <p>Insertar registros de prueba y verificar que las restricciones de negocio se disparan correctamente ante inserciones inválidas.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <h4>Consultas de verificación</h4>
+        <p>Ejecutar queries sobre vistas del sistema (<code>pg_indexes</code>, <code>information_schema</code>) para confirmar la estructura desplegada.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ERD ═══════ -->
+<section id="erd" class="section">
+  <h2>📐 Modelo Entidad-Relación</h2>
+  <p>Diagrama de las cuatro entidades del sistema con sus atributos y cardinalidades. La tabla <strong>detalle_factura</strong> resuelve la relación M:N entre factura y producto.</p>
+
+  <div class="erd-wrap">
+    <svg class="erd" viewBox="0 0 920 640" width="900" height="640" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- CLIENTE (0,0) -->
+      <g transform="translate(20,40)">
+        <rect class="entity" width="200" height="250"/>
+        <rect class="entity-header" x="0" y="0" width="200" height="34" rx="8" ry="0"/>
+        <rect class="entity-header" x="0" y="10" width="200" height="24"/>
+        <text class="ent-title" x="100" y="23" text-anchor="middle">👤 CLIENTE</text>
+        <line x1="0" y1="34" x2="200" y2="34" stroke="#2e3250"/>
+        <text class="field-pk" x="10" y="54">🔑 id_cliente (PK, serial)</text>
+        <line x1="0" y1="60" x2="200" y2="60" stroke="#2e3250" stroke-dasharray="3 2"/>
+        <text class="field-uq" x="10" y="78">tipo_documento (varchar 5)</text>
+        <text class="field-uq" x="10" y="96">numero_documento (varchar 20)</text>
+        <text x="140" y="88" fill="#f59e0b" font-size="9">UNIQUE</text>
+        <text class="field" x="10" y="114">nombre_completo (varchar 150)</text>
+        <text class="field" x="10" y="132">direccion (varchar 255)</text>
+        <text class="field-uq" x="10" y="150">correo_electronico</text>
+        <text x="140" y="150" fill="#f59e0b" font-size="9">UNIQUE</text>
+        <text class="field-uq" x="10" y="168">celular (varchar 20)</text>
+        <text x="140" y="168" fill="#f59e0b" font-size="9">UNIQUE</text>
+        <rect x="0" y="175" width="200" height="1" fill="#2e3250"/>
+        <text class="cm" x="10" y="192" font-size="10">UNIQUE(tipo_doc,</text>
+        <text class="cm" x="10" y="206" font-size="10">  numero_doc)</text>
+        <text class="cm" x="10" y="222" font-size="10">1 cliente → N facturas</text>
+      </g>
+
+      <!-- FACTURA (350,40) -->
+      <g transform="translate(360,40)">
+        <rect class="entity" width="200" height="250"/>
+        <rect class="entity-header2" x="0" y="0" width="200" height="34" rx="8" ry="0"/>
+        <rect class="entity-header2" x="0" y="10" width="200" height="24"/>
+        <text class="ent-title" x="100" y="23" text-anchor="middle">🧾 FACTURA</text>
+        <line x1="0" y1="34" x2="200" y2="34" stroke="#2e3250"/>
+        <text class="field-pk" x="10" y="54">🔑 id_factura (PK, serial)</text>
+        <line x1="0" y1="60" x2="200" y2="60" stroke="#2e3250" stroke-dasharray="3 2"/>
+        <text class="field-uq" x="10" y="78">numero_factura (varchar 30)</text>
+        <text x="145" y="78" fill="#f59e0b" font-size="9">UNIQUE</text>
+        <text class="field" x="10" y="96">fecha (timestamptz)</text>
+        <text class="field" x="10" y="114">subtotal (numeric 12,2)</text>
+        <text class="field" x="10" y="132">porcentaje_iva (numeric 5,2)</text>
+        <text class="field" x="10" y="150">valor_iva (numeric 12,2)</text>
+        <text class="field" x="10" y="168">total (numeric 12,2)</text>
+        <text class="field-fk" x="10" y="186">🔗 id_cliente (FK→cliente)</text>
+        <rect x="0" y="192" width="200" height="1" fill="#2e3250"/>
+        <text class="cm" x="10" y="210" font-size="10">total = subtotal + valor_iva</text>
+        <text class="cm" x="10" y="226" font-size="10">1 factura → N detalles</text>
+      </g>
+
+      <!-- PRODUCTO (700,40) -->
+      <g transform="translate(700,40)">
+        <rect class="entity" width="200" height="210"/>
+        <rect class="entity-header3" x="0" y="0" width="200" height="34" rx="8" ry="0"/>
+        <rect class="entity-header3" x="0" y="10" width="200" height="24"/>
+        <text class="ent-title" x="100" y="23" text-anchor="middle">📦 PRODUCTO</text>
+        <line x1="0" y1="34" x2="200" y2="34" stroke="#2e3250"/>
+        <text class="field-pk" x="10" y="54">🔑 id_producto (PK, serial)</text>
+        <line x1="0" y1="60" x2="200" y2="60" stroke="#2e3250" stroke-dasharray="3 2"/>
+        <text class="field" x="10" y="78">nombre_producto (varchar 150)</text>
+        <text class="field" x="10" y="96">precio (numeric 12,2)</text>
+        <text class="field" x="10" y="114">cantidad (integer)</text>
+        <text class="field" x="10" y="132">ubicacion_fisica (varchar 100)</text>
+        <rect x="0" y="140" width="200" height="1" fill="#2e3250"/>
+        <text class="cm" x="10" y="158" font-size="10">precio > 0, cantidad ≥ 0</text>
+        <text class="cm" x="10" y="174" font-size="10">1 producto → N detalles</text>
+      </g>
+
+      <!-- DETALLE_FACTURA (360,420) -->
+      <g transform="translate(360,430)">
+        <rect class="entity" width="200" height="180"/>
+        <rect x="0" y="0" width="200" height="34" fill="#7c3aed" rx="8" ry="0"/>
+        <rect x="0" y="10" width="200" height="24" fill="#7c3aed"/>
+        <text class="ent-title" x="100" y="23" text-anchor="middle">📋 DETALLE_FACTURA</text>
+        <line x1="0" y1="34" x2="200" y2="34" stroke="#2e3250"/>
+        <text class="field-pk" x="10" y="54">🔑 id_detalle (PK, serial)</text>
+        <text class="field-fk" x="10" y="72">🔗 id_factura (FK→factura)</text>
+        <text class="field-fk" x="10" y="90">🔗 id_producto (FK→producto)</text>
+        <text class="field" x="10" y="108">precio_unitario (numeric 12,2)</text>
+        <text class="field" x="10" y="126">cantidad (integer)</text>
+        <text class="field" x="10" y="144">porcentaje_iva (numeric 5,2)</text>
+        <text class="field" x="10" y="162">subtotal_linea (numeric 12,2)</text>
+      </g>
+
+      <!-- ─── RELACIONES ─── -->
+      <!-- cliente → factura  (1:N) -->
+      <line class="rel-line" x1="220" y1="150" x2="360" y2="165"/>
+      <text class="rel-label" x="258" y="145">1</text>
+      <text class="rel-label" x="338" y="160">N</text>
+
+      <!-- factura → detalle  (1:N) -->
+      <line class="rel-line" x1="460" y1="290" x2="460" y2="430"/>
+      <text class="rel-label" x="465" y="315">1</text>
+      <text class="rel-label" x="465" y="425">N</text>
+
+      <!-- producto → detalle  (1:N) -->
+      <line class="rel-line" x1="700" y1="250" x2="560" y2="490"/>
+      <text class="rel-label" x="665" y="260">1</text>
+      <text class="rel-label" x="572" y="490">N</text>
+
+      <!-- ─── LEYENDA ─── -->
+      <g transform="translate(20, 390)">
+        <rect class="legend-box" x="0" y="0" width="300" height="130"/>
+        <text fill="#94a3b8" x="10" y="20" font-size="11" font-weight="600" font-family="'Segoe UI',sans-serif">LEYENDA</text>
+        <text fill="#f59e0b" x="10" y="40" font-size="11" font-family="monospace">🔑 PK  Llave primaria</text>
+        <text fill="#22d3ee" x="10" y="58" font-size="11" font-family="monospace">🔗 FK  Llave foránea</text>
+        <text fill="#f59e0b" x="10" y="76" font-size="11" font-family="monospace">UNIQUE  Restricción unicidad</text>
+        <text fill="#6272a4" x="10" y="94" font-size="11" font-family="monospace">--- Relación entre entidades</text>
+        <text fill="#94a3b8" x="10" y="112" font-size="11" font-family="monospace">1 : N  Cardinalidad</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════ SCHEMA SQL ═══════ -->
+<section id="schema" class="section">
+  <h2>🏗️ Esquema y Base de Datos</h2>
+  <p>Script completo de creación de la base de datos, extensiones y esquema dedicado.</p>
+
+  <div class="code-block" id="cb1">
+    <button class="copy-btn" onclick="copiar('cb1',this)">Copiar</button>
+<span class="cm">-- ══════════════════════════════════════════════════════════════
+-- Pipeline PostgreSQL — Sistema de Clientes, Productos y Facturas
+-- Paso 1: Creación de la base de datos y esquema
+-- ══════════════════════════════════════════════════════════════</span>
+
+<span class="cm">-- Ejecutar como superusuario (ej. postgres)</span>
+<span class="kw">CREATE DATABASE</span> ventas_db
+  <span class="kw">WITH</span>
+    ENCODING    = <span class="st">'UTF8'</span>
+    LC_COLLATE  = <span class="st">'es_CO.UTF-8'</span>
+    LC_CTYPE    = <span class="st">'es_CO.UTF-8'</span>
+    TEMPLATE    = template0;
+
+<span class="cm">-- Conectarse a la nueva BD: \c ventas_db</span>
+
+<span class="cm">-- Extensión para UUIDs (opcional, usamos SERIAL como PK)</span>
+<span class="kw">CREATE EXTENSION IF NOT EXISTS</span> <span class="fn">pgcrypto</span>;
+
+<span class="cm">-- Esquema dedicado para aislar objetos del schema public</span>
+<span class="kw">CREATE SCHEMA IF NOT EXISTS</span> ventas;
+
+<span class="cm">-- Establecer search_path por defecto en la sesión</span>
+<span class="kw">SET</span> search_path <span class="kw">TO</span> ventas, public;
+
+<span class="cm">-- Configurar search_path permanente en la BD</span>
+<span class="kw">ALTER DATABASE</span> ventas_db <span class="kw">SET</span> search_path <span class="kw">TO</span> ventas, public;
+  </div>
+</section>
+
+<!-- ═══════ TABLAS ═══════ -->
+<section id="tablas" class="section">
+  <h2>📊 Definición de Tablas</h2>
+
+  <h3>Tabla: cliente</h3>
+  <div class="code-block" id="cb2">
+    <button class="copy-btn" onclick="copiar('cb2',this)">Copiar</button>
+<span class="cm">-- ── TABLA: ventas.cliente ───────────────────────────────────</span>
+<span class="kw">CREATE TABLE</span> ventas.cliente (
+  id_cliente        <span class="tp">SERIAL</span>        <span class="kw">PRIMARY KEY</span>,
+  tipo_documento    <span class="tp">VARCHAR</span>(<span class="nm">5</span>)   <span class="kw">NOT NULL</span>
+      <span class="kw">CHECK</span> (tipo_documento <span class="kw">IN</span> (<span class="st">'CC'</span>,<span class="st">'CE'</span>,<span class="st">'TI'</span>,<span class="st">'PP'</span>,<span class="st">'NIT'</span>)),
+  numero_documento  <span class="tp">VARCHAR</span>(<span class="nm">20</span>)  <span class="kw">NOT NULL</span>,
+  nombre_completo   <span class="tp">VARCHAR</span>(<span class="nm">150</span>) <span class="kw">NOT NULL</span>,
+  direccion         <span class="tp">VARCHAR</span>(<span class="nm">255</span>),
+  correo_electronico <span class="tp">VARCHAR</span>(<span class="nm">120</span>) <span class="kw">NOT NULL UNIQUE</span>,
+  celular           <span class="tp">VARCHAR</span>(<span class="nm">20</span>)  <span class="kw">NOT NULL UNIQUE</span>,
+  created_at        <span class="tp">TIMESTAMPTZ</span> <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>(),
+  updated_at        <span class="tp">TIMESTAMPTZ</span> <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>(),
+
+  <span class="cm">-- Regla de negocio: (tipo_documento, numero_documento) juntos son únicos</span>
+  <span class="kw">CONSTRAINT</span> uq_cliente_documento
+      <span class="kw">UNIQUE</span> (tipo_documento, numero_documento)
+);
+
+<span class="kw">COMMENT ON TABLE</span>  ventas.cliente                       <span class="kw">IS</span> <span class="st">'Clientes del sistema'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.cliente.tipo_documento         <span class="kw">IS</span> <span class="st">'CC, CE, TI, PP, NIT'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.cliente.numero_documento       <span class="kw">IS</span> <span class="st">'Número del documento según tipo'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.cliente.correo_electronico     <span class="kw">IS</span> <span class="st">'Único por cliente'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.cliente.celular                <span class="kw">IS</span> <span class="st">'Único por cliente'</span>;
+  </div>
+
+  <h3>Tabla: producto</h3>
+  <div class="code-block" id="cb3">
+    <button class="copy-btn" onclick="copiar('cb3',this)">Copiar</button>
+<span class="cm">-- ── TABLA: ventas.producto ──────────────────────────────────</span>
+<span class="kw">CREATE TABLE</span> ventas.producto (
+  id_producto       <span class="tp">SERIAL</span>         <span class="kw">PRIMARY KEY</span>,
+  nombre_producto   <span class="tp">VARCHAR</span>(<span class="nm">150</span>)  <span class="kw">NOT NULL</span>,
+  precio            <span class="tp">NUMERIC</span>(<span class="nm">12</span>,<span class="nm">2</span>) <span class="kw">NOT NULL CHECK</span> (precio &gt; <span class="nm">0</span>),
+  cantidad          <span class="tp">INTEGER</span>       <span class="kw">NOT NULL DEFAULT</span> <span class="nm">0</span>
+                                   <span class="kw">CHECK</span> (cantidad &gt;= <span class="nm">0</span>),
+  ubicacion_fisica  <span class="tp">VARCHAR</span>(<span class="nm">100</span>),
+  created_at        <span class="tp">TIMESTAMPTZ</span>  <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>(),
+  updated_at        <span class="tp">TIMESTAMPTZ</span>  <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>()
+);
+
+<span class="kw">COMMENT ON TABLE</span>  ventas.producto                      <span class="kw">IS</span> <span class="st">'Catálogo de productos'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.producto.precio               <span class="kw">IS</span> <span class="st">'Precio actual del catálogo (referencia)'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.producto.cantidad             <span class="kw">IS</span> <span class="st">'Stock disponible en bodega'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.producto.ubicacion_fisica     <span class="kw">IS</span> <span class="st">'Estante o ubicación en almacén'</span>;
+  </div>
+
+  <h3>Tabla: factura</h3>
+  <div class="code-block" id="cb4">
+    <button class="copy-btn" onclick="copiar('cb4',this)">Copiar</button>
+<span class="cm">-- ── TABLA: ventas.factura ───────────────────────────────────</span>
+<span class="kw">CREATE TABLE</span> ventas.factura (
+  id_factura        <span class="tp">SERIAL</span>         <span class="kw">PRIMARY KEY</span>,
+  numero_factura    <span class="tp">VARCHAR</span>(<span class="nm">30</span>)   <span class="kw">NOT NULL UNIQUE</span>,
+  fecha             <span class="tp">TIMESTAMPTZ</span>  <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>(),
+  <span class="cm">-- Subtotal de la factura sin IVA</span>
+  subtotal          <span class="tp">NUMERIC</span>(<span class="nm">14</span>,<span class="nm">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="nm">0.00</span>
+                                   <span class="kw">CHECK</span> (subtotal &gt;= <span class="nm">0</span>),
+  <span class="cm">-- Porcentaje general de IVA aplicado en la factura (ej. 19.00)</span>
+  porcentaje_iva    <span class="tp">NUMERIC</span>(<span class="nm">5</span>,<span class="nm">2</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="nm">19.00</span>
+                                   <span class="kw">CHECK</span> (porcentaje_iva &gt;= <span class="nm">0</span>),
+  <span class="cm">-- Valor monetario del IVA calculado</span>
+  valor_iva         <span class="tp">NUMERIC</span>(<span class="nm">14</span>,<span class="nm">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="nm">0.00</span>
+                                   <span class="kw">CHECK</span> (valor_iva &gt;= <span class="nm">0</span>),
+  <span class="cm">-- Total = subtotal + valor_iva</span>
+  total             <span class="tp">NUMERIC</span>(<span class="nm">14</span>,<span class="nm">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="nm">0.00</span>
+                                   <span class="kw">CHECK</span> (total &gt;= <span class="nm">0</span>),
+  <span class="cm">-- FK: una factura pertenece obligatoriamente a un cliente</span>
+  id_cliente        <span class="tp">INTEGER</span>       <span class="kw">NOT NULL</span>
+      <span class="kw">REFERENCES</span> ventas.cliente (id_cliente)
+      <span class="kw">ON DELETE RESTRICT</span>
+      <span class="kw">ON UPDATE CASCADE</span>,
+  created_at        <span class="tp">TIMESTAMPTZ</span>  <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>()
+);
+
+<span class="kw">COMMENT ON TABLE</span>  ventas.factura                       <span class="kw">IS</span> <span class="st">'Cabecera de facturas de venta'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.factura.numero_factura        <span class="kw">IS</span> <span class="st">'Único; ej. FAC-2024-001'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.factura.subtotal              <span class="kw">IS</span> <span class="st">'Suma de subtotal_linea de los detalles'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.factura.valor_iva             <span class="kw">IS</span> <span class="st">'IVA total de la factura'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.factura.total                 <span class="kw">IS</span> <span class="st">'subtotal + valor_iva'</span>;
+  </div>
+
+  <h3>Tabla: detalle_factura</h3>
+  <div class="code-block" id="cb5">
+    <button class="copy-btn" onclick="copiar('cb5',this)">Copiar</button>
+<span class="cm">-- ── TABLA: ventas.detalle_factura ───────────────────────────
+-- Resuelve la relación M:N entre factura y producto.
+-- Almacena precio, cantidad e IVA al momento de la venta
+-- (snapshot: inmune a cambios futuros del catálogo).
+-- ────────────────────────────────────────────────────────────</span>
+<span class="kw">CREATE TABLE</span> ventas.detalle_factura (
+  id_detalle        <span class="tp">SERIAL</span>         <span class="kw">PRIMARY KEY</span>,
+  id_factura        <span class="tp">INTEGER</span>       <span class="kw">NOT NULL</span>
+      <span class="kw">REFERENCES</span> ventas.factura  (id_factura)
+      <span class="kw">ON DELETE CASCADE</span>
+      <span class="kw">ON UPDATE CASCADE</span>,
+  id_producto       <span class="tp">INTEGER</span>       <span class="kw">NOT NULL</span>
+      <span class="kw">REFERENCES</span> ventas.producto (id_producto)
+      <span class="kw">ON DELETE RESTRICT</span>
+      <span class="kw">ON UPDATE CASCADE</span>,
+  <span class="cm">-- Snapshot del precio al momento de facturar</span>
+  precio_unitario   <span class="tp">NUMERIC</span>(<span class="nm">12</span>,<span class="nm">2</span>) <span class="kw">NOT NULL CHECK</span> (precio_unitario &gt; <span class="nm">0</span>),
+  <span class="cm">-- Cantidad de unidades del producto en esta línea</span>
+  cantidad          <span class="tp">INTEGER</span>       <span class="kw">NOT NULL CHECK</span> (cantidad &gt; <span class="nm">0</span>),
+  <span class="cm">-- Porcentaje de IVA aplicado a este producto al facturar</span>
+  porcentaje_iva    <span class="tp">NUMERIC</span>(<span class="nm">5</span>,<span class="nm">2</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="nm">19.00</span>
+                                   <span class="kw">CHECK</span> (porcentaje_iva &gt;= <span class="nm">0</span>),
+  <span class="cm">-- subtotal_linea = precio_unitario * cantidad (sin IVA)</span>
+  subtotal_linea    <span class="tp">NUMERIC</span>(<span class="nm">14</span>,<span class="nm">2</span>) <span class="kw">NOT NULL CHECK</span> (subtotal_linea &gt;= <span class="nm">0</span>),
+
+  <span class="cm">-- Evitar duplicar el mismo producto en la misma factura</span>
+  <span class="kw">CONSTRAINT</span> uq_detalle_factura_producto
+      <span class="kw">UNIQUE</span> (id_factura, id_producto)
+);
+
+<span class="kw">COMMENT ON TABLE</span>  ventas.detalle_factura                    <span class="kw">IS</span> <span class="st">'Líneas de producto por factura (snapshot)'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.detalle_factura.precio_unitario    <span class="kw">IS</span> <span class="st">'Precio del producto al momento de venta'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.detalle_factura.porcentaje_iva     <span class="kw">IS</span> <span class="st">'IVA aplicado a este producto al vender'</span>;
+<span class="kw">COMMENT ON COLUMN</span> ventas.detalle_factura.subtotal_linea     <span class="kw">IS</span> <span class="st">'precio_unitario * cantidad'</span>;
+  </div>
+
+  <h3>Trigger: actualizar totales de factura</h3>
+  <div class="code-block" id="cb6">
+    <button class="copy-btn" onclick="copiar('cb6',this)">Copiar</button>
+<span class="cm">-- ── FUNCIÓN y TRIGGER: recalcular totales en factura ────────</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> ventas.<span class="fn">recalcular_factura</span>()
+<span class="kw">RETURNS TRIGGER</span> <span class="kw">AS</span> $$
+<span class="kw">DECLARE</span>
+  v_subtotal   <span class="tp">NUMERIC</span>(<span class="nm">14</span>,<span class="nm">2</span>);
+  v_valor_iva  <span class="tp">NUMERIC</span>(<span class="nm">14</span>,<span class="nm">2</span>);
+  v_id_fac     <span class="tp">INTEGER</span>;
+<span class="kw">BEGIN</span>
+  v_id_fac := <span class="kw">CASE</span> <span class="kw">WHEN</span> TG_OP = <span class="st">'DELETE'</span> <span class="kw">THEN</span> OLD.id_factura
+              <span class="kw">ELSE</span> NEW.id_factura <span class="kw">END</span>;
+
+  <span class="kw">SELECT</span>
+    <span class="fn">COALESCE</span>(<span class="fn">SUM</span>(subtotal_linea), <span class="nm">0</span>),
+    <span class="fn">COALESCE</span>(<span class="fn">SUM</span>(subtotal_linea * porcentaje_iva / <span class="nm">100</span>), <span class="nm">0</span>)
+  <span class="kw">INTO</span> v_subtotal, v_valor_iva
+  <span class="kw">FROM</span> ventas.detalle_factura
+  <span class="kw">WHERE</span> id_factura = v_id_fac;
+
+  <span class="kw">UPDATE</span> ventas.factura
+  <span class="kw">SET</span>
+    subtotal   = v_subtotal,
+    valor_iva  = v_valor_iva,
+    total      = v_subtotal + v_valor_iva
+  <span class="kw">WHERE</span> id_factura = v_id_fac;
+
+  <span class="kw">RETURN NULL</span>;
+<span class="kw">END</span>;
+$$ <span class="kw">LANGUAGE</span> plpgsql;
+
+<span class="kw">CREATE TRIGGER</span> trg_recalcular_factura
+<span class="kw">AFTER INSERT OR UPDATE OR DELETE ON</span> ventas.detalle_factura
+<span class="kw">FOR EACH ROW EXECUTE FUNCTION</span> ventas.<span class="fn">recalcular_factura</span>();
+  </div>
+</section>
+
+<!-- ═══════ ÍNDICES ═══════ -->
+<section id="indices" class="section">
+  <h2>⚡ Índices</h2>
+  <p>Estrategia de indexación orientada a las consultas más frecuentes del sistema: búsqueda de cliente por documento, correo o celular; consulta de facturas por cliente o número; y joins en detalles de factura.</p>
+
+  <div class="badge-row">
+    <span class="badge badge-pk">🔑 PK implícita (B-tree)</span>
+    <span class="badge badge-uniq">✦ UNIQUE (B-tree)</span>
+    <span class="badge badge-ind">◆ Índice de rendimiento</span>
+  </div>
+
+  <div class="code-block" id="cb7">
+    <button class="copy-btn" onclick="copiar('cb7',this)">Copiar</button>
+<span class="cm">-- ══════════════════════════════════════════════════════════════
+-- ÍNDICES — ventas_db
+-- Los constraints UNIQUE y PRIMARY KEY ya crean índices B-tree.
+-- Los siguientes son adicionales para rendimiento en búsquedas.
+-- ══════════════════════════════════════════════════════════════</span>
+
+<span class="cm">-- ── cliente ─────────────────────────────────────────────────</span>
+<span class="cm">-- Búsqueda por correo (login, búsqueda rápida)</span>
+<span class="kw">CREATE INDEX</span> idx_cliente_correo
+    <span class="kw">ON</span> ventas.cliente (correo_electronico);
+
+<span class="cm">-- Búsqueda por celular</span>
+<span class="kw">CREATE INDEX</span> idx_cliente_celular
+    <span class="kw">ON</span> ventas.cliente (celular);
+
+<span class="cm">-- Búsqueda por tipo y número de documento (ya cubre el UNIQUE,
+-- pero un índice explícito permite consultas por tipo_documento solo)</span>
+<span class="kw">CREATE INDEX</span> idx_cliente_tipo_doc
+    <span class="kw">ON</span> ventas.cliente (tipo_documento);
+
+<span class="cm">-- Búsqueda por nombre (ILIKE %texto%) → GIN+trigram es mejor,
+-- pero para búsqueda exacta o prefix basta B-tree</span>
+<span class="kw">CREATE INDEX</span> idx_cliente_nombre
+    <span class="kw">ON</span> ventas.cliente (nombre_completo);
+
+<span class="cm">-- ── factura ──────────────────────────────────────────────────</span>
+<span class="cm">-- Facturas de un cliente (JOIN más frecuente)</span>
+<span class="kw">CREATE INDEX</span> idx_factura_cliente
+    <span class="kw">ON</span> ventas.factura (id_cliente);
+
+<span class="cm">-- Rango de fechas (reportes, cierres de mes)</span>
+<span class="kw">CREATE INDEX</span> idx_factura_fecha
+    <span class="kw">ON</span> ventas.factura (fecha DESC);
+
+<span class="cm">-- ── detalle_factura ──────────────────────────────────────────</span>
+<span class="cm">-- Detalles de una factura (el JOIN más intensivo del sistema)</span>
+<span class="kw">CREATE INDEX</span> idx_detalle_factura
+    <span class="kw">ON</span> ventas.detalle_factura (id_factura);
+
+<span class="cm">-- Historial de un producto en facturas</span>
+<span class="kw">CREATE INDEX</span> idx_detalle_producto
+    <span class="kw">ON</span> ventas.detalle_factura (id_producto);
+
+<span class="cm">-- ── Verificación de índices creados ──────────────────────────</span>
+<span class="kw">SELECT</span>
+  schemaname, tablename, indexname, indexdef
+<span class="kw">FROM</span>
+  pg_indexes
+<span class="kw">WHERE</span>
+  schemaname = <span class="st">'ventas'</span>
+<span class="kw">ORDER BY</span>
+  tablename, indexname;
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>ventas.cliente</h4>
+      <span class="tag tag-pk">PK id_cliente</span>
+      <span class="tag tag-uq">UQ correo_electronico</span>
+      <span class="tag tag-uq">UQ celular</span>
+      <span class="tag tag-uq">UQ (tipo_doc, num_doc)</span>
+      <span class="tag tag-idx">IDX tipo_documento</span>
+      <span class="tag tag-idx">IDX nombre_completo</span>
+    </div>
+    <div class="card">
+      <h4>ventas.factura</h4>
+      <span class="tag tag-pk">PK id_factura</span>
+      <span class="tag tag-uq">UQ numero_factura</span>
+      <span class="tag tag-fk">FK id_cliente</span>
+      <span class="tag tag-idx">IDX id_cliente</span>
+      <span class="tag tag-idx">IDX fecha DESC</span>
+    </div>
+    <div class="card">
+      <h4>ventas.producto</h4>
+      <span class="tag tag-pk">PK id_producto</span>
+      <span class="tag tag-nn">CHECK precio > 0</span>
+      <span class="tag tag-nn">CHECK cantidad ≥ 0</span>
+    </div>
+    <div class="card">
+      <h4>ventas.detalle_factura</h4>
+      <span class="tag tag-pk">PK id_detalle</span>
+      <span class="tag tag-fk">FK id_factura</span>
+      <span class="tag tag-fk">FK id_producto</span>
+      <span class="tag tag-uq">UQ (id_factura, id_producto)</span>
+      <span class="tag tag-idx">IDX id_factura</span>
+      <span class="tag tag-idx">IDX id_producto</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ REGLAS ═══════ -->
+<section id="reglas" class="section">
+  <h2>📋 Reglas de Negocio Implementadas</h2>
+  <p>Todas las reglas se implementan como constraints en DDL, garantizando integridad sin depender de la capa de aplicación.</p>
+
+  <h3>Unicidad</h3>
+  <ul class="rules-list">
+    <li><strong>(tipo_documento, numero_documento)</strong> — UNIQUE en tabla <code>cliente</code>. Ambos campos juntos son únicos; permite el mismo número con diferentes tipos.</li>
+    <li><strong>correo_electronico</strong> — UNIQUE en tabla <code>cliente</code>. Ningún cliente puede registrarse con un correo ya usado.</li>
+    <li><strong>celular</strong> — UNIQUE en tabla <code>cliente</code>. Un número de celular identifica unívocamente a un cliente.</li>
+    <li><strong>numero_factura</strong> — UNIQUE en tabla <code>factura</code>. Garantiza trazabilidad contable sin duplicados.</li>
+    <li><strong>(id_factura, id_producto)</strong> — UNIQUE en <code>detalle_factura</code>. Un producto no se repite en la misma factura; se consolidan cantidades.</li>
+  </ul>
+
+  <h3>Integridad Referencial</h3>
+  <ul class="rules-list">
+    <li><strong>Una factura debe tener un cliente</strong> — FK id_cliente NOT NULL con ON DELETE RESTRICT (no se puede eliminar un cliente con facturas).</li>
+    <li><strong>Un producto puede estar en varias facturas</strong> — FK en <code>detalle_factura</code> con ON DELETE RESTRICT en producto (no se elimina un producto si tiene historial de ventas).</li>
+    <li><strong>Una factura puede tener uno o más productos</strong> — Cardinalidad 1:N entre factura y detalle_factura; CASCADE en delete.</li>
+  </ul>
+
+  <h3>Consistencia de Datos (CHECK)</h3>
+  <ul class="rules-list">
+    <li><strong>precio > 0</strong> — Los productos no pueden tener precio cero o negativo.</li>
+    <li><strong>cantidad ≥ 0</strong> — Stock de producto no puede ser negativo.</li>
+    <li><strong>precio_unitario > 0, cantidad > 0</strong> — Líneas de factura con valores positivos.</li>
+    <li><strong>porcentaje_iva ≥ 0</strong> — IVA no puede ser negativo (puede ser 0 para exentos).</li>
+    <li><strong>tipo_documento IN (CC,CE,TI,PP,NIT)</strong> — Valores controlados de tipos de documento colombianos.</li>
+  </ul>
+
+  <h3>Snapshot de Precios</h3>
+  <ul class="rules-list">
+    <li><strong>precio_unitario y porcentaje_iva en detalle_factura</strong> — Se almacena el precio e IVA vigente al momento de la venta. Si el catálogo cambia, las facturas históricas no se ven afectadas.</li>
+  </ul>
+
+  <h3>Automatización</h3>
+  <ul class="rules-list">
+    <li><strong>Trigger trg_recalcular_factura</strong> — Recalcula subtotal, valor_iva y total de la cabecera de factura automáticamente tras INSERT / UPDATE / DELETE en detalle_factura.</li>
+  </ul>
+</section>
+
+</main>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copiar(id, btn) {
+  const block = document.getElementById(id);
+  const text = block.innerText.replace(/Copiar\n?/, '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); }, 2000);
+  }).catch(() => { btn.textContent = 'Error'; });
+}
+</script>
+</body>
+</html>
